@@ -286,6 +286,46 @@ footer a{color:rgba(139,168,136,0.8);text-decoration:none;transition:color .2s;}
 footer a:hover{color:var(--sage);}
 .footer-logo{font-family:'Cormorant Garamond',serif;font-size:1.9rem;font-weight:300;color:rgba(248,245,238,.85);font-style:italic;margin-bottom:.7rem;display:block;}
 
+/* ── GALLERY FOOTER (see-more link) ──────────────────────────────────────── */
+.gallery-footer{text-align:center;margin-top:3rem;}
+.gallery-footer a{
+  display:inline-flex;align-items:center;gap:.6rem;
+  padding:.85rem 2.2rem;
+  border:1px solid var(--sage-dark);color:var(--sage-dark);
+  background:rgba(255,255,255,0.55);
+  font-family:'Jost',sans-serif;font-size:.74rem;letter-spacing:.14em;
+  text-transform:uppercase;text-decoration:none;border-radius:1px;
+  transition:background .25s,color .25s;
+}
+.gallery-footer a:hover{background:var(--sage-dark);color:#fff;}
+.gallery-footer a svg{width:14px;height:14px;fill:currentColor;flex-shrink:0;}
+
+/* ── FLOATING COMMISSION CTA ─────────────────────────────────────────────── */
+/* Persistent route to the order form. Fades in after the visitor has scrolled
+   past the hero, fades out while the form is in view so it doesn't compete
+   with itself. Z-index 90 stays below the nav (z-index 100). */
+.float-cta{
+  position:fixed;bottom:1.5rem;right:1.5rem;z-index:90;
+  display:inline-flex;align-items:center;gap:.55rem;
+  padding:.85rem 1.5rem;
+  background:var(--sage-dark);color:#fff;
+  font-family:'Jost',sans-serif;font-size:.72rem;
+  letter-spacing:.14em;text-transform:uppercase;
+  text-decoration:none;border-radius:999px;
+  box-shadow:0 8px 28px rgba(28,26,22,0.28),0 2px 6px rgba(28,26,22,0.18);
+  opacity:0;transform:translateY(18px);pointer-events:none;
+  transition:opacity .4s ease,transform .4s ease,background .2s;
+}
+.float-cta.visible{opacity:1;transform:translateY(0);pointer-events:auto;}
+.float-cta:hover{background:var(--ink);}
+.float-cta svg{
+  width:14px;height:14px;flex-shrink:0;
+  stroke:currentColor;fill:none;stroke-width:1.6;
+}
+@media(max-width:480px){
+  .float-cta{bottom:1rem;right:1rem;padding:.7rem 1.2rem;font-size:.68rem;}
+}
+
 /* ── RESPONSIVE ──────────────────────────────────────────────────────────── */
 @media(max-width:768px){
   nav{padding:1rem 1.5rem;}
@@ -458,7 +498,7 @@ footer a:hover{color:var(--sage);}
 <!-- GALLERY -->
 <section class="gallery-section" id="gallery">
   <div class="gallery-header">
-    <p class="section-label">Selected works</p>
+    <p class="section-label">A selection of recent works</p>
     <h2 class="section-title">Recent <em>commissions</em></h2>
   </div>
   <div class="gallery-grid">
@@ -492,6 +532,15 @@ footer a:hover{color:var(--sage);}
       <span class="sold-price">1 500 kr</span>
       <div class="gallery-caption">Sunflowers — acrylic on canvas</div>
     </div>
+  </div>
+  <!-- "See more works" link: today it points to Instagram (which has the full archive).
+       TODO Maya: once the homepage gallery has 12+ pieces, build a dedicated /gallery
+       page and swap the href below to point there instead. -->
+  <div class="gallery-footer">
+    <a href="https://instagram.com/krmantina" target="_blank" rel="noopener" aria-label="See more works on Instagram">
+      See the full collection on Instagram
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+    </a>
   </div>
 </section>
 
@@ -736,6 +785,13 @@ footer a:hover{color:var(--sage);}
   <p style="margin-top:.7rem;font-size:.7rem;">© 2025 by Maya · All works are original and handmade · Currently shipping within Sweden only</p>
 </footer>
 
+<!-- Floating commission CTA — JS toggles `.visible` based on scroll position.
+     The circle SVG inside mirrors Maya's signature mark for brand consistency. -->
+<a href="#order" class="float-cta" id="float-cta" aria-label="Start a commission">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/></svg>
+  Commission
+</a>
+
 <script>
 /**
  * Resize + compress an image File in the browser so phone photos don't blow past
@@ -835,6 +891,33 @@ form.addEventListener('submit', async function(e) {
     btn.disabled = false;
   }
 });
+
+/* Floating commission CTA — show after scrolling past the hero, hide while
+   the order form itself is in view so the floating button doesn't compete
+   with the actual form. IIFE keeps these variables out of the global scope. */
+(function() {
+  const floatCta = document.getElementById('float-cta');
+  const hero = document.querySelector('.hero');
+  const orderSection = document.getElementById('order');
+  if (!floatCta || !hero || !orderSection) return;
+
+  const update = () => {
+    const heroBottom = hero.getBoundingClientRect().bottom;
+    const orderRect = orderSection.getBoundingClientRect();
+    // Treat the form as "in view" once its top crosses 70% down the viewport
+    const orderInView = orderRect.top < window.innerHeight * 0.7 && orderRect.bottom > 0;
+    if (heroBottom < 0 && !orderInView) {
+      floatCta.classList.add('visible');
+    } else {
+      floatCta.classList.remove('visible');
+    }
+  };
+
+  // Passive listeners — scroll/resize handlers shouldn't block the main thread
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update, { passive: true });
+  update();
+})();
 </script>
 </body>
 </html>
