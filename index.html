@@ -40,7 +40,7 @@
   --text-muted:rgba(28,26,22,0.58);
 }
 
-html{scroll-behavior:smooth;}
+html{scroll-behavior:smooth;overflow-x:clip;}
 
 /* ── JASMINE BACKGROUND SYSTEM ─────────────────────────────────────────────
    The entire page lives on a continuous jasmine garden.
@@ -117,24 +117,20 @@ nav ul{align-items:center;}
 
 /* ── HERO PAINTING PANEL ─────────────────────────────────────────────────── */
 /* The right half: paintings cascade diagonally across the living garden.
-   Image size AND container height both scale with the viewport via clamp() so
-   the diagonal preserves its proportions from large external monitor down to
-   a small laptop — fixed sizes broke the cascade on narrow screens. */
+   Image size scales with viewport (clamp + vw) so the cascade stays
+   proportional from a 27" external monitor down to a small laptop, while
+   positions and container height stay safely fixed to avoid any overflow. */
 .hero-garden{
   position:relative;
   overflow:hidden;
-  /* Was a fixed 640px floor — caused the cascade to overflow on short screens.
-     Now: scales between 560px (very short viewports) and 820px (tall ones). */
-  min-height: clamp(560px, 90vh, 820px);
+  min-height:640px;
 }
 .hero-garden img{
   position:absolute;
-  /* Image width tracks the viewport. 18vw means the image is always ~36% of
-     the hero-garden column (which is 50vw on desktop), so the percentage-based
-     position offsets below stay proportionally consistent at every width.
-     Floor 150px so it never gets uselessly tiny; ceiling 270px so on 4K
-     monitors the paintings don't balloon. */
-  width: clamp(150px, 18vw, 270px);
+  /* Was width:48%; max-width:300px — fixed cap broke proportions on laptops.
+     17vw scales smoothly: ~256px at 1500-wide, ~218px at 1280, ~170px at 1000.
+     Floor 165px (small but readable) / ceiling 260px (cap on very wide screens). */
+  width: clamp(165px, 17vw, 260px);
   /* tight dark shadow + 1px sage outline mask any pale margin in the source photos
      and read as "framed art" rather than "image on page" */
   box-shadow:
@@ -145,12 +141,9 @@ nav ul{align-items:center;}
   opacity:0;
   animation:riseIn 1s cubic-bezier(.22,1,.36,1) forwards;
 }
-/* Positions are percentages of container — they already scale with width.
-   Vertical positions slightly tightened so the lowest image still fits inside
-   the container even on 720p laptop screens. */
-.hero-garden img.main  {top:4%;  right:7%;  z-index:3; animation-delay:.25s;}
-.hero-garden img.float.a{top:30%; right:27%; z-index:2; animation-delay:.6s;}
-.hero-garden img.float.b{top:56%; right:46%; z-index:1; animation-delay:.95s;}
+.hero-garden img.main  {top:6%;  right:6%;  z-index:3; animation-delay:.25s;}
+.hero-garden img.float.a{top:33%; right:26%; z-index:2; animation-delay:.6s;}
+.hero-garden img.float.b{top:60%; right:46%; z-index:1; animation-delay:.95s;}
 @keyframes riseIn{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:translateY(0);}}
 
 /* ── BUTTONS ─────────────────────────────────────────────────────────────── */
