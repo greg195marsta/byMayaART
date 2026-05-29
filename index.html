@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>by Maya — Custom Handmade Art · Stockholm</title>
+<meta name="description" content="Original handmade watercolour, ink, and acrylic paintings by Maya — a Stockholm-based artist. Commission a personal piece: pets, bouquets, places, memories.">
+<meta name="author" content="Maya">
+<meta name="theme-color" content="#5A7A57">
+
+<!-- Open Graph / social sharing -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="by Maya — Custom Handmade Art">
+<meta property="og:description" content="Original handmade paintings — watercolour, ink, acrylic. Commission a piece that holds real meaning.">
+<meta property="og:image" content="bouquet_corrected.jpg">
+<meta property="og:locale" content="en_GB">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="by Maya — Custom Handmade Art">
+<meta name="twitter:description" content="Original handmade paintings — watercolour, ink, acrylic. Commission a piece that holds real meaning.">
+<meta name="twitter:image" content="bouquet_corrected.jpg">
+
+<!-- Inline SVG favicon: Maya's circle mark on ivory -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23F8F5EE'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%235A7A57' stroke-width='2'/%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --ivory:#F8F5EE;
+  --sage-light:#E8EFE2;
+  --sage:#8BA888;
+  --sage-dark:#5A7A57;
+  --ink:#1C1A16;
+  --bark:#6B4F35;
+  --gold:#C4973A;
+  --white:#FFFFFF;
+  --border:rgba(90,122,87,0.18);
+  --text-muted:rgba(28,26,22,0.58);
+}
+
+html{scroll-behavior:smooth;}
+
+/* ── JASMINE BACKGROUND SYSTEM ─────────────────────────────────────────────
+   The entire page lives on a continuous jasmine garden.
+   We use a tiling SVG pattern as the page background, then
+   each section overlays a semi-transparent panel so content is readable
+   while the garden breathes through everywhere.
+─────────────────────────────────────────────────────────────────────────── */
+body{
+  font-family:'Jost',sans-serif;
+  color:var(--ink);
+  font-weight:300;
+  line-height:1.7;
+  overflow-x:hidden;
+  /* Tiling jasmine SVG pattern — the garden */
+  background-color:#EFF5EB;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='420' viewBox='0 0 420 420'%3E%3C!-- Main sweeping vine --%3E%3Cpath d='M0 350 C40 300 80 280 120 240 C160 200 180 160 210 120 C240 80 280 60 320 40 C360 20 400 10 420 0' stroke='%238BA888' stroke-width='1.5' fill='none' opacity='0.5'/%3E%3Cpath d='M0 420 C50 380 90 340 140 300 C190 260 210 220 240 180 C270 140 310 110 350 80 C380 58 410 40 420 30' stroke='%238BA888' stroke-width='1' fill='none' opacity='0.35'/%3E%3C!-- Cross vine --%3E%3Cpath d='M420 350 C380 310 340 290 300 260 C260 230 240 200 210 170 C180 140 140 120 100 90 C60 60 20 30 0 0' stroke='%238BA888' stroke-width='1.2' fill='none' opacity='0.4'/%3E%3C!-- Side tendrils --%3E%3Cpath d='M60 0 C50 30 55 50 45 70 C35 90 20 100 10 120' stroke='%238BA888' stroke-width='0.8' fill='none' opacity='0.45'/%3E%3Cpath d='M200 0 C210 25 205 45 215 65' stroke='%238BA888' stroke-width='0.8' fill='none' opacity='0.4'/%3E%3Cpath d='M360 0 C350 20 355 40 345 58' stroke='%238BA888' stroke-width='0.7' fill='none' opacity='0.35'/%3E%3Cpath d='M0 100 C25 110 40 105 58 115' stroke='%238BA888' stroke-width='0.7' fill='none' opacity='0.4'/%3E%3Cpath d='M0 220 C20 215 38 220 52 210' stroke='%238BA888' stroke-width='0.7' fill='none' opacity='0.35'/%3E%3Cpath d='M420 150 C400 158 385 152 368 162' stroke='%238BA888' stroke-width='0.7' fill='none' opacity='0.4'/%3E%3Cpath d='M420 280 C398 272 382 278 365 268' stroke='%238BA888' stroke-width='0.7' fill='none' opacity='0.35'/%3E%3C!-- LEAVES along main vine --%3E%3Cellipse cx='95' cy='268' rx='9' ry='5' transform='rotate(-40 95 268)' fill='%235A7A57' opacity='0.45'/%3E%3Cellipse cx='148' cy='218' rx='8' ry='4' transform='rotate(-50 148 218)' fill='%235A7A57' opacity='0.4'/%3E%3Cellipse cx='195' cy='172' rx='10' ry='5' transform='rotate(-55 195 172)' fill='%235A7A57' opacity='0.45'/%3E%3Cellipse cx='248' cy='130' rx='8' ry='4' transform='rotate(-60 248 130)' fill='%235A7A57' opacity='0.38'/%3E%3Cellipse cx='298' cy='90' rx='9' ry='5' transform='rotate(-65 298 90)' fill='%235A7A57' opacity='0.42'/%3E%3Cellipse cx='355' cy='55' rx='7' ry='4' transform='rotate(-70 355 55)' fill='%235A7A57' opacity='0.38'/%3E%3C!-- Leaves right vine --%3E%3Cellipse cx='340' cy='288' rx='9' ry='4' transform='rotate(40 340 288)' fill='%235A7A57' opacity='0.4'/%3E%3Cellipse cx='288' cy='238' rx='8' ry='4' transform='rotate(45 288 238)' fill='%235A7A57' opacity='0.38'/%3E%3Cellipse cx='238' cy='195' rx='9' ry='5' transform='rotate(50 238 195)' fill='%235A7A57' opacity='0.42'/%3E%3Cellipse cx='188' cy='148' rx='8' ry='4' transform='rotate(55 188 148)' fill='%235A7A57' opacity='0.38'/%3E%3Cellipse cx='138' cy='105' rx='9' ry='5' transform='rotate(60 138 105)' fill='%235A7A57' opacity='0.4'/%3E%3C!-- JASMINE FLOWERS ---%3E%3C!-- Flower helper: 5 petals as ellipses rotated around centre ---%3E%3C!-- Flower 1 at ~(120,240) ---%3E%3Cg transform='translate(120,240)'%3E%3Cellipse cx='0' cy='-7' rx='5' ry='3' fill='%23FDFAF4' opacity='0.9'/%3E%3Cellipse cx='6.7' cy='-2.2' rx='5' ry='3' transform='rotate(72)' fill='%23FDFAF4' opacity='0.9'/%3E%3Cellipse cx='4.1' cy='5.7' rx='5' ry='3' transform='rotate(144)' fill='%23FDFAF4' opacity='0.9'/%3E%3Cellipse cx='-4.1' cy='5.7' rx='5' ry='3' transform='rotate(216)' fill='%23FDFAF4' opacity='0.9'/%3E%3Cellipse cx='-6.7' cy='-2.2' rx='5' ry='3' transform='rotate(288)' fill='%23FDFAF4' opacity='0.9'/%3E%3Ccircle r='2.5' fill='%23E8C84A' opacity='0.95'/%3E%3C/g%3E%3C!-- Flower 2 at ~(210,120) ---%3E%3Cg transform='translate(210,120)'%3E%3Cellipse cx='0' cy='-8' rx='6' ry='3.5' fill='%23FDFAF4' opacity='0.88'/%3E%3Cellipse cx='7.6' cy='-2.5' rx='6' ry='3.5' transform='rotate(72)' fill='%23FDFAF4' opacity='0.88'/%3E%3Cellipse cx='4.7' cy='6.5' rx='6' ry='3.5' transform='rotate(144)' fill='%23FDFAF4' opacity='0.88'/%3E%3Cellipse cx='-4.7' cy='6.5' rx='6' ry='3.5' transform='rotate(216)' fill='%23FDFAF4' opacity='0.88'/%3E%3Cellipse cx='-7.6' cy='-2.5' rx='6' ry='3.5' transform='rotate(288)' fill='%23FDFAF4' opacity='0.88'/%3E%3Ccircle r='3' fill='%23E8C84A' opacity='0.92'/%3E%3C/g%3E%3C!-- Flower 3 at ~(320,40) ---%3E%3Cg transform='translate(318,42)'%3E%3Cellipse cx='0' cy='-6' rx='4.5' ry='2.5' fill='%23FDFAF4' opacity='0.85'/%3E%3Cellipse cx='5.7' cy='-1.9' rx='4.5' ry='2.5' transform='rotate(72)' fill='%23FDFAF4' opacity='0.85'/%3E%3Cellipse cx='3.5' cy='4.9' rx='4.5' ry='2.5' transform='rotate(144)' fill='%23FDFAF4' opacity='0.85'/%3E%3Cellipse cx='-3.5' cy='4.9' rx='4.5' ry='2.5' transform='rotate(216)' fill='%23FDFAF4' opacity='0.85'/%3E%3Cellipse cx='-5.7' cy='-1.9' rx='4.5' ry='2.5' transform='rotate(288)' fill='%23FDFAF4' opacity='0.85'/%3E%3Ccircle r='2' fill='%23E8C84A' opacity='0.9'/%3E%3C/g%3E%3C!-- Flower 4 at ~(300,260) right vine ---%3E%3Cg transform='translate(298,262)'%3E%3Cellipse cx='0' cy='-7' rx='5.5' ry='3' fill='%23FDFAF4' opacity='0.88'/%3E%3Cellipse cx='6.7' cy='-2.2' rx='5.5' ry='3' transform='rotate(72)' fill='%23FDFAF4' opacity='0.88'/%3E%3Cellipse cx='4.1' cy='5.7' rx='5.5' ry='3' transform='rotate(144)' fill='%23FDFAF4' opacity='0.88'/%3E%3Cellipse cx='-4.1' cy='5.7' rx='5.5' ry='3' transform='rotate(216)' fill='%23FDFAF4' opacity='0.88'/%3E%3Cellipse cx='-6.7' cy='-2.2' rx='5.5' ry='3' transform='rotate(288)' fill='%23FDFAF4' opacity='0.88'/%3E%3Ccircle r='2.5' fill='%23E8C84A' opacity='0.92'/%3E%3C/g%3E%3C!-- Flower 5 small at ~(55,70) tendril ---%3E%3Cg transform='translate(52,72)'%3E%3Cellipse cx='0' cy='-5' rx='3.5' ry='2' fill='%23FDFAF4' opacity='0.82'/%3E%3Cellipse cx='4.8' cy='-1.5' rx='3.5' ry='2' transform='rotate(72)' fill='%23FDFAF4' opacity='0.82'/%3E%3Cellipse cx='3' cy='4' rx='3.5' ry='2' transform='rotate(144)' fill='%23FDFAF4' opacity='0.82'/%3E%3Cellipse cx='-3' cy='4' rx='3.5' ry='2' transform='rotate(216)' fill='%23FDFAF4' opacity='0.82'/%3E%3Cellipse cx='-4.8' cy='-1.5' rx='3.5' ry='2' transform='rotate(288)' fill='%23FDFAF4' opacity='0.82'/%3E%3Ccircle r='1.8' fill='%23E8C84A' opacity='0.88'/%3E%3C/g%3E%3C!-- Flower 6 at ~(185,148) ---%3E%3Cg transform='translate(185,150)'%3E%3Cellipse cx='0' cy='-6' rx='4.5' ry='2.5' fill='%23FDFAF4' opacity='0.86'/%3E%3Cellipse cx='5.7' cy='-1.9' rx='4.5' ry='2.5' transform='rotate(72)' fill='%23FDFAF4' opacity='0.86'/%3E%3Cellipse cx='3.5' cy='4.9' rx='4.5' ry='2.5' transform='rotate(144)' fill='%23FDFAF4' opacity='0.86'/%3E%3Cellipse cx='-3.5' cy='4.9' rx='4.5' ry='2.5' transform='rotate(216)' fill='%23FDFAF4' opacity='0.86'/%3E%3Cellipse cx='-5.7' cy='-1.9' rx='4.5' ry='2.5' transform='rotate(288)' fill='%23FDFAF4' opacity='0.86'/%3E%3Ccircle r='2.2' fill='%23E8C84A' opacity='0.9'/%3E%3C/g%3E%3C!-- Flower 7 at ~(240,195) ---%3E%3Cg transform='translate(242,193)'%3E%3Cellipse cx='0' cy='-7' rx='5' ry='2.8' fill='%23FDFAF4' opacity='0.84'/%3E%3Cellipse cx='6.7' cy='-2.2' rx='5' ry='2.8' transform='rotate(72)' fill='%23FDFAF4' opacity='0.84'/%3E%3Cellipse cx='4.1' cy='5.7' rx='5' ry='2.8' transform='rotate(144)' fill='%23FDFAF4' opacity='0.84'/%3E%3Cellipse cx='-4.1' cy='5.7' rx='5' ry='2.8' transform='rotate(216)' fill='%23FDFAF4' opacity='0.84'/%3E%3Cellipse cx='-6.7' cy='-2.2' rx='5' ry='2.8' transform='rotate(288)' fill='%23FDFAF4' opacity='0.84'/%3E%3Ccircle r='2.3' fill='%23E8C84A' opacity='0.9'/%3E%3C/g%3E%3C!-- Buds ---%3E%3Cellipse cx='160' cy='200' rx='3' ry='5' transform='rotate(-50 160 200)' fill='%23E8F0E0' opacity='0.7'/%3E%3Cellipse cx='270' cy='155' rx='2.5' ry='4' transform='rotate(-55 270 155)' fill='%23E8F0E0' opacity='0.65'/%3E%3Cellipse cx='340' cy='78' rx='2.5' ry='4' transform='rotate(-65 340 78)' fill='%23E8F0E0' opacity='0.65'/%3E%3Cellipse cx='218' cy='208' rx='2.5' ry='4' transform='rotate(48 218 208)' fill='%23E8F0E0' opacity='0.62'/%3E%3Cellipse cx='138' cy='108' rx='2.5' ry='4' transform='rotate(58 138 108)' fill='%23E8F0E0' opacity='0.65'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 420px 420px;
+}
+
+/* ── SECTION PANELS ──────────────────────────────────────────────────────── */
+/* Each section gets a semi-transparent panel so the garden shows through */
+.panel-ivory { background: rgba(248,245,238,0.88); }
+.panel-white  { background: rgba(255,255,255,0.82); }
+.panel-sage   { background: rgba(232,239,226,0.85); }
+.panel-dark   { background: rgba(28,26,22,0.93);    }
+
+/* ── NAV ─────────────────────────────────────────────────────────────────── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.2rem 3rem;
+  background:rgba(248,245,238,0.92);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(90,122,87,0.2);
+}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:400;letter-spacing:.04em;color:var(--ink);text-decoration:none;}
+.nav-logo span{font-style:italic;color:var(--sage-dark);}
+nav ul{list-style:none;display:flex;gap:2.5rem;}
+nav ul a{text-decoration:none;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);opacity:.6;transition:opacity .2s,color .2s;}
+nav ul a:hover{opacity:1;color:var(--sage-dark);}
+.nav-ig{display:inline-flex;align-items:center;gap:.45rem;text-decoration:none;color:var(--ink);opacity:.65;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;transition:opacity .2s,color .2s;margin-left:1.8rem;padding-left:1.8rem;border-left:.5px solid rgba(90,122,87,.2);}
+.nav-ig:hover{opacity:1;color:var(--sage-dark);}
+.nav-ig svg{width:15px;height:15px;fill:currentColor;}
+nav ul{align-items:center;}
+
+/* small Instagram chip in the hero */
+.hero-ig{display:inline-flex;align-items:center;gap:.55rem;margin-bottom:1.8rem;padding:.45rem .9rem .45rem .7rem;background:rgba(255,255,255,0.55);border:.5px solid rgba(90,122,87,0.25);border-radius:99px;text-decoration:none;color:var(--ink);font-size:.74rem;letter-spacing:.06em;align-self:flex-start;transition:background .2s,border-color .2s,transform .2s;}
+.hero-ig:hover{background:#fff;border-color:var(--sage-dark);transform:translateY(-1px);}
+.hero-ig svg{width:14px;height:14px;fill:var(--sage-dark);}
+.hero-ig strong{font-weight:500;color:var(--sage-dark);}
+
+/* ── HERO ────────────────────────────────────────────────────────────────── */
+.hero{
+  min-height:100vh;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  padding-top:72px;
+  position:relative;
+}
+.hero-text{
+  display:flex;flex-direction:column;justify-content:center;
+  padding:5rem 4rem 5rem 5rem;
+  background:rgba(248,245,238,0.80);
+  backdrop-filter:blur(2px);
+}
+.eyebrow{font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:var(--sage-dark);margin-bottom:1.4rem;}
+.hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(3rem,5vw,4.8rem);font-weight:300;line-height:1.08;margin-bottom:1.6rem;}
+.hero-title em{font-style:italic;color:var(--sage-dark);}
+.hero-desc{font-size:.97rem;color:var(--text-muted);max-width:40ch;margin-bottom:1rem;line-height:1.85;}
+.sig-note{display:flex;align-items:center;gap:.7rem;margin-bottom:2.5rem;font-size:.78rem;color:rgba(28,26,22,.4);font-style:italic;}
+.sig-circle{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--sage);flex-shrink:0;}
+.hero-buttons{display:flex;gap:1rem;flex-wrap:wrap;}
+
+/* ── HERO PAINTING PANEL ─────────────────────────────────────────────────── */
+/* The right half: paintings cascade diagonally across the living garden */
+.hero-garden{
+  position:relative;
+  overflow:hidden;
+  min-height:640px;
+}
+.hero-garden img{
+  position:absolute;
+  width:48%;
+  max-width:300px;
+  /* tight dark shadow + 1px sage outline mask any pale margin in the source photos
+     and read as "framed art" rather than "image on page" */
+  box-shadow:
+    0 18px 50px rgba(28,26,22,0.32),
+    0 0 0 1px rgba(28,26,22,0.35);
+  background:transparent;
+  display:block;
+  opacity:0;
+  animation:riseIn 1s cubic-bezier(.22,1,.36,1) forwards;
+}
+.hero-garden img.main  {top:6%;  right:6%;  z-index:3; animation-delay:.25s;}
+.hero-garden img.float.a{top:33%; right:26%; z-index:2; animation-delay:.6s;}
+.hero-garden img.float.b{top:60%; right:46%; z-index:1; animation-delay:.95s;}
+@keyframes riseIn{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── BUTTONS ─────────────────────────────────────────────────────────────── */
+.btn-primary{display:inline-block;padding:.9rem 2.2rem;background:var(--sage-dark);color:#fff;text-decoration:none;font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;transition:background .25s,transform .2s;border-radius:1px;}
+.btn-primary:hover{background:var(--ink);transform:translateY(-1px);}
+.btn-outline{display:inline-block;padding:.9rem 2.2rem;border:1px solid var(--sage-dark);color:var(--sage-dark);text-decoration:none;font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;transition:all .25s;border-radius:1px;}
+.btn-outline:hover{background:var(--sage-dark);color:#fff;}
+
+/* ── SECTION LABELS ──────────────────────────────────────────────────────── */
+.section-label{font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:var(--sage-dark);margin-bottom:1rem;}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:clamp(1.9rem,3vw,2.7rem);font-weight:300;line-height:1.2;margin-bottom:1rem;}
+.section-title em{font-style:italic;color:var(--sage-dark);}
+
+/* ── WHY ─────────────────────────────────────────────────────────────────── */
+.why-section{padding:6rem 5rem;position:relative;}
+.why-inner{max-width:1050px;margin:0 auto;background:rgba(255,255,255,0.78);padding:4rem;border:1px solid rgba(90,122,87,0.15);}
+.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;margin-top:3rem;}
+.why-card{padding:1.8rem;background:rgba(248,245,238,0.9);border:0.5px solid rgba(90,122,87,0.15);}
+.why-card::before{content:'';display:block;width:28px;height:2px;background:var(--sage);margin-bottom:1rem;}
+.why-card h3{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:400;margin-bottom:.6rem;line-height:1.3;}
+.why-card p{font-size:.84rem;color:var(--text-muted);line-height:1.75;}
+
+/* ── ABOUT ───────────────────────────────────────────────────────────────── */
+.about{display:grid;grid-template-columns:1fr 1fr;position:relative;}
+.about-images{display:grid;grid-template-columns:1fr 1fr;gap:3px;}
+.about-images img{width:100%;aspect-ratio:3/4;object-fit:contain;object-position:center;display:block;background:#EFF5EB;}
+.about-text{padding:6rem 5rem;display:flex;flex-direction:column;justify-content:center;background:rgba(255,255,255,0.84);}
+.about-text p{color:var(--text-muted);margin-bottom:1rem;font-size:.92rem;max-width:44ch;}
+.about-sig{display:flex;align-items:center;gap:1rem;margin-top:1.5rem;padding-top:1.5rem;border-top:0.5px solid var(--border);}
+.about-sig-circle{width:28px;height:28px;border-radius:50%;border:2px solid var(--sage);flex-shrink:0;}
+.about-sig p{font-size:.78rem;color:rgba(28,26,22,.45);font-style:italic;margin:0;}
+
+/* ── GALLERY ─────────────────────────────────────────────────────────────── */
+.gallery-section{padding:7rem 4rem;position:relative;}
+.gallery-header{text-align:center;margin-bottom:3.5rem;}
+.gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:1100px;margin:0 auto;}
+.gallery-item{
+  position:relative;overflow:hidden;cursor:pointer;
+  background:#EFF5EB;
+  box-shadow:0 4px 30px rgba(28,26,22,.10);
+  transition:box-shadow .4s, transform .4s;
+}
+.gallery-item:hover{box-shadow:0 12px 50px rgba(28,26,22,.18);transform:translateY(-3px);}
+.gallery-item img{width:100%;aspect-ratio:3/4;object-fit:contain;object-position:center;display:block;background:#EFF5EB;transition:transform .65s ease;}
+.gallery-item:hover img{transform:scale(1.03);}
+.gallery-item.wide{grid-column:span 2;}
+.gallery-item.wide img{aspect-ratio:4/3;}
+.gallery-caption{position:absolute;bottom:0;left:0;right:0;padding:1.4rem 1.1rem .9rem;background:linear-gradient(transparent,rgba(28,26,22,.62));color:white;font-family:'Cormorant Garamond',serif;font-size:1rem;font-style:italic;opacity:0;transition:opacity .3s;}
+.gallery-item:hover .gallery-caption{opacity:1;}
+.sold-badge{position:absolute;top:.9rem;left:.9rem;background:rgba(28,26,22,.82);color:var(--gold);font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;padding:.32rem .7rem;font-family:'Jost',sans-serif;font-weight:400;}
+.sold-price{position:absolute;top:.9rem;right:.9rem;background:rgba(28,26,22,.82);color:rgba(255,255,255,.75);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;padding:.32rem .7rem;font-family:'Jost',sans-serif;}
+
+/* ── HOW IT WORKS ────────────────────────────────────────────────────────── */
+.how-section{padding:7rem 5rem;position:relative;}
+.how-inner{background:rgba(28,26,22,0.91);padding:5rem;max-width:1100px;margin:0 auto;}
+.how-header{text-align:center;margin-bottom:4rem;}
+.how-header .section-label{color:rgba(139,168,136,0.9);}
+.how-header .section-title{color:#fff;}
+.how-header .section-title em{color:var(--gold);}
+.how-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;position:relative;}
+.how-steps::before{content:'';position:absolute;top:1.4rem;left:14%;right:14%;height:.5px;background:rgba(255,255,255,.1);}
+.step{text-align:center;padding:0 .8rem;}
+.step-num{font-family:'Cormorant Garamond',serif;font-size:3rem;font-weight:300;color:var(--gold);line-height:1;margin-bottom:1.2rem;}
+.step h3{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:400;margin-bottom:.55rem;color:#fff;}
+.step p{font-size:.8rem;color:rgba(255,255,255,.45);line-height:1.7;}
+
+/* ── ORDER ───────────────────────────────────────────────────────────────── */
+.order-section{padding:7rem 5rem;position:relative;}
+.order-inner{max-width:780px;margin:0 auto;background:rgba(255,255,255,0.88);padding:4rem;border:1px solid rgba(90,122,87,0.15);}
+.order-header{margin-bottom:3rem;}
+.order-header p.sub{color:var(--text-muted);font-size:.9rem;margin-top:.8rem;max-width:50ch;line-height:1.8;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem;}
+.form-group{display:flex;flex-direction:column;gap:.45rem;}
+.form-group.full{grid-column:span 2;}
+label{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,26,22,.5);}
+input,textarea,select{font-family:'Jost',sans-serif;font-weight:300;font-size:.92rem;padding:.82rem 1rem;border:.5px solid rgba(90,122,87,.25);background:rgba(248,245,238,.8);color:var(--ink);outline:none;transition:border-color .2s;-webkit-appearance:none;appearance:none;border-radius:0;width:100%;}
+input:focus,textarea:focus,select:focus{border-color:var(--sage-dark);background:#fff;}
+textarea{resize:vertical;min-height:130px;}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235A7A57' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 1rem center;padding-right:2.5rem;}
+.file-zone{border:.5px dashed rgba(90,122,87,.35);padding:2rem;text-align:center;cursor:pointer;background:rgba(232,239,226,.5);transition:border-color .2s,background .2s;position:relative;}
+.file-zone:hover{border-color:var(--sage-dark);background:rgba(232,239,226,.8);}
+.file-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;padding:0;border:none;}
+.file-zone-text{font-size:.8rem;color:rgba(28,26,22,.42);pointer-events:none;}
+.file-zone-text strong{display:block;color:var(--sage-dark);font-weight:400;margin-bottom:.3rem;}
+#file-name{margin-top:.4rem;font-size:.76rem;color:var(--sage-dark);}
+.swish-box{background:rgba(232,239,226,.7);border-left:2px solid var(--sage);padding:1rem 1.4rem;font-size:.82rem;color:var(--text-muted);line-height:1.65;margin-top:1.4rem;}
+.swish-box strong{color:var(--sage-dark);font-weight:500;}
+.form-actions{margin-top:1.8rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;}
+.submit-btn{padding:1rem 2.8rem;background:var(--sage-dark);color:#fff;border:none;font-family:'Jost',sans-serif;font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;transition:background .2s,transform .15s;border-radius:1px;}
+.submit-btn:hover{background:var(--ink);transform:translateY(-1px);}
+.form-footnote{font-size:.74rem;color:rgba(28,26,22,.38);}
+#success-msg{display:none;background:rgba(232,239,226,.9);border-left:2px solid var(--sage);padding:1.2rem 1.5rem;margin-top:1.5rem;font-size:.9rem;color:var(--sage-dark);}
+
+/* ── TRUST BAND ──────────────────────────────────────────────────────────── */
+.trust-band{padding:3rem 5rem;position:relative;}
+.trust-band-inner{max-width:1000px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;background:rgba(255,255,255,0.78);padding:2rem 2.5rem;border:1px solid rgba(90,122,87,0.15);}
+.trust-item{text-align:center;}
+.trust-item .trust-icon{display:block;margin:0 auto .6rem;width:24px;height:24px;color:var(--sage-dark);}
+.trust-item .trust-label{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:400;color:var(--ink);margin-bottom:.2rem;}
+.trust-item .trust-sub{font-size:.74rem;color:var(--text-muted);line-height:1.5;letter-spacing:.02em;}
+
+/* ── TESTIMONIALS ────────────────────────────────────────────────────────── */
+.testimonials-section{padding:6rem 5rem;position:relative;}
+.testimonials-inner{max-width:1100px;margin:0 auto;background:rgba(248,245,238,0.86);padding:4rem;border:1px solid rgba(90,122,87,0.15);}
+.testimonials-header{text-align:center;margin-bottom:3rem;}
+.testimonials-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.8rem;}
+.testimonial{padding:2rem 1.6rem 1.6rem;background:rgba(255,255,255,0.78);border:0.5px solid rgba(90,122,87,0.18);position:relative;}
+.testimonial::before{content:'\201C';position:absolute;top:-.2rem;left:1rem;font-family:'Cormorant Garamond',serif;font-size:4rem;color:rgba(139,168,136,0.38);line-height:1;}
+.testimonial .quote{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem;line-height:1.6;color:var(--ink);margin-bottom:1.4rem;padding-top:.4rem;}
+.testimonial .author{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--sage-dark);font-weight:400;}
+.testimonial .detail{font-size:.78rem;color:var(--text-muted);margin-top:.25rem;font-style:italic;}
+
+/* ── FAQ ─────────────────────────────────────────────────────────────────── */
+.faq-section{padding:6rem 5rem;position:relative;}
+.faq-inner{max-width:780px;margin:0 auto;background:rgba(255,255,255,0.84);padding:4rem;border:1px solid rgba(90,122,87,0.15);}
+.faq-header{text-align:center;margin-bottom:2.5rem;}
+.faq-item{border-bottom:0.5px solid var(--border);padding:.2rem 0;}
+.faq-item:last-child{border-bottom:none;}
+.faq-item summary{font-family:'Cormorant Garamond',serif;font-size:1.18rem;font-weight:400;color:var(--ink);cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:1.5rem;padding:1.2rem 0;transition:color .2s;}
+.faq-item summary::-webkit-details-marker{display:none;}
+.faq-item summary::after{content:'+';font-family:'Jost',sans-serif;font-weight:300;font-size:1.6rem;color:var(--sage-dark);transition:transform .25s;flex-shrink:0;}
+.faq-item[open] summary::after{transform:rotate(45deg);}
+.faq-item summary:hover{color:var(--sage-dark);}
+.faq-item .answer{font-size:.92rem;color:var(--text-muted);line-height:1.85;padding:.2rem 2rem 1.4rem 0;}
+
+/* ── INSTAGRAM ───────────────────────────────────────────────────────────── */
+.insta-section{padding:5rem;position:relative;text-align:center;}
+.insta-inner{max-width:520px;margin:0 auto;background:rgba(28,26,22,0.88);padding:4rem;border:1px solid rgba(139,168,136,0.2);}
+.insta-section .section-label{color:rgba(139,168,136,0.85);}
+.insta-title{font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,3vw,2.4rem);font-weight:300;color:#fff;line-height:1.25;margin-bottom:1rem;}
+.insta-title em{font-style:italic;color:var(--gold);}
+.insta-desc{font-size:.88rem;color:rgba(255,255,255,.45);margin-bottom:2rem;line-height:1.85;}
+.insta-btn{display:inline-flex;align-items:center;gap:.7rem;padding:.9rem 2rem;border:1px solid rgba(139,168,136,.4);color:#fff;text-decoration:none;font-size:.76rem;letter-spacing:.12em;text-transform:uppercase;transition:all .3s;border-radius:1px;}
+.insta-btn:hover{background:rgba(139,168,136,.15);border-color:rgba(139,168,136,.8);}
+.insta-btn svg{width:16px;height:16px;fill:currentColor;flex-shrink:0;}
+
+/* ── FOOTER ──────────────────────────────────────────────────────────────── */
+footer{background:rgba(22,20,16,0.96);color:rgba(248,245,238,.38);text-align:center;padding:3rem;font-size:.75rem;letter-spacing:.07em;position:relative;}
+footer a{color:rgba(139,168,136,0.8);text-decoration:none;transition:color .2s;}
+footer a:hover{color:var(--sage);}
+.footer-logo{font-family:'Cormorant Garamond',serif;font-size:1.9rem;font-weight:300;color:rgba(248,245,238,.85);font-style:italic;margin-bottom:.7rem;display:block;}
+
+/* ── RESPONSIVE ──────────────────────────────────────────────────────────── */
+@media(max-width:768px){
+  nav{padding:1rem 1.5rem;}
+  nav ul{display:none;}
+  .hero-ig{font-size:.7rem;padding:.4rem .8rem .4rem .6rem;}
+  .hero{grid-template-columns:1fr;min-height:auto;}
+  .hero-text{padding:4rem 1.8rem 2.5rem;}
+  .hero-garden{min-height:520px;padding:1.5rem 0;}
+  .hero-garden img{width:55%;max-width:240px;}
+  .hero-garden img.main  {top:4%;  right:5%;}
+  .hero-garden img.float.a{top:30%; right:22%;}
+  .hero-garden img.float.b{top:56%; right:40%;}
+  .why-section{padding:4rem 1.2rem;}
+  .why-inner{padding:2rem 1.5rem;}
+  .why-grid{grid-template-columns:1fr;}
+  .about{grid-template-columns:1fr;}
+  .about-text{padding:3rem 1.8rem;}
+  .gallery-section{padding:4rem 1.2rem;}
+  .gallery-grid{grid-template-columns:1fr 1fr;gap:.75rem;}
+  .gallery-item.wide{grid-column:span 2;}
+  .how-section{padding:3rem 1.2rem;}
+  .how-inner{padding:3rem 1.5rem;}
+  .how-steps{grid-template-columns:1fr 1fr;}
+  .how-steps::before{display:none;}
+  .order-section{padding:3rem 1.2rem;}
+  .order-inner{padding:2rem 1.5rem;}
+  .trust-band{padding:2rem 1.2rem;}
+  .trust-band-inner{grid-template-columns:1fr 1fr;gap:1.5rem;padding:1.5rem;}
+  .testimonials-section{padding:3.5rem 1.2rem;}
+  .testimonials-inner{padding:2rem 1.5rem;}
+  .testimonials-grid{grid-template-columns:1fr;gap:1.2rem;}
+  .faq-section{padding:3.5rem 1.2rem;}
+  .faq-inner{padding:2rem 1.5rem;}
+  .insta-section{padding:3rem 1.2rem;}
+  .insta-inner{padding:2.5rem 1.5rem;}
+  .form-grid{grid-template-columns:1fr;}
+  .form-group.full{grid-column:span 1;}
+}
+</style>
+
+<!-- Structured data for Google: helps the site show up for "commission art Stockholm" etc.
+     TODO Maya: replace the @id URL with the live domain once published. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "VisualArtist",
+  "name": "Maya",
+  "alternateName": "by Maya",
+  "description": "Stockholm-based artist creating original handmade watercolour, ink and acrylic paintings. Custom commissions for pets, bouquets, portraits and meaningful moments.",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Stockholm",
+    "addressCountry": "SE"
+  },
+  "knowsAbout": ["Watercolour", "Ink painting", "Acrylic painting", "Custom portrait commissions"],
+  "image": "img1.jpg",
+  "sameAs": ["https://instagram.com/krmantina"],
+  "email": "commissions@bymaya.art",
+  "makesOffer": {
+    "@type": "Offer",
+    "itemOffered": {
+      "@type": "Service",
+      "name": "Custom handmade painting commission",
+      "areaServed": { "@type": "Country", "name": "Sweden" }
+    }
+  }
+}
+</script>
+</head>
+<body>
+
+<nav aria-label="Primary">
+  <a href="#" class="nav-logo" aria-label="by Maya — home">by <span>Maya</span></a>
+  <ul>
+    <li><a href="#gallery">Gallery</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#why">Ideas</a></li>
+    <li><a href="#order">Commission</a></li>
+    <li>
+      <a class="nav-ig" href="https://instagram.com/krmantina" target="_blank" rel="noopener" aria-label="Instagram @krmantina">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        @krmantina
+      </a>
+    </li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-text">
+    <p class="eyebrow">Handmade · Original · Personal</p>
+    <h1 class="hero-title">Art that carries<br><em>your</em> story</h1>
+    <p class="hero-desc">Every piece is painted by hand — watercolour, ink, acrylic — made to hold real meaning for the person who owns it.</p>
+    <div class="sig-note">
+      <div class="sig-circle"></div>
+      Every painting I sign with my personal mark — a circle
+    </div>
+    <a class="hero-ig" href="https://instagram.com/krmantina" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+      Found me through <strong>@krmantina</strong>? Welcome.
+    </a>
+    <div class="hero-buttons">
+      <a href="#order" class="btn-primary">Commission a piece</a>
+      <a href="#gallery" class="btn-outline">View gallery</a>
+    </div>
+  </div>
+  <div class="hero-garden">
+    <img class="main" src="bouquet_corrected.jpg" alt="Watercolour summer bouquet — roses, daisies and delphinium in a glass vase" fetchpriority="high" decoding="async">
+    <img class="float a" src="improvedpenguin.png" alt="Watercolour penguin portrait" loading="lazy" decoding="async">
+    <img class="float b" src="improvedwatercolorflowers.png" alt="Acrylic sunflowers reflected on water" loading="lazy" decoding="async">
+  </div>
+</section>
+
+<!-- WHY -->
+<section class="why-section" id="why">
+  <div class="why-inner">
+    <p class="section-label">Why commission a painting</p>
+    <h2 class="section-title">A gift that no one else<br>in the world <em>has</em></h2>
+    <div class="why-grid">
+      <div class="why-card">
+        <h3>Your pet, forever in paint</h3>
+        <p>Your dog's goofy ears. The way your cat curls up in the sun. I paint animals with soul — send me a photo and I'll capture exactly what makes your pet <em>them</em>.</p>
+      </div>
+      <div class="why-card">
+        <h3>A portrait of what someone loves</h3>
+        <p>The flowers she always buys. The view from their favourite chair. Tell me what defines a person and I'll paint it into something they'll treasure for a lifetime.</p>
+      </div>
+      <div class="why-card">
+        <h3>Mark a moment in time</h3>
+        <p>A wedding bouquet. A first home. A child's birthday. Let me paint a moment before it fades — something that hangs on the wall and brings it back every single day.</p>
+      </div>
+      <div class="why-card">
+        <h3>Something no algorithm can make</h3>
+        <p>Every brushstroke is a decision I make. Every painting takes days. There is no shortcut, no template, no print run — just paint, paper, and someone who genuinely cares.</p>
+      </div>
+      <div class="why-card">
+        <h3>The most personal gift you can give</h3>
+        <p>Anyone can buy a candle or a gift card. A painting from me says: I thought about you, what you love, what matters to you — and I made something only you could own.</p>
+      </div>
+      <div class="why-card">
+        <h3>Art that belongs on a wall</h3>
+        <p>Not a souvenir. Not a print. A single original artwork made for your space, your taste, your home. Something guests will always stop and ask about.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="about-images">
+    <img src="lovebirds_corrected.png" alt="Lovebirds on a branch — watercolour" loading="lazy" decoding="async">
+    <img src="scroll_corrected.png" alt="Cherry blossom and bird — ink on scroll" loading="lazy" decoding="async">
+    <img src="improvedwatercolorflowers.png" alt="Sunflowers — acrylic on canvas" loading="lazy" decoding="async">
+    <img src="improvedpenguin.png" alt="Penguin portrait — watercolour" loading="lazy" decoding="async">
+  </div>
+  <div class="about-text">
+    <p class="section-label">About me</p>
+    <h2 class="section-title">Art that <em>matters</em><br>to you</h2>
+    <p>I'm a Syrian-born artist living in Stockholm, with a Master's degree in Architecture and a lifelong passion for painting. My background in architecture gives my work an innate sense of composition and intention.</p>
+    <p>I work across watercolour, ink, and acrylic — every piece painted entirely by hand. My greatest joy is creating art that holds outsized meaning for the person who owns it: a beloved pet, a bouquet from a special day, a memory worth keeping.</p>
+    <p>Every commission begins with a conversation. I want to understand what matters to you before I ever pick up a brush.</p>
+    <p style="font-size:.78rem;color:rgba(28,26,22,.38);margin-top:.5rem;">Currently shipping within Sweden only.</p>
+    <div class="about-sig">
+      <div class="about-sig-circle"></div>
+      <p>I don't sign my name — just a circle. Simple, unmistakable, mine.</p>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section class="gallery-section" id="gallery">
+  <div class="gallery-header">
+    <p class="section-label">Selected works</p>
+    <h2 class="section-title">Recent <em>commissions</em></h2>
+  </div>
+  <div class="gallery-grid">
+    <div class="gallery-item wide">
+      <img src="bouquet_corrected.jpg" alt="Summer bouquet — watercolour" loading="lazy" decoding="async">
+      <span class="sold-badge">Sold</span>
+      <span class="sold-price">1 300 kr</span>
+      <div class="gallery-caption">Summer bouquet — watercolour on paper</div>
+    </div>
+    <div class="gallery-item">
+      <img src="improvedpenguin.png" alt="Penguin portrait — watercolour" loading="lazy" decoding="async">
+      <span class="sold-badge">Sold</span>
+      <span class="sold-price">900 kr</span>
+      <div class="gallery-caption">Penguin portrait — watercolour</div>
+    </div>
+    <div class="gallery-item">
+      <img src="lovebirds_corrected.png" alt="Lovebirds — watercolour" loading="lazy" decoding="async">
+      <span class="sold-badge">Sold</span>
+      <span class="sold-price">1 100 kr</span>
+      <div class="gallery-caption">Lovebirds — watercolour</div>
+    </div>
+    <div class="gallery-item">
+      <img src="scroll_corrected.png" alt="Cherry blossom scroll — ink" loading="lazy" decoding="async">
+      <span class="sold-badge">Sold</span>
+      <span class="sold-price">1 700 kr</span>
+      <div class="gallery-caption">Cherry blossom — ink on scroll</div>
+    </div>
+    <div class="gallery-item">
+      <img src="improvedwatercolorflowers.png" alt="Sunflowers — acrylic" loading="lazy" decoding="async">
+      <span class="sold-badge">Sold</span>
+      <span class="sold-price">1 500 kr</span>
+      <div class="gallery-caption">Sunflowers — acrylic on canvas</div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST BAND -->
+<section class="trust-band" aria-label="What every commission includes">
+  <div class="trust-band-inner">
+    <div class="trust-item">
+      <svg class="trust-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="12" cy="12" r="9"/></svg>
+      <div class="trust-label">One of one</div>
+      <div class="trust-sub">Every piece hand-painted, never reprinted</div>
+    </div>
+    <div class="trust-item">
+      <svg class="trust-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M4 8h16M4 12h16M4 16h10"/></svg>
+      <div class="trust-label">Personal from the start</div>
+      <div class="trust-sub">Every commission begins with a conversation</div>
+    </div>
+    <div class="trust-item">
+      <svg class="trust-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M3 7l9-4 9 4v6c0 5-3.5 7.5-9 9-5.5-1.5-9-4-9-9V7z"/></svg>
+      <div class="trust-label">Safely shipped</div>
+      <div class="trust-sub">Carefully packed, tracked within Sweden</div>
+    </div>
+    <div class="trust-item">
+      <svg class="trust-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="12" cy="12" r="5"/><path d="M12 17v4M9 21h6"/></svg>
+      <div class="trust-label">Signed with a circle</div>
+      <div class="trust-sub">Maya's personal mark on every piece</div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-section">
+  <div class="how-inner">
+    <div class="how-header">
+      <p class="section-label">The process</p>
+      <h2 class="section-title">How a commission <em>works</em></h2>
+    </div>
+    <div class="how-steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <h3>Tell me your story</h3>
+        <p>Fill in the form with what you have in mind — a photo, a description, a feeling you want to capture.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <h3>I'll reach out</h3>
+        <p>Within a few days I'll get back to you to talk through your vision and confirm every detail together.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <h3>Pay via Swish</h3>
+        <p>Once we've agreed on everything, I'll send you my Swish number and you pay simply and securely.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">04</div>
+        <h3>Receive your art</h3>
+        <p>I'll carefully pack your original piece and ship it to you within Sweden.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<!-- TODO Maya: replace the placeholder quotes/names below with real testimonials from past buyers.
+     Keep each quote 1–2 sentences, mention what was painted, and use first name + city if possible. -->
+<section class="testimonials-section" aria-label="What buyers say">
+  <div class="testimonials-inner">
+    <div class="testimonials-header">
+      <p class="section-label">In their own words</p>
+      <h2 class="section-title">What people say about<br>their <em>commission</em></h2>
+    </div>
+    <div class="testimonials-grid">
+      <figure class="testimonial">
+        <blockquote class="quote">[Replace with a real testimonial — e.g. "Maya painted our dog Bruno from a photo and somehow caught the look he gives when he's about to steal a sock. We cried."]</blockquote>
+        <figcaption>
+          <div class="author">[First name]</div>
+          <div class="detail">[What was painted · City]</div>
+        </figcaption>
+      </figure>
+      <figure class="testimonial">
+        <blockquote class="quote">[Replace with a real testimonial — e.g. "I asked for the bouquet from our wedding day. Three years later it hangs in our hallway and still stops people in their tracks."]</blockquote>
+        <figcaption>
+          <div class="author">[First name]</div>
+          <div class="detail">[What was painted · City]</div>
+        </figcaption>
+      </figure>
+      <figure class="testimonial">
+        <blockquote class="quote">[Replace with a real testimonial — e.g. "Best gift I have ever given. My mum opened it and went completely quiet."]</blockquote>
+        <figcaption>
+          <div class="author">[First name]</div>
+          <div class="detail">[What was painted · City]</div>
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ORDER FORM -->
+<section class="order-section" id="order">
+  <div class="order-inner">
+    <div class="order-header">
+      <p class="section-label">Commission a piece</p>
+      <h2 class="section-title">Start your <em>order</em></h2>
+      <p class="sub">Tell me what you have in mind. The more you share, the more personal I can make it. No payment needed at this stage — just describe what you'd love.</p>
+    </div>
+    <!-- Form delivery via Web3Forms — submissions emailed to the address
+         registered for the access_key below. Browser-side image compression
+         (see <script> at end of file) keeps reference photos under the 5MB cap. -->
+    <form id="commission-form" action="https://api.web3forms.com/submit" method="POST" enctype="multipart/form-data" aria-label="Commission request">
+      <input type="hidden" name="access_key" value="d454d965-a757-4b4d-a915-5181f7e30599">
+      <input type="hidden" name="subject" value="New commission request — by Maya">
+      <input type="hidden" name="from_name" value="by Maya — website">
+      <!-- honeypot anti-spam field; real users won't fill it -->
+      <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="name">Your name</label>
+          <input type="text" id="name" name="name" placeholder="Anna Lindqvist" required>
+        </div>
+        <div class="form-group">
+          <label for="email">Email address</label>
+          <input type="email" id="email" name="email" placeholder="anna@example.com" required>
+        </div>
+        <div class="form-group">
+          <label for="size">Artwork size</label>
+          <select id="size" name="size">
+            <option value="" disabled selected>Choose a size (or decide together)</option>
+            <option value="Not sure yet — let's discuss">Not sure yet — let's discuss</option>
+            <option value="A5 — 15x21 cm (small)">A5 — 15×21 cm · Small</option>
+            <option value="A4 — 21x30 cm (medium)">A4 — 21×30 cm · Medium</option>
+            <option value="A3 — 30x42 cm (large)">A3 — 30×42 cm · Large</option>
+            <option value="Custom size — see description">Custom size · Describe below</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="medium">Preferred medium</label>
+          <select id="medium" name="medium">
+            <option value="" disabled selected>Any preference?</option>
+            <option value="Watercolour">Watercolour</option>
+            <option value="Ink / line drawing">Ink · Line drawing</option>
+            <option value="Acrylic on canvas">Acrylic on canvas</option>
+            <option value="No preference — Maya decides">No preference — Maya decides</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="occasion">Occasion (optional)</label>
+          <input type="text" id="occasion" name="occasion" placeholder="Birthday, wedding, memorial…">
+        </div>
+        <div class="form-group">
+          <label for="deadline">Needed by (optional)</label>
+          <input type="date" id="deadline" name="deadline">
+        </div>
+        <div class="form-group full">
+          <label for="description">Describe what you'd like</label>
+          <textarea id="description" name="description" placeholder="Tell me what matters to you — a pet, a person, a place, a memory, a bouquet. The more detail you share, the better I can make it feel truly yours..." required></textarea>
+        </div>
+        <div class="form-group full">
+          <label>Reference image (optional)</label>
+          <div class="file-zone">
+            <input type="file" id="photo" name="photo" accept="image/*">
+            <div class="file-zone-text">
+              <strong>Upload a photo or reference</strong>
+              A pet, a place, a person — anything that helps me understand your vision. Phone photos welcome, any size.
+            </div>
+            <div id="file-name"></div>
+          </div>
+        </div>
+      </div>
+      <div class="swish-box">
+        <strong>Payment via Swish</strong> — After reviewing your request, I'll be in touch to confirm all the details and share my Swish number. No payment is required at this stage.
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="submit-btn">Send commission request</button>
+        <span class="form-footnote">I'll reply within 2–4 days · Sweden only</span>
+      </div>
+      <div id="success-msg">
+        Thank you — your request has landed. I'll personally read it and reply within 2–4 days to talk through your idea. ○
+      </div>
+    </form>
+  </div>
+</section>
+
+<!-- FAQ -->
+<!-- TODO Maya: review the answers below — anything in [SQUARE BRACKETS] needs your real number/policy. -->
+<section class="faq-section" id="faq" aria-label="Frequently asked questions">
+  <div class="faq-inner">
+    <div class="faq-header">
+      <p class="section-label">Before you commission</p>
+      <h2 class="section-title">Common <em>questions</em></h2>
+    </div>
+
+    <details class="faq-item">
+      <summary>How long does a commission take?</summary>
+      <div class="answer">Once we've agreed on the details, most pieces take [2–4 weeks] from first brushstroke to packed and ready to ship. Larger or more detailed works can take longer — I'll always give you a clear timeline before you commit.</div>
+    </details>
+
+    <details class="faq-item">
+      <summary>Can I see the painting before it's finished?</summary>
+      <div class="answer">Yes. I share progress photos at key stages so you can give feedback while there's still time to adjust. Most commissions go through one or two rounds of small tweaks before the final piece.</div>
+    </details>
+
+    <details class="faq-item">
+      <summary>What if I'm not happy with the final piece?</summary>
+      <div class="answer">Because we agree on the concept, size and reference together — and because you see progress along the way — it almost never gets to that point. If something genuinely doesn't feel right at the end, we talk. I'd much rather adjust than have you live with something you don't love.</div>
+    </details>
+
+    <details class="faq-item">
+      <summary>Does it arrive framed?</summary>
+      <div class="answer">[Frames are optional and quoted separately — most pieces ship unframed on archival paper or canvas, ready for your own frame. Tell me in the form if you'd like a framing quote.]</div>
+    </details>
+
+    <details class="faq-item">
+      <summary>Do you ship outside Sweden?</summary>
+      <div class="answer">Not at the moment. All commissions ship within Sweden only — that way I can pack carefully and track every parcel personally.</div>
+    </details>
+
+    <details class="faq-item">
+      <summary>How do payments work?</summary>
+      <div class="answer">Payment is via Swish, once we've agreed on every detail. [I typically ask for a deposit to start, with the balance due before shipping.] No payment is needed when you first submit a commission request.</div>
+    </details>
+
+    <details class="faq-item">
+      <summary>What size should I choose?</summary>
+      <div class="answer">If you're unsure, leave it blank — we'll decide together based on where the piece will hang and what you want painted. A pet portrait often works beautifully at A4; a bouquet or scene usually wants A3 or larger.</div>
+    </details>
+  </div>
+</section>
+
+<!-- INSTAGRAM -->
+<section class="insta-section">
+  <div class="insta-inner">
+    <p class="section-label">Follow along</p>
+    <h2 class="insta-title">The art, the process,<br>the <em>life behind it</em></h2>
+    <p class="insta-desc">New work in progress, finished pieces, and the everyday moments that feed the art — come find me on Instagram.</p>
+    <a href="https://instagram.com/krmantina" target="_blank" rel="noopener" class="insta-btn">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+      @krmantina
+    </a>
+  </div>
+</section>
+
+<footer>
+  <span class="footer-logo">by Maya</span>
+  <p>Handmade art from Stockholm, Sweden · <a href="mailto:commissions@bymaya.art">commissions@bymaya.art</a> · <a href="https://instagram.com/krmantina" target="_blank" rel="noopener">@krmantina</a></p>
+  <p style="margin-top:.7rem;font-size:.7rem;">© 2025 by Maya · All works are original and handmade · Currently shipping within Sweden only</p>
+</footer>
+
+<script>
+/**
+ * Resize + compress an image File in the browser so phone photos don't blow past
+ * the form provider's 5MB upload limit. A modern phone photo (~8MB, 4032×3024)
+ * comes out around 500-900KB at 2000px / 0.85 quality — more than enough detail
+ * for painting from, and well under the limit.
+ */
+async function compressImage(file, maxDim = 2000, quality = 0.85) {
+  if (!file || !file.type || !file.type.startsWith('image/')) return file;
+  // tiny files (< 1.5MB) — leave them alone, no point compressing
+  if (file.size < 1.5 * 1024 * 1024) return file;
+
+  const objectUrl = URL.createObjectURL(file);
+  try {
+    const img = await new Promise((resolve, reject) => {
+      const i = new Image();
+      i.onload = () => resolve(i);
+      i.onerror = () => reject(new Error('Could not read image'));
+      i.src = objectUrl;
+    });
+
+    let { width, height } = img;
+    if (width > maxDim || height > maxDim) {
+      const ratio = Math.min(maxDim / width, maxDim / height);
+      width = Math.round(width * ratio);
+      height = Math.round(height * ratio);
+    }
+
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+
+    const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', quality));
+    if (!blob) return file; // fallback: send original if anything went sideways
+
+    const safeName = file.name.replace(/\.[^.]+$/, '') + '.jpg';
+    return new File([blob], safeName, { type: 'image/jpeg' });
+  } catch (err) {
+    console.warn('Image compression failed, sending original:', err);
+    return file;
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
+}
+
+const form = document.getElementById('commission-form');
+const fileInput = document.getElementById('photo');
+const fileNameEl = document.getElementById('file-name');
+
+// keep the file-name preview behaviour, but no longer inline on the input
+fileInput.addEventListener('change', () => {
+  fileNameEl.textContent = fileInput.files[0] ? fileInput.files[0].name : '';
+});
+
+form.addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const btn = form.querySelector('.submit-btn');
+  btn.textContent = 'Sending...';
+  btn.disabled = true;
+
+  try {
+    const fd = new FormData(form);
+
+    // compress the reference photo if one was attached
+    if (fileInput.files && fileInput.files[0]) {
+      btn.textContent = 'Preparing photo...';
+      const compressed = await compressImage(fileInput.files[0]);
+      fd.set('photo', compressed);
+      btn.textContent = 'Sending...';
+    }
+
+    const res = await fetch(form.action, {
+      method: 'POST',
+      body: fd,
+      headers: { 'Accept': 'application/json' }
+    });
+
+    if (res.ok) {
+      form.style.display = 'none';
+      document.getElementById('success-msg').style.display = 'block';
+    } else {
+      btn.textContent = 'Something went wrong — please try again';
+      btn.disabled = false;
+    }
+  } catch (err) {
+    btn.textContent = 'Something went wrong — please try again';
+    btn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>
