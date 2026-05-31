@@ -322,17 +322,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .trust-item .trust-label{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:400;color:var(--ink);margin-bottom:.2rem;}
 .trust-item .trust-sub{font-size:.74rem;color:var(--text-muted);line-height:1.5;letter-spacing:.02em;}
 
-/* ── TESTIMONIALS ────────────────────────────────────────────────────────── */
-.testimonials-section{padding:6rem 5rem;position:relative;}
-.testimonials-inner{max-width:1100px;margin:0 auto;background:rgba(248,245,238,0.86);padding:4rem;border:1px solid rgba(90,122,87,0.15);}
-.testimonials-header{text-align:center;margin-bottom:3rem;}
-.testimonials-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.8rem;}
-.testimonial{padding:2rem 1.6rem 1.6rem;background:rgba(255,255,255,0.78);border:0.5px solid rgba(90,122,87,0.18);position:relative;}
-.testimonial::before{content:'\201C';position:absolute;top:-.2rem;left:1rem;font-family:'Cormorant Garamond',serif;font-size:4rem;color:rgba(139,168,136,0.38);line-height:1;}
-.testimonial .quote{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem;line-height:1.6;color:var(--ink);margin-bottom:1.4rem;padding-top:.4rem;}
-.testimonial .author{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--sage-dark);font-weight:400;}
-.testimonial .detail{font-size:.78rem;color:var(--text-muted);margin-top:.25rem;font-style:italic;}
-
 /* ── FAQ ─────────────────────────────────────────────────────────────────── */
 .faq-section{padding:6rem 5rem;position:relative;}
 .faq-inner{max-width:780px;margin:0 auto;background:rgba(255,255,255,0.84);padding:4rem;border:1px solid rgba(90,122,87,0.15);}
@@ -450,9 +439,6 @@ footer a:hover{color:var(--sage);}
   .order-inner{padding:2rem 1.5rem;}
   .trust-band{padding:2rem 1.2rem;}
   .trust-band-inner{grid-template-columns:1fr 1fr;gap:1.5rem;padding:1.5rem;}
-  .testimonials-section{padding:3.5rem 1.2rem;}
-  .testimonials-inner{padding:2rem 1.5rem;}
-  .testimonials-grid{grid-template-columns:1fr;gap:1.2rem;}
   .faq-section{padding:3.5rem 1.2rem;}
   .faq-inner{padding:2rem 1.5rem;}
   .insta-section{padding:3rem 1.2rem;}
@@ -707,40 +693,8 @@ footer a:hover{color:var(--sage);}
   </div>
 </section>
 
-<!-- TESTIMONIALS -->
-<!-- TODO Maya: replace the placeholder quotes/names below with real testimonials from past buyers.
-     Keep each quote 1–2 sentences, mention what was painted, and use first name + city if possible. -->
-<section class="testimonials-section" aria-label="What buyers say">
-  <div class="testimonials-inner">
-    <div class="testimonials-header">
-      <p class="section-label">In their own words</p>
-      <h2 class="section-title">What people say about<br>their <em>commission</em></h2>
-    </div>
-    <div class="testimonials-grid">
-      <figure class="testimonial">
-        <blockquote class="quote">[Replace with a real testimonial — e.g. "Maya painted our dog Bruno from a photo and somehow caught the look he gives when he's about to steal a sock. We cried."]</blockquote>
-        <figcaption>
-          <div class="author">[First name]</div>
-          <div class="detail">[What was painted · City]</div>
-        </figcaption>
-      </figure>
-      <figure class="testimonial">
-        <blockquote class="quote">[Replace with a real testimonial — e.g. "I asked for the bouquet from our wedding day. Three years later it hangs in our hallway and still stops people in their tracks."]</blockquote>
-        <figcaption>
-          <div class="author">[First name]</div>
-          <div class="detail">[What was painted · City]</div>
-        </figcaption>
-      </figure>
-      <figure class="testimonial">
-        <blockquote class="quote">[Replace with a real testimonial — e.g. "Best gift I have ever given. My mum opened it and went completely quiet."]</blockquote>
-        <figcaption>
-          <div class="author">[First name]</div>
-          <div class="detail">[What was painted · City]</div>
-        </figcaption>
-      </figure>
-    </div>
-  </div>
-</section>
+<!-- Testimonials section temporarily removed. See CLAUDE.md for context;
+     the design is preserved at git tag `testimonials-design-saved`. -->
 
 <!-- ORDER FORM -->
 <section class="order-section" id="order">
