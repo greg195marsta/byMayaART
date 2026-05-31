@@ -1,0 +1,11 @@
+# Temp file used by Claude Code to pass multi-line commit messages
+# (PowerShell mangles -m strings; we use `git commit -F .commit-msg-tmp`)
+.commit-msg-tmp
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
