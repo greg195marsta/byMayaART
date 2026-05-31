@@ -200,6 +200,79 @@ nav ul{align-items:center;}
    gold so it harmonises with the brand without competing with the Sold tag. */
 .specialty-tag{position:absolute;top:2.45rem;left:.9rem;background:rgba(90,122,87,0.88);color:#F8F5EE;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;padding:.3rem .65rem;font-family:'Jost',sans-serif;font-weight:400;}
 
+/* Specialty piece = gallery tile that opens a multi-photo lightbox on click.
+   Persistent "View N photos" hint sits bottom-right; fades out on hover so
+   the existing caption gradient can take over without competing. */
+.gallery-item.specialty-piece{cursor:pointer;}
+.view-count{
+  position:absolute;bottom:.9rem;right:.9rem;
+  background:rgba(28,26,22,0.82);color:rgba(248,245,238,0.92);
+  font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  padding:.4rem .8rem;
+  font-family:'Jost',sans-serif;font-weight:500;
+  transition:opacity .3s,background .2s,color .2s;
+  pointer-events:none;
+}
+.gallery-item.specialty-piece:hover .view-count{opacity:0;}
+
+/* ── LIGHTBOX (multi-photo overlay for specialty pieces) ─────────────────── */
+.lightbox{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,0.94);
+  z-index:200; /* above everything else: nav 100, float-cta 90 */
+  display:flex;align-items:center;justify-content:center;
+  padding:3rem 4rem;
+  animation:lightboxFade .25s ease;
+}
+.lightbox[hidden]{display:none;}
+@keyframes lightboxFade{from{opacity:0;}to{opacity:1;}}
+.lightbox-content{
+  display:flex;flex-direction:column;align-items:center;
+  max-width:92vw;max-height:88vh;
+}
+.lightbox-image{
+  max-width:100%;max-height:74vh;
+  display:block;object-fit:contain;
+  box-shadow:0 20px 60px rgba(0,0,0,0.5);
+}
+.lightbox-caption{
+  color:rgba(248,245,238,0.88);
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;font-size:1.05rem;
+  text-align:center;margin:1.4rem 0 0;
+  max-width:55ch;line-height:1.5;
+}
+.lightbox-counter{
+  color:rgba(248,245,238,0.45);
+  font-size:.66rem;letter-spacing:.22em;
+  text-transform:uppercase;margin:.6rem 0 0;
+}
+.lightbox-close,
+.lightbox-prev,
+.lightbox-next{
+  position:absolute;background:none;border:none;
+  color:rgba(248,245,238,0.7);cursor:pointer;
+  font-family:'Jost',sans-serif;
+  display:flex;align-items:center;justify-content:center;
+  line-height:1;
+  transition:color .2s,transform .2s;
+}
+.lightbox-close:hover,
+.lightbox-prev:hover,
+.lightbox-next:hover{color:#fff;}
+.lightbox-close{
+  top:1.2rem;right:1.5rem;
+  font-size:2rem;width:2.8rem;height:2.8rem;
+}
+.lightbox-prev,
+.lightbox-next{
+  top:50%;transform:translateY(-50%);
+  font-size:2.8rem;width:3.2rem;height:3.2rem;
+}
+.lightbox-prev:hover,.lightbox-next:hover{transform:translateY(-50%) scale(1.1);}
+.lightbox-prev{left:1.2rem;}
+.lightbox-next{right:1.2rem;}
+
 /* ── HOW IT WORKS ────────────────────────────────────────────────────────── */
 .how-section{padding:7rem 5rem;position:relative;}
 .how-inner{background:rgba(28,26,22,0.91);padding:5rem;max-width:1100px;margin:0 auto;}
@@ -386,6 +459,13 @@ footer a:hover{color:var(--sage);}
   .insta-inner{padding:2.5rem 1.5rem;}
   .form-grid{grid-template-columns:1fr;}
   .form-group.full{grid-column:span 1;}
+  .lightbox{padding:1rem;}
+  .lightbox-close{top:.4rem;right:.4rem;font-size:1.6rem;width:2.4rem;height:2.4rem;}
+  .lightbox-prev{left:.2rem;font-size:2.2rem;width:2.6rem;height:2.6rem;}
+  .lightbox-next{right:.2rem;font-size:2.2rem;width:2.6rem;height:2.6rem;}
+  .lightbox-image{max-height:68vh;}
+  .lightbox-caption{font-size:.92rem;}
+  .view-count{font-size:.55rem;padding:.32rem .6rem;}
 }
 </style>
 
@@ -543,11 +623,12 @@ footer a:hover{color:var(--sage);}
       <span class="sold-price">1 000 kr</span>
       <div class="gallery-caption">Lovebirds — watercolour · A5</div>
     </div>
-    <div class="gallery-item">
-      <img src="scroll_corrected.png" alt="Cherry blossom — ink on Japanese scroll" loading="lazy" decoding="async">
+    <div class="gallery-item specialty-piece" data-lightbox="scroll" tabindex="0" role="button" aria-label="Open Cherry blossom scroll — 4 photos">
+      <img src="scroll_full.jpg" alt="Cherry blossom — ink on Japanese scroll" loading="lazy" decoding="async">
       <span class="sold-badge">Sold</span>
       <span class="specialty-tag">Specialty</span>
       <span class="sold-price">2 500 kr</span>
+      <span class="view-count">View 4 photos →</span>
       <div class="gallery-caption">Cherry blossom — ink on Japanese scroll · specialty piece</div>
     </div>
     <div class="gallery-item">
@@ -828,6 +909,20 @@ footer a:hover{color:var(--sage);}
   <p style="margin-top:.7rem;font-size:.7rem;">© 2025 by Maya · All works are original and handmade · Sweden, Europe by arrangement</p>
 </footer>
 
+<!-- Specialty-piece lightbox: shows multiple photos of one work with prev/next,
+     opened by any gallery tile with data-lightbox="<id>". The photos array
+     lives in the script at the bottom of this file. -->
+<div class="lightbox" id="scroll-lightbox" hidden aria-hidden="true" aria-label="Cherry blossom scroll — 4 photos" role="dialog">
+  <button class="lightbox-close" aria-label="Close (Esc)">×</button>
+  <button class="lightbox-prev" aria-label="Previous photo (←)">‹</button>
+  <button class="lightbox-next" aria-label="Next photo (→)">›</button>
+  <div class="lightbox-content">
+    <img class="lightbox-image" src="" alt="">
+    <p class="lightbox-caption"></p>
+    <p class="lightbox-counter"></p>
+  </div>
+</div>
+
 <!-- Floating commission CTA — JS toggles `.visible` based on scroll position.
      The circle SVG inside mirrors Maya's signature mark for brand consistency. -->
 <a href="#order" class="float-cta" id="float-cta" aria-label="Start a commission">
@@ -934,6 +1029,80 @@ form.addEventListener('submit', async function(e) {
     btn.disabled = false;
   }
 });
+
+/* Specialty-piece lightbox. Tile with data-lightbox="scroll" opens an overlay
+   that walks through multiple photos with prev/next, keyboard (esc, arrows),
+   click-outside-to-close, and tap-anywhere navigation on touch. */
+(function() {
+  const trigger = document.querySelector('[data-lightbox="scroll"]');
+  const lightbox = document.getElementById('scroll-lightbox');
+  if (!trigger || !lightbox) return;
+
+  const imgEl = lightbox.querySelector('.lightbox-image');
+  const captionEl = lightbox.querySelector('.lightbox-caption');
+  const counterEl = lightbox.querySelector('.lightbox-counter');
+  const closeBtn = lightbox.querySelector('.lightbox-close');
+  const prevBtn = lightbox.querySelector('.lightbox-prev');
+  const nextBtn = lightbox.querySelector('.lightbox-next');
+
+  // Storytelling order: full piece -> physical form -> close-up -> close-up
+  const photos = [
+    { src: 'scroll_full.jpg',          caption: 'The full scroll — hand-painted ink, mounted as a traditional kakejiku with silk brocade and a hanging ribbon.' },
+    { src: 'scroll_rolled.jpg',        caption: 'Rolled and tied — the scroll arrives ready to hang straight from delivery.' },
+    { src: 'scroll_detail_bird.jpg',   caption: 'Close-up: the bird perched among the flowering branches.' },
+    { src: 'scroll_detail_flower.jpg', caption: 'Close-up: a single blossom rendered with finely shaded petal detail.' }
+  ];
+
+  let currentIndex = 0;
+
+  function show(idx) {
+    // wrap around in both directions
+    currentIndex = ((idx % photos.length) + photos.length) % photos.length;
+    const p = photos[currentIndex];
+    imgEl.src = p.src;
+    imgEl.alt = p.caption;
+    captionEl.textContent = p.caption;
+    counterEl.textContent = (currentIndex + 1) + ' / ' + photos.length;
+  }
+
+  function open() {
+    show(0);
+    lightbox.hidden = false;
+    lightbox.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden'; // prevent background scroll
+    closeBtn.focus();
+  }
+
+  function close() {
+    lightbox.hidden = true;
+    lightbox.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    trigger.focus(); // return keyboard focus where it came from
+  }
+
+  trigger.addEventListener('click', open);
+  // Keyboard activation when the gallery tile has focus (tabindex=0 makes it focusable)
+  trigger.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
+  });
+
+  closeBtn.addEventListener('click', close);
+  prevBtn.addEventListener('click', () => show(currentIndex - 1));
+  nextBtn.addEventListener('click', () => show(currentIndex + 1));
+
+  // Click on the dark backdrop (outside any control) closes the lightbox
+  lightbox.addEventListener('click', e => {
+    if (e.target === lightbox) close();
+  });
+
+  // Keyboard navigation while open
+  document.addEventListener('keydown', e => {
+    if (lightbox.hidden) return;
+    if (e.key === 'Escape') close();
+    else if (e.key === 'ArrowLeft') show(currentIndex - 1);
+    else if (e.key === 'ArrowRight') show(currentIndex + 1);
+  });
+})();
 
 /* Dynamic price indication on the commission form. Updates as the visitor
    changes Size, Medium, or Frame. Stays hidden if any of size/medium is
