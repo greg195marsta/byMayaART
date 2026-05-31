@@ -54,6 +54,7 @@ body{
   font-weight:300;
   line-height:1.7;
   overflow-x:hidden;
+  position:relative; /* makes body the positioning parent for .jasmine-scatter */
   /* Tiling jasmine SVG pattern — the garden */
   background-color:#EFF5EB;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='420' viewBox='0 0 420 420'%3E%3C!-- Main sweeping vine --%3E%3Cpath d='M0 350 C40 300 80 280 120 240 C160 200 180 160 210 120 C240 80 280 60 320 40 C360 20 400 10 420 0' stroke='%238BA888' stroke-width='1.5' fill='none' opacity='0.5'/%3E%3Cpath d='M0 420 C50 380 90 340 140 300 C190 260 210 220 240 180 C270 140 310 110 350 80 C380 58 410 40 420 30' stroke='%238BA888' stroke-width='1' fill='none' opacity='0.35'/%3E%3C!-- Cross vine --%3E%3Cpath d='M420 350 C380 310 340 290 300 260 C260 230 240 200 210 170 C180 140 140 120 100 90 C60 60 20 30 0 0' stroke='%238BA888' stroke-width='1.2' fill='none' opacity='0.4'/%3E%3C!-- Side tendrils --%3E%3Cpath d='M60 0 C50 30 55 50 45 70 C35 90 20 100 10 120' stroke='%238BA888' stroke-width='0.8' fill='none' opacity='0.45'/%3E%3Cpath d='M200 0 C210 25 205 45 215 65' stroke='%238BA888' stroke-width='0.8' fill='none' opacity='0.4'/%3E%3Cpath d='M360 0 C350 20 355 40 345 58' stroke='%238BA888' stroke-width='0.7' fill='none' opacity='0.35'/%3E%3Cpath d='M0 100 C25 110 40 105 58 115' stroke='%238BA888' stroke-width='0.7' fill='none' opacity='0.4'/%3E%3Cpath d='M0 220 C20 215 38 220 52 210' stroke='%238BA888' stroke-width='0.7' fill='none' opacity='0.35'/%3E%3Cpath d='M420 150 C400 158 385 152 368 162' stroke='%238BA888' stroke-width='0.7' fill='none' opacity='0.4'/%3E%3Cpath d='M420 280 C398 272 382 278 365 268' stroke='%238BA888' stroke-width='0.7' fill='none' opacity='0.35'/%3E%3C!-- LEAVES along main vine --%3E%3Cellipse cx='95' cy='268' rx='9' ry='5' transform='rotate(-40 95 268)' fill='%235A7A57' opacity='0.45'/%3E%3Cellipse cx='148' cy='218' rx='8' ry='4' transform='rotate(-50 148 218)' fill='%235A7A57' opacity='0.4'/%3E%3Cellipse cx='195' cy='172' rx='10' ry='5' transform='rotate(-55 195 172)' fill='%235A7A57' opacity='0.45'/%3E%3Cellipse cx='248' cy='130' rx='8' ry='4' transform='rotate(-60 248 130)' fill='%235A7A57' opacity='0.38'/%3E%3Cellipse cx='298' cy='90' rx='9' ry='5' transform='rotate(-65 298 90)' fill='%235A7A57' opacity='0.42'/%3E%3Cellipse cx='355' cy='55' rx='7' ry='4' transform='rotate(-70 355 55)' fill='%235A7A57' opacity='0.38'/%3E%3C!-- Leaves right vine --%3E%3Cellipse cx='340' cy='288' rx='9' ry='4' transform='rotate(40 340 288)' fill='%235A7A57' opacity='0.4'/%3E%3Cellipse cx='288' cy='238' rx='8' ry='4' transform='rotate(45 288 238)' fill='%235A7A57' opacity='0.38'/%3E%3Cellipse cx='238' cy='195' rx='9' ry='5' transform='rotate(50 238 195)' fill='%235A7A57' opacity='0.42'/%3E%3Cellipse cx='188' cy='148' rx='8' ry='4' transform='rotate(55 188 148)' fill='%235A7A57' opacity='0.38'/%3E%3Cellipse cx='138' cy='105' rx='9' ry='5' transform='rotate(60 138 105)' fill='%235A7A57' opacity='0.4'/%3E%3C!-- JASMINE FLOWERS ---%3E%3C!-- Flower helper: 5 petals as ellipses rotated around centre ---%3E%3C!-- Flower 1 at ~(120,240) ---%3E%3Cg transform='translate(120,240)'%3E%3Cellipse cx='0' cy='-7' rx='5' ry='3' fill='%23FDFAF4' opacity='0.9'/%3E%3Cellipse cx='6.7' cy='-2.2' rx='5' ry='3' transform='rotate(72)' fill='%23FDFAF4' opacity='0.9'/%3E%3Cellipse cx='4.1' cy='5.7' rx='5' ry='3' transform='rotate(144)' fill='%23FDFAF4' opacity='0.9'/%3E%3Cellipse cx='-4.1' cy='5.7' rx='5' ry='3' transform='rotate(216)' fill='%23FDFAF4' opacity='0.9'/%3E%3Cellipse cx='-6.7' cy='-2.2' rx='5' ry='3' transform='rotate(288)' fill='%23FDFAF4' opacity='0.9'/%3E%3Ccircle r='2.5' fill='%23E8C84A' opacity='0.95'/%3E%3C/g%3E%3C!-- Flower 2 at ~(210,120) ---%3E%3Cg transform='translate(210,120)'%3E%3Cellipse cx='0' cy='-8' rx='6' ry='3.5' fill='%23FDFAF4' opacity='0.88'/%3E%3Cellipse cx='7.6' cy='-2.5' rx='6' ry='3.5' transform='rotate(72)' fill='%23FDFAF4' opacity='0.88'/%3E%3Cellipse cx='4.7' cy='6.5' rx='6' ry='3.5' transform='rotate(144)' fill='%23FDFAF4' opacity='0.88'/%3E%3Cellipse cx='-4.7' cy='6.5' rx='6' ry='3.5' transform='rotate(216)' fill='%23FDFAF4' opacity='0.88'/%3E%3Cellipse cx='-7.6' cy='-2.5' rx='6' ry='3.5' transform='rotate(288)' fill='%23FDFAF4' opacity='0.88'/%3E%3Ccircle r='3' fill='%23E8C84A' opacity='0.92'/%3E%3C/g%3E%3C!-- Flower 3 at ~(320,40) ---%3E%3Cg transform='translate(318,42)'%3E%3Cellipse cx='0' cy='-6' rx='4.5' ry='2.5' fill='%23FDFAF4' opacity='0.85'/%3E%3Cellipse cx='5.7' cy='-1.9' rx='4.5' ry='2.5' transform='rotate(72)' fill='%23FDFAF4' opacity='0.85'/%3E%3Cellipse cx='3.5' cy='4.9' rx='4.5' ry='2.5' transform='rotate(144)' fill='%23FDFAF4' opacity='0.85'/%3E%3Cellipse cx='-3.5' cy='4.9' rx='4.5' ry='2.5' transform='rotate(216)' fill='%23FDFAF4' opacity='0.85'/%3E%3Cellipse cx='-5.7' cy='-1.9' rx='4.5' ry='2.5' transform='rotate(288)' fill='%23FDFAF4' opacity='0.85'/%3E%3Ccircle r='2' fill='%23E8C84A' opacity='0.9'/%3E%3C/g%3E%3C!-- Flower 4 at ~(300,260) right vine ---%3E%3Cg transform='translate(298,262)'%3E%3Cellipse cx='0' cy='-7' rx='5.5' ry='3' fill='%23FDFAF4' opacity='0.88'/%3E%3Cellipse cx='6.7' cy='-2.2' rx='5.5' ry='3' transform='rotate(72)' fill='%23FDFAF4' opacity='0.88'/%3E%3Cellipse cx='4.1' cy='5.7' rx='5.5' ry='3' transform='rotate(144)' fill='%23FDFAF4' opacity='0.88'/%3E%3Cellipse cx='-4.1' cy='5.7' rx='5.5' ry='3' transform='rotate(216)' fill='%23FDFAF4' opacity='0.88'/%3E%3Cellipse cx='-6.7' cy='-2.2' rx='5.5' ry='3' transform='rotate(288)' fill='%23FDFAF4' opacity='0.88'/%3E%3Ccircle r='2.5' fill='%23E8C84A' opacity='0.92'/%3E%3C/g%3E%3C!-- Flower 5 small at ~(55,70) tendril ---%3E%3Cg transform='translate(52,72)'%3E%3Cellipse cx='0' cy='-5' rx='3.5' ry='2' fill='%23FDFAF4' opacity='0.82'/%3E%3Cellipse cx='4.8' cy='-1.5' rx='3.5' ry='2' transform='rotate(72)' fill='%23FDFAF4' opacity='0.82'/%3E%3Cellipse cx='3' cy='4' rx='3.5' ry='2' transform='rotate(144)' fill='%23FDFAF4' opacity='0.82'/%3E%3Cellipse cx='-3' cy='4' rx='3.5' ry='2' transform='rotate(216)' fill='%23FDFAF4' opacity='0.82'/%3E%3Cellipse cx='-4.8' cy='-1.5' rx='3.5' ry='2' transform='rotate(288)' fill='%23FDFAF4' opacity='0.82'/%3E%3Ccircle r='1.8' fill='%23E8C84A' opacity='0.88'/%3E%3C/g%3E%3C!-- Flower 6 at ~(185,148) ---%3E%3Cg transform='translate(185,150)'%3E%3Cellipse cx='0' cy='-6' rx='4.5' ry='2.5' fill='%23FDFAF4' opacity='0.86'/%3E%3Cellipse cx='5.7' cy='-1.9' rx='4.5' ry='2.5' transform='rotate(72)' fill='%23FDFAF4' opacity='0.86'/%3E%3Cellipse cx='3.5' cy='4.9' rx='4.5' ry='2.5' transform='rotate(144)' fill='%23FDFAF4' opacity='0.86'/%3E%3Cellipse cx='-3.5' cy='4.9' rx='4.5' ry='2.5' transform='rotate(216)' fill='%23FDFAF4' opacity='0.86'/%3E%3Cellipse cx='-5.7' cy='-1.9' rx='4.5' ry='2.5' transform='rotate(288)' fill='%23FDFAF4' opacity='0.86'/%3E%3Ccircle r='2.2' fill='%23E8C84A' opacity='0.9'/%3E%3C/g%3E%3C!-- Flower 7 at ~(240,195) ---%3E%3Cg transform='translate(242,193)'%3E%3Cellipse cx='0' cy='-7' rx='5' ry='2.8' fill='%23FDFAF4' opacity='0.84'/%3E%3Cellipse cx='6.7' cy='-2.2' rx='5' ry='2.8' transform='rotate(72)' fill='%23FDFAF4' opacity='0.84'/%3E%3Cellipse cx='4.1' cy='5.7' rx='5' ry='2.8' transform='rotate(144)' fill='%23FDFAF4' opacity='0.84'/%3E%3Cellipse cx='-4.1' cy='5.7' rx='5' ry='2.8' transform='rotate(216)' fill='%23FDFAF4' opacity='0.84'/%3E%3Cellipse cx='-6.7' cy='-2.2' rx='5' ry='2.8' transform='rotate(288)' fill='%23FDFAF4' opacity='0.84'/%3E%3Ccircle r='2.3' fill='%23E8C84A' opacity='0.9'/%3E%3C/g%3E%3C!-- Buds ---%3E%3Cellipse cx='160' cy='200' rx='3' ry='5' transform='rotate(-50 160 200)' fill='%23E8F0E0' opacity='0.7'/%3E%3Cellipse cx='270' cy='155' rx='2.5' ry='4' transform='rotate(-55 270 155)' fill='%23E8F0E0' opacity='0.65'/%3E%3Cellipse cx='340' cy='78' rx='2.5' ry='4' transform='rotate(-65 340 78)' fill='%23E8F0E0' opacity='0.65'/%3E%3Cellipse cx='218' cy='208' rx='2.5' ry='4' transform='rotate(48 218 208)' fill='%23E8F0E0' opacity='0.62'/%3E%3Cellipse cx='138' cy='108' rx='2.5' ry='4' transform='rotate(58 138 108)' fill='%23E8F0E0' opacity='0.65'/%3E%3C/svg%3E");
@@ -286,6 +287,28 @@ footer a{color:rgba(139,168,136,0.8);text-decoration:none;transition:color .2s;}
 footer a:hover{color:var(--sage);}
 .footer-logo{font-family:'Cormorant Garamond',serif;font-size:1.9rem;font-weight:300;color:rgba(248,245,238,.85);font-style:italic;margin-bottom:.7rem;display:block;}
 
+/* ── JASMINE SCATTER (decorative bloom layer) ────────────────────────────── */
+/* DEMO — added on top of the original jasmine-vine background pattern.
+   Scatters actual jasmine bloom illustrations across the full page height.
+   To revert: delete this CSS block, the <svg> symbol definition, and the
+   <div class="jasmine-scatter"> element. Alternatively, git revert this commit. */
+.jasmine-scatter{
+  position:absolute;top:0;left:0;right:0;bottom:0;
+  pointer-events:none;       /* don't block any clicks beneath the flowers */
+  z-index:5;                  /* above section panels, below nav (100) and float-cta (90) */
+  overflow:hidden;            /* keep stray petals from causing scroll */
+}
+.jasmine-bloom{
+  position:absolute;display:block;
+  filter:drop-shadow(0 2px 5px rgba(28,26,22,0.10));
+  animation:jasmine-sway 9s ease-in-out infinite;
+}
+/* Slight breathing motion — barely noticeable but adds life */
+@keyframes jasmine-sway{
+  0%,100%{transform:translateY(0) rotate(var(--rot,0deg));}
+  50%{transform:translateY(-6px) rotate(calc(var(--rot,0deg) + 3deg));}
+}
+
 /* ── GALLERY FOOTER (see-more link) ──────────────────────────────────────── */
 .gallery-footer{text-align:center;margin-top:3rem;}
 .gallery-footer a{
@@ -396,6 +419,59 @@ footer a:hover{color:var(--sage);}
 </script>
 </head>
 <body>
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     JASMINE SCATTER — DEMO LAYER (added Nov 2026)
+     One reusable <symbol> for the bloom + a scatter div with 14 placements.
+     Each bloom has individual position / size / rotation / opacity inline so
+     the layout looks naturally varied. Animated subtly via CSS.
+     To remove cleanly: git revert the commit that added this, or delete
+     this entire block (symbol + scatter div) plus the .jasmine-scatter
+     and .jasmine-bloom CSS rules.
+═════════════════════════════════════════════════════════════════════════ -->
+<svg width="0" height="0" style="position:absolute;visibility:hidden;" aria-hidden="true">
+  <defs>
+    <symbol id="jasmine-flower" viewBox="0 0 100 100">
+      <!-- 5 cream-white petals arranged at 72° intervals -->
+      <g transform="translate(50,50)">
+        <ellipse cx="0" cy="-22" rx="9" ry="20" fill="#FDFAF4" stroke="#E8D9BD" stroke-width="0.5"/>
+        <ellipse cx="0" cy="-22" rx="9" ry="20" fill="#FDFAF4" stroke="#E8D9BD" stroke-width="0.5" transform="rotate(72)"/>
+        <ellipse cx="0" cy="-22" rx="9" ry="20" fill="#FDFAF4" stroke="#E8D9BD" stroke-width="0.5" transform="rotate(144)"/>
+        <ellipse cx="0" cy="-22" rx="9" ry="20" fill="#FDFAF4" stroke="#E8D9BD" stroke-width="0.5" transform="rotate(216)"/>
+        <ellipse cx="0" cy="-22" rx="9" ry="20" fill="#FDFAF4" stroke="#E8D9BD" stroke-width="0.5" transform="rotate(288)"/>
+        <!-- Golden centre + small inner accent for stamens -->
+        <circle r="6.5" fill="#E8C84A"/>
+        <circle r="3.2" fill="#FFD93D"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="jasmine-scatter" aria-hidden="true">
+  <!-- Top of page / hero area -->
+  <svg class="jasmine-bloom" style="top:3%;left:4%;width:78px;height:78px;--rot:-15deg;transform:rotate(-15deg);opacity:0.62;"><use href="#jasmine-flower"/></svg>
+  <svg class="jasmine-bloom" style="top:9%;right:7%;width:54px;height:54px;--rot:28deg;transform:rotate(28deg);opacity:0.55;"><use href="#jasmine-flower"/></svg>
+  <svg class="jasmine-bloom" style="top:14%;left:11%;width:42px;height:42px;--rot:60deg;transform:rotate(60deg);opacity:0.45;"><use href="#jasmine-flower"/></svg>
+
+  <!-- Middle band: gallery / about -->
+  <svg class="jasmine-bloom" style="top:22%;right:13%;width:66px;height:66px;--rot:-25deg;transform:rotate(-25deg);opacity:0.55;"><use href="#jasmine-flower"/></svg>
+  <svg class="jasmine-bloom" style="top:30%;left:3%;width:58px;height:58px;--rot:12deg;transform:rotate(12deg);opacity:0.52;"><use href="#jasmine-flower"/></svg>
+  <svg class="jasmine-bloom" style="top:37%;right:5%;width:48px;height:48px;--rot:-42deg;transform:rotate(-42deg);opacity:0.5;"><use href="#jasmine-flower"/></svg>
+
+  <!-- Trust band / how it works area -->
+  <svg class="jasmine-bloom" style="top:46%;left:18%;width:40px;height:40px;--rot:18deg;transform:rotate(18deg);opacity:0.4;"><use href="#jasmine-flower"/></svg>
+  <svg class="jasmine-bloom" style="top:52%;right:11%;width:72px;height:72px;--rot:45deg;transform:rotate(45deg);opacity:0.58;"><use href="#jasmine-flower"/></svg>
+  <svg class="jasmine-bloom" style="top:60%;left:6%;width:55px;height:55px;--rot:-30deg;transform:rotate(-30deg);opacity:0.5;"><use href="#jasmine-flower"/></svg>
+
+  <!-- Testimonials / form area -->
+  <svg class="jasmine-bloom" style="top:68%;right:4%;width:45px;height:45px;--rot:22deg;transform:rotate(22deg);opacity:0.5;"><use href="#jasmine-flower"/></svg>
+  <svg class="jasmine-bloom" style="top:76%;left:12%;width:62px;height:62px;--rot:-12deg;transform:rotate(-12deg);opacity:0.55;"><use href="#jasmine-flower"/></svg>
+
+  <!-- FAQ / Instagram tail -->
+  <svg class="jasmine-bloom" style="top:83%;right:9%;width:50px;height:50px;--rot:35deg;transform:rotate(35deg);opacity:0.5;"><use href="#jasmine-flower"/></svg>
+  <svg class="jasmine-bloom" style="top:90%;left:5%;width:44px;height:44px;--rot:-22deg;transform:rotate(-22deg);opacity:0.45;"><use href="#jasmine-flower"/></svg>
+  <svg class="jasmine-bloom" style="top:96%;right:15%;width:38px;height:38px;--rot:8deg;transform:rotate(8deg);opacity:0.42;"><use href="#jasmine-flower"/></svg>
+</div>
 
 <nav aria-label="Primary">
   <a href="#" class="nav-logo" aria-label="by Maya — home">by <span>Maya</span></a>
