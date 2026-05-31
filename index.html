@@ -286,6 +286,40 @@ footer a{color:rgba(139,168,136,0.8);text-decoration:none;transition:color .2s;}
 footer a:hover{color:var(--sage);}
 .footer-logo{font-family:'Cormorant Garamond',serif;font-size:1.9rem;font-weight:300;color:rgba(248,245,238,.85);font-style:italic;margin-bottom:.7rem;display:block;}
 
+/* ── FRAME RADIO PILLS (for the order form) ──────────────────────────────── */
+.radio-row{display:flex;gap:.8rem;flex-wrap:wrap;}
+.radio-pill{
+  display:inline-flex;align-items:center;gap:.55rem;
+  padding:.7rem 1.3rem;
+  border:.5px solid rgba(90,122,87,.3);
+  background:rgba(248,245,238,.7);
+  cursor:pointer;
+  font-size:.88rem;
+  transition:border-color .2s,background .2s;
+}
+.radio-pill:hover{border-color:var(--sage-dark);}
+.radio-pill input[type=radio]{accent-color:var(--sage-dark);margin:0;}
+.radio-pill:has(input:checked){border-color:var(--sage-dark);background:rgba(232,239,226,.65);}
+
+/* ── PRICE INDICATION BOX (dynamic, in the order form) ───────────────────── */
+.price-box{
+  display:flex;align-items:center;gap:1.3rem;flex-wrap:wrap;
+  padding:1.1rem 1.5rem;
+  background:rgba(232,239,226,.65);border-left:2px solid var(--sage);
+}
+.price-box .price-label{
+  font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--sage-dark);
+}
+.price-box .price-value{
+  font-family:'Cormorant Garamond',serif;font-size:1.7rem;color:var(--ink);line-height:1;
+}
+.price-box .price-value strong{font-weight:500;}
+.price-box .price-note{
+  font-size:.74rem;color:var(--text-muted);font-style:italic;
+  flex:1 1 100%;line-height:1.55;margin:0;
+}
+
 /* ── GALLERY FOOTER (see-more link) ──────────────────────────────────────── */
 .gallery-footer{text-align:center;margin-top:3rem;}
 .gallery-footer a{
@@ -676,11 +710,35 @@ footer a:hover{color:var(--sage);}
           <label for="medium">Preferred medium</label>
           <select id="medium" name="medium">
             <option value="" disabled selected>Any preference?</option>
+            <option value="Pencil (blyerts)">Pencil drawing (blyerts)</option>
             <option value="Watercolour">Watercolour</option>
-            <option value="Ink / line drawing">Ink · Line drawing</option>
             <option value="Acrylic on canvas">Acrylic on canvas</option>
             <option value="No preference — Maya decides">No preference — Maya decides</option>
           </select>
+        </div>
+        <div class="form-group full">
+          <label>Framed?</label>
+          <div class="radio-row">
+            <label class="radio-pill">
+              <input type="radio" name="frame" value="No frame">
+              <span>No frame</span>
+            </label>
+            <label class="radio-pill">
+              <input type="radio" name="frame" value="With frame">
+              <span>With frame</span>
+            </label>
+          </div>
+        </div>
+        <!-- Indicative price — hidden until size + medium are chosen.
+             JS at bottom of file looks up the price from a table based on
+             size, medium and frame choice. Stays hidden for custom size,
+             "not sure" size, "no preference" medium, etc. -->
+        <div class="form-group full" id="price-indication" hidden>
+          <div class="price-box">
+            <span class="price-label">Indicative price</span>
+            <span class="price-value">~<strong id="price-amount">0</strong> SEK</span>
+            <p class="price-note">Rough estimate based on size, medium and frame — not a commitment. We'll agree on the final price together once we've talked through what you'd like.</p>
+          </div>
         </div>
         <div class="form-group">
           <label for="occasion">Occasion (optional)</label>
@@ -886,6 +944,59 @@ form.addEventListener('submit', async function(e) {
     btn.disabled = false;
   }
 });
+
+/* Dynamic price indication on the commission form. Updates as the visitor
+   changes Size, Medium, or Frame. Stays hidden if any of size/medium is
+   not a pricable choice (custom size, "not sure", "no preference", etc.). */
+(function() {
+  const sizeSelect = document.getElementById('size');
+  const mediumSelect = document.getElementById('medium');
+  const frameRadios = document.querySelectorAll('input[name="frame"]');
+  const priceBox = document.getElementById('price-indication');
+  const priceAmount = document.getElementById('price-amount');
+  if (!sizeSelect || !mediumSelect || !priceBox || !priceAmount) return;
+
+  // Base price in SEK, indexed [medium][size]
+  const priceTable = {
+    'Pencil (blyerts)':   { A5: 800,  A4: 1000, A3: 1400 },
+    'Watercolour':        { A5: 1000, A4: 1200, A3: 1800 },
+    'Acrylic on canvas':  { A5: 1500, A4: 2000, A3: 2500 }
+  };
+
+  // Frame surcharge in SEK by size — covers buying the frame plus the bump
+  // in postage band (heavier/larger packages cost more to ship)
+  const frameSurcharge = { A5: 100, A4: 150, A3: 200 };
+
+  // Pull just the A5/A4/A3 code out of the size select's value string
+  // ("A5 — 15x21 cm (small)" → "A5"). Returns null for non-standard sizes.
+  function sizeCode(val) {
+    if (!val) return null;
+    if (val.startsWith('A5')) return 'A5';
+    if (val.startsWith('A4')) return 'A4';
+    if (val.startsWith('A3')) return 'A3';
+    return null;
+  }
+
+  function update() {
+    const size = sizeCode(sizeSelect.value);
+    const medium = mediumSelect.value;
+    if (!size || !priceTable[medium]) {
+      priceBox.hidden = true;
+      return;
+    }
+    let price = priceTable[medium][size];
+    const framed = Array.from(frameRadios).find(r => r.checked && r.value === 'With frame');
+    if (framed) price += frameSurcharge[size];
+    // Swedish thousand-separator (1 200 not 1,200)
+    priceAmount.textContent = price.toLocaleString('sv-SE');
+    priceBox.hidden = false;
+  }
+
+  sizeSelect.addEventListener('change', update);
+  mediumSelect.addEventListener('change', update);
+  frameRadios.forEach(r => r.addEventListener('change', update));
+  update(); // run once on load in case the browser restored form state
+})();
 
 /* Floating commission CTA — show after scrolling past the hero, hide while
    the order form itself is in view so the floating button doesn't compete
