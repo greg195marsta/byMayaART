@@ -286,21 +286,6 @@ footer a{color:rgba(139,168,136,0.8);text-decoration:none;transition:color .2s;}
 footer a:hover{color:var(--sage);}
 .footer-logo{font-family:'Cormorant Garamond',serif;font-size:1.9rem;font-weight:300;color:rgba(248,245,238,.85);font-style:italic;margin-bottom:.7rem;display:block;}
 
-/* ── FRAME RADIO PILLS (for the order form) ──────────────────────────────── */
-.radio-row{display:flex;gap:.8rem;flex-wrap:wrap;}
-.radio-pill{
-  display:inline-flex;align-items:center;gap:.55rem;
-  padding:.7rem 1.3rem;
-  border:.5px solid rgba(90,122,87,.3);
-  background:rgba(248,245,238,.7);
-  cursor:pointer;
-  font-size:.88rem;
-  transition:border-color .2s,background .2s;
-}
-.radio-pill:hover{border-color:var(--sage-dark);}
-.radio-pill input[type=radio]{accent-color:var(--sage-dark);margin:0;}
-.radio-pill:has(input:checked){border-color:var(--sage-dark);background:rgba(232,239,226,.65);}
-
 /* ── PRICE INDICATION BOX (dynamic, in the order form) ───────────────────── */
 .price-box{
   display:flex;align-items:center;gap:1.3rem;flex-wrap:wrap;
@@ -539,32 +524,32 @@ footer a:hover{color:var(--sage);}
     <div class="gallery-item wide">
       <img src="bouquet_corrected.jpg" alt="Summer bouquet — watercolour" loading="lazy" decoding="async">
       <span class="sold-badge">Sold</span>
-      <span class="sold-price">1 300 kr</span>
-      <div class="gallery-caption">Summer bouquet — watercolour on paper</div>
+      <span class="sold-price">1 000 kr</span>
+      <div class="gallery-caption">Summer bouquet — watercolour on paper · A5</div>
     </div>
     <div class="gallery-item">
       <img src="improvedpenguin.png" alt="Penguin portrait — watercolour" loading="lazy" decoding="async">
       <span class="sold-badge">Sold</span>
-      <span class="sold-price">900 kr</span>
-      <div class="gallery-caption">Penguin portrait — watercolour</div>
+      <span class="sold-price">1 000 kr</span>
+      <div class="gallery-caption">Penguin portrait — watercolour · A5</div>
     </div>
     <div class="gallery-item">
       <img src="lovebirds_corrected.png" alt="Lovebirds — watercolour" loading="lazy" decoding="async">
       <span class="sold-badge">Sold</span>
-      <span class="sold-price">1 100 kr</span>
-      <div class="gallery-caption">Lovebirds — watercolour</div>
+      <span class="sold-price">1 000 kr</span>
+      <div class="gallery-caption">Lovebirds — watercolour · A5</div>
     </div>
     <div class="gallery-item">
-      <img src="scroll_corrected.png" alt="Cherry blossom scroll — ink" loading="lazy" decoding="async">
+      <img src="scroll_corrected.png" alt="Cherry blossom — ink on Japanese scroll" loading="lazy" decoding="async">
       <span class="sold-badge">Sold</span>
-      <span class="sold-price">1 700 kr</span>
-      <div class="gallery-caption">Cherry blossom — ink on scroll</div>
+      <span class="sold-price">2 500 kr</span>
+      <div class="gallery-caption">Cherry blossom — ink on Japanese scroll · specialty piece</div>
     </div>
     <div class="gallery-item">
       <img src="improvedwatercolorflowers.png" alt="Sunflowers — acrylic" loading="lazy" decoding="async">
       <span class="sold-badge">Sold</span>
-      <span class="sold-price">1 500 kr</span>
-      <div class="gallery-caption">Sunflowers — acrylic on canvas</div>
+      <span class="sold-price">2 000 kr</span>
+      <div class="gallery-caption">Sunflowers — acrylic on canvas · A4</div>
     </div>
   </div>
   <!-- "See more works" link: today it points to Instagram (which has the full archive).
@@ -716,18 +701,13 @@ footer a:hover{color:var(--sage);}
             <option value="No preference — Maya decides">No preference — Maya decides</option>
           </select>
         </div>
-        <div class="form-group full">
-          <label>Framed?</label>
-          <div class="radio-row">
-            <label class="radio-pill">
-              <input type="radio" name="frame" value="No frame">
-              <span>No frame</span>
-            </label>
-            <label class="radio-pill">
-              <input type="radio" name="frame" value="With frame">
-              <span>With frame</span>
-            </label>
-          </div>
+        <div class="form-group">
+          <label for="frame">Framed?</label>
+          <select id="frame" name="frame">
+            <option value="" disabled selected>With or without frame?</option>
+            <option value="No frame">No frame</option>
+            <option value="With frame">With frame</option>
+          </select>
         </div>
         <!-- Indicative price — hidden until size + medium are chosen.
              JS at bottom of file looks up the price from a table based on
@@ -951,10 +931,10 @@ form.addEventListener('submit', async function(e) {
 (function() {
   const sizeSelect = document.getElementById('size');
   const mediumSelect = document.getElementById('medium');
-  const frameRadios = document.querySelectorAll('input[name="frame"]');
+  const frameSelect = document.getElementById('frame');
   const priceBox = document.getElementById('price-indication');
   const priceAmount = document.getElementById('price-amount');
-  if (!sizeSelect || !mediumSelect || !priceBox || !priceAmount) return;
+  if (!sizeSelect || !mediumSelect || !frameSelect || !priceBox || !priceAmount) return;
 
   // Base price in SEK, indexed [medium][size]
   const priceTable = {
@@ -985,8 +965,7 @@ form.addEventListener('submit', async function(e) {
       return;
     }
     let price = priceTable[medium][size];
-    const framed = Array.from(frameRadios).find(r => r.checked && r.value === 'With frame');
-    if (framed) price += frameSurcharge[size];
+    if (frameSelect.value === 'With frame') price += frameSurcharge[size];
     // Swedish thousand-separator (1 200 not 1,200)
     priceAmount.textContent = price.toLocaleString('sv-SE');
     priceBox.hidden = false;
@@ -994,7 +973,7 @@ form.addEventListener('submit', async function(e) {
 
   sizeSelect.addEventListener('change', update);
   mediumSelect.addEventListener('change', update);
-  frameRadios.forEach(r => r.addEventListener('change', update));
+  frameSelect.addEventListener('change', update);
   update(); // run once on load in case the browser restored form state
 })();
 
