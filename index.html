@@ -195,6 +195,10 @@ nav ul{align-items:center;}
 .gallery-item:hover .gallery-caption{opacity:1;}
 .sold-badge{position:absolute;top:.9rem;left:.9rem;background:rgba(28,26,22,.82);color:var(--gold);font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;padding:.32rem .7rem;font-family:'Jost',sans-serif;font-weight:400;}
 .sold-price{position:absolute;top:.9rem;right:.9rem;background:rgba(28,26,22,.82);color:rgba(255,255,255,.75);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;padding:.32rem .7rem;font-family:'Jost',sans-serif;}
+/* Specialty marker for one-off / non-standard pieces (e.g. Japanese scrolls).
+   Sits just below .sold-badge to read as a secondary label. Sage rather than
+   gold so it harmonises with the brand without competing with the Sold tag. */
+.specialty-tag{position:absolute;top:2.45rem;left:.9rem;background:rgba(90,122,87,0.88);color:#F8F5EE;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;padding:.3rem .65rem;font-family:'Jost',sans-serif;font-weight:400;}
 
 /* ── HOW IT WORKS ────────────────────────────────────────────────────────── */
 .how-section{padding:7rem 5rem;position:relative;}
@@ -542,6 +546,7 @@ footer a:hover{color:var(--sage);}
     <div class="gallery-item">
       <img src="scroll_corrected.png" alt="Cherry blossom — ink on Japanese scroll" loading="lazy" decoding="async">
       <span class="sold-badge">Sold</span>
+      <span class="specialty-tag">Specialty</span>
       <span class="sold-price">2 500 kr</span>
       <div class="gallery-caption">Cherry blossom — ink on Japanese scroll · specialty piece</div>
     </div>
@@ -784,6 +789,11 @@ footer a:hover{color:var(--sage);}
     <details class="faq-item">
       <summary>Does it arrive framed?</summary>
       <div class="answer">Frames are optional and quoted separately — most pieces ship unframed on archival paper or canvas, ready for your own frame. Tell me in the form if you'd like a framing quote.</div>
+    </details>
+
+    <details class="faq-item">
+      <summary>Can you paint on something other than paper or canvas?</summary>
+      <div class="answer">Yes — I sometimes take on specialty pieces like Japanese hanging scrolls (kakejiku), where the mounting itself is part of the artwork. These are priced individually because the materials and time involved differ from a standard commission. If you have an unusual format in mind, mention it in the form and we'll talk it through.</div>
     </details>
 
     <details class="faq-item">
