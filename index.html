@@ -203,7 +203,52 @@ nav ul{align-items:center;}
 /* Specialty piece = gallery tile that opens a multi-photo lightbox on click.
    Persistent "View N photos" hint sits bottom-right; fades out on hover so
    the existing caption gradient can take over without competing. */
-.gallery-item.specialty-piece{cursor:pointer;}
+.gallery-item.specialty-piece{
+  cursor:pointer;
+  aspect-ratio:3/4; /* match sibling tiles so the grid stays balanced */
+}
+/* Scrollable viewport for the specialty scroll piece. The image inside is
+   taller than the tile, so the tile becomes a "window" the visitor scrolls
+   through to view the full piece — like unrolling a real kakejiku. */
+.scroll-viewport{
+  width:100%;height:100%;
+  overflow-y:auto;overflow-x:hidden;
+  background:#EFF5EB;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(90,122,87,0.45) transparent;
+  position:relative;z-index:1;
+}
+.scroll-viewport::-webkit-scrollbar{width:5px;}
+.scroll-viewport::-webkit-scrollbar-track{background:transparent;}
+.scroll-viewport::-webkit-scrollbar-thumb{background:rgba(90,122,87,0.4);border-radius:2px;}
+.scroll-viewport::-webkit-scrollbar-thumb:hover{background:rgba(90,122,87,0.7);}
+.scroll-viewport img{
+  /* Override the gallery's default 3:4 aspect / contain rules — we want the
+     image to take 90% of tile width at its NATURAL aspect, so it can overflow
+     vertically and the viewport becomes the scroll surface. */
+  width:90%;height:auto;
+  aspect-ratio:auto;object-fit:unset;
+  margin:0 auto;padding:5% 0;
+  display:block;background:transparent;
+  box-sizing:border-box;
+}
+/* Suppress the gallery's hover image-zoom for the scroll — would clip
+   awkwardly inside the scrollable viewport. */
+.gallery-item.specialty-piece:hover .scroll-viewport img{transform:none;}
+/* Subtle fade at top and bottom to signal "there's more to scroll" */
+.gallery-item.specialty-piece::before,
+.gallery-item.specialty-piece::after{
+  content:'';position:absolute;left:0;right:0;height:30px;
+  pointer-events:none;z-index:2;
+}
+.gallery-item.specialty-piece::before{
+  top:0;
+  background:linear-gradient(to bottom,rgba(239,245,235,0.92),rgba(239,245,235,0));
+}
+.gallery-item.specialty-piece::after{
+  bottom:0;
+  background:linear-gradient(to top,rgba(239,245,235,0.92),rgba(239,245,235,0));
+}
 .view-count{
   position:absolute;bottom:.9rem;right:.9rem;
   background:rgba(28,26,22,0.82);color:rgba(248,245,238,0.92);
@@ -566,7 +611,7 @@ footer a:hover{color:var(--sage);}
 <section class="about" id="about">
   <div class="about-images">
     <img src="lovebirds_corrected.png" alt="Lovebirds on a branch — watercolour" loading="lazy" decoding="async">
-    <img src="scroll_corrected.png" alt="Cherry blossom and bird — ink on scroll" loading="lazy" decoding="async">
+    <img src="scroll_detail_bird.jpg" alt="Cherry blossom and bird — ink on Japanese scroll, detail" loading="lazy" decoding="async">
     <img src="improvedwatercolorflowers.png" alt="Sunflowers — acrylic on canvas" loading="lazy" decoding="async">
     <img src="improvedpenguin.png" alt="Penguin portrait — watercolour" loading="lazy" decoding="async">
   </div>
@@ -610,7 +655,12 @@ footer a:hover{color:var(--sage);}
       <div class="gallery-caption">Lovebirds — watercolour · A5</div>
     </div>
     <div class="gallery-item specialty-piece" data-lightbox="scroll" tabindex="0" role="button" aria-label="Open Cherry blossom scroll — 4 photos">
-      <img src="scroll_full.jpg" alt="Cherry blossom — ink on Japanese scroll" loading="lazy" decoding="async">
+      <!-- The image is much taller than the tile by design; the viewport
+           makes the tile a scrollable window onto the scroll itself, which
+           mimics the physical experience of viewing a hanging scroll. -->
+      <div class="scroll-viewport">
+        <img src="scroll_full.jpg" alt="Cherry blossom — ink on Japanese scroll" loading="lazy" decoding="async">
+      </div>
       <span class="sold-badge">Sold</span>
       <span class="specialty-tag">Specialty</span>
       <span class="sold-price">2 500 kr</span>
