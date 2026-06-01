@@ -401,6 +401,32 @@ footer a:hover{color:var(--sage);}
   flex:1 1 100%;line-height:1.55;margin:0;
 }
 
+/* ── SPECIALTY WORK SECTION ─────────────────────────────────────────────── */
+/* Feature section between the gallery and trust band that gives the
+   Japanese scroll piece its own moment — explains kakejiku format, why
+   it's different from a framed painting, and invites specialty commissions. */
+.specialty-section{padding:6rem 5rem;position:relative;}
+.specialty-inner{
+  max-width:1050px;margin:0 auto;
+  background:rgba(248,245,238,0.86);
+  padding:3.5rem 4rem;
+  border:1px solid rgba(90,122,87,0.15);
+  display:grid;grid-template-columns:0.85fr 1fr;
+  gap:3rem;align-items:center;
+}
+.specialty-image{position:relative;}
+.specialty-image img{
+  width:100%;height:auto;display:block;
+  box-shadow:0 8px 28px rgba(28,26,22,0.18);
+}
+.specialty-text .section-label{margin-bottom:1rem;}
+.specialty-text .section-title{margin-bottom:1.4rem;}
+.specialty-text p{
+  font-size:.95rem;color:var(--text-muted);
+  margin-bottom:1rem;line-height:1.85;max-width:50ch;
+}
+.specialty-text .btn-outline{margin-top:.8rem;}
+
 /* ── GALLERY FOOTER (see-more link) ──────────────────────────────────────── */
 .gallery-footer{text-align:center;margin-top:3rem;}
 .gallery-footer a{
@@ -464,6 +490,8 @@ footer a:hover{color:var(--sage);}
   .gallery-item.size-a4,
   .gallery-item.specialty-piece{grid-column:span 1;}
   .gallery-item.size-a4{align-self:stretch;}
+  .specialty-section{padding:3.5rem 1.2rem;}
+  .specialty-inner{padding:2rem 1.5rem;grid-template-columns:1fr;gap:1.5rem;}
   .how-section{padding:3rem 1.2rem;}
   .how-inner{padding:3rem 1.5rem;}
   .how-steps{grid-template-columns:1fr 1fr;}
@@ -547,7 +575,7 @@ footer a:hover{color:var(--sage);}
     </div>
     <a class="hero-ig" href="https://instagram.com/krmantina" target="_blank" rel="noopener">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-      Found me through <strong>@krmantina</strong>? Welcome.
+      See new work first on Instagram → <strong>@krmantina</strong>
     </a>
     <div class="hero-buttons">
       <a href="#order" class="btn-primary">Commission a piece</a>
@@ -671,6 +699,23 @@ footer a:hover{color:var(--sage);}
       See the full collection on Instagram
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
     </a>
+  </div>
+</section>
+
+<!-- SPECIALTY WORK -->
+<section class="specialty-section" aria-label="Specialty work — Japanese hanging scrolls">
+  <div class="specialty-inner">
+    <div class="specialty-image">
+      <img class="zoomable" src="scroll_detail_bird.jpg" alt="Cherry blossom and bird — detail from Japanese hanging scroll" loading="lazy" decoding="async" tabindex="0" role="button" aria-label="Open scroll detail full screen">
+    </div>
+    <div class="specialty-text">
+      <p class="section-label">Specialty work</p>
+      <h2 class="section-title">When the format is <em>part of the art</em></h2>
+      <p>Some commissions push beyond paper and canvas. Hand-painted Japanese hanging scrolls (<em>kakejiku</em>) — sumi ink on washi paper, mounted with silk brocade and a wooden roller, ready to hang straight from delivery.</p>
+      <p>The scroll itself is part of the piece. No frame, no glass — just the painting in its traditional form, the way kakejiku have been displayed for centuries.</p>
+      <p>If you'd like something out of the ordinary, tell me what you have in mind.</p>
+      <a href="#order" class="btn-outline">Commission a specialty piece</a>
+    </div>
   </div>
 </section>
 
@@ -817,7 +862,7 @@ footer a:hover{color:var(--sage);}
             <input type="file" id="photo" name="photo" accept="image/*">
             <div class="file-zone-text">
               <strong>Upload a photo or reference</strong>
-              A pet, a place, a person — anything that helps me understand your vision. Phone photos welcome, any size.
+              A pet, a place, a person — anything that helps me understand your vision. Phone photos work great — clear and in good light if possible. If you have a few good angles, send them all.
             </div>
             <div id="file-name"></div>
           </div>
