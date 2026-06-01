@@ -120,7 +120,14 @@ nav ul{align-items:center;}
    positions and container height stay safely fixed to avoid any overflow. */
 .hero-garden{
   position:relative;
-  overflow:hidden;
+  /* overflow:visible — the lower painting (acrylic sunflowers) sits at top:60%
+     and on wide-but-short viewports (e.g. 1920x900) its natural height makes
+     it extend past the .hero container. With overflow:hidden the bottom edge
+     of the painted frame got clipped here, even though clicking opened the
+     painting fully via the lightbox (which renders outside this container).
+     overflow:visible lets the cascade breathe; the WHY section below has its
+     own ivory panel so any minor shadow bleed reads as intentional. */
+  overflow:visible;
   min-height:640px;
 }
 .hero-garden img{
@@ -187,11 +194,12 @@ nav ul{align-items:center;}
 /* ── GALLERY ─────────────────────────────────────────────────────────────── */
 .gallery-section{padding:7rem 4rem;position:relative;}
 .gallery-header{text-align:center;margin-bottom:3.5rem;}
-/* Gallery sized proportionally to real artwork dimensions. 12-column grid:
-   A5 = 4 cols (33%), A4 = 5 cols (42%), A3 = 7 cols (58%).
-   A4:A3 ratio ≈ 1.4, matching the real-world 1.41x linear scaling between
-   A-series sizes. */
-.gallery-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:1rem;max-width:700px;margin:0 auto;}
+/* Gallery-wall arrangement: pieces of varying real-world sizes hung together
+   on a common horizontal "rail". 12-col grid keeps proportions truthful
+   (A5 = 4, A4 = 5, A3 = 7, specialty scroll = 3 narrow-but-tall), while
+   justify-content:center makes any row with leftover cols hang centred —
+   the way pieces would actually be arranged on a wall, not flushed left. */
+.gallery-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:1.5rem 1.25rem;max-width:880px;margin:0 auto;justify-content:center;align-items:center;}
 .gallery-item{
   grid-column:span 4; /* default = A5 size */
   position:relative;overflow:hidden;cursor:pointer;
@@ -227,7 +235,8 @@ nav ul{align-items:center;}
    any other tile, conveying its real-world size. */
 .gallery-item.specialty-piece{
   cursor:pointer;
-  grid-column:span 3; /* same width as A4, tallness comes from the aspect */
+  grid-column:span 3; /* narrower than A5 in the 12-col grid; the tile's tallness comes from the aspect-ratio below */
+  align-self:center;
   aspect-ratio:626 / 1484; /* matches the lossless-cropped scroll image (scroll content bounding box, with transparent corners) */
   /* Transparent so the site's jasmin-pattern flows through any letterboxing
      in the tile, instead of a solid jasmin block contrasting with the textured site bg. */
@@ -359,7 +368,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 
 /* ── TRUST BAND ──────────────────────────────────────────────────────────── */
 .trust-band{padding:3rem 5rem;position:relative;}
-.trust-band-inner{max-width:1000px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;background:rgba(255,255,255,0.78);padding:2rem 2.5rem;border:1px solid rgba(90,122,87,0.15);}
+.trust-band-inner{max-width:820px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;background:rgba(255,255,255,0.78);padding:2rem 2.5rem;border:1px solid rgba(90,122,87,0.15);}
 .trust-item{text-align:center;}
 .trust-item .trust-icon{display:block;margin:0 auto .6rem;width:24px;height:24px;color:var(--sage-dark);}
 .trust-item .trust-label{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:400;color:var(--ink);margin-bottom:.2rem;}
@@ -419,18 +428,28 @@ footer a:hover{color:var(--sage);}
    Japanese scroll piece its own moment — explains kakejiku format, why
    it's different from a framed painting, and invites specialty commissions. */
 .specialty-section{padding:6rem 5rem;position:relative;}
+/* The image hangs on the jasmine page background (its PNG has transparent
+   corners) while the text sits on its own ivory panel — mirrors the way
+   the full-scroll gallery tile lets the garden show through. */
 .specialty-inner{
   max-width:1050px;margin:0 auto;
-  background:rgba(248,245,238,0.86);
-  padding:3.5rem 4rem;
-  border:1px solid rgba(90,122,87,0.15);
+  background:none;
+  padding:0;
+  border:none;
   display:grid;grid-template-columns:0.85fr 1fr;
   gap:3rem;align-items:center;
 }
 .specialty-image{position:relative;}
 .specialty-image img{
   width:100%;height:auto;display:block;
-  box-shadow:0 8px 28px rgba(28,26,22,0.18);
+  background:transparent;
+  /* No drop-shadow — a hard rectangular shadow gives away the bounding box
+     of the transparent PNG and breaks the "floating on the garden" effect. */
+}
+.specialty-text{
+  background:rgba(248,245,238,0.86);
+  padding:3rem 3rem;
+  border:1px solid rgba(90,122,87,0.15);
 }
 .specialty-text .section-label{margin-bottom:1rem;}
 .specialty-text .section-title{margin-bottom:1.4rem;}
@@ -506,7 +525,8 @@ footer a:hover{color:var(--sage);}
   .gallery-item.size-a4,
   .gallery-item.size-a3{align-self:stretch;}
   .specialty-section{padding:3.5rem 1.2rem;}
-  .specialty-inner{padding:2rem 1.5rem;grid-template-columns:1fr;gap:1.5rem;}
+  .specialty-inner{padding:0;grid-template-columns:1fr;gap:1.5rem;}
+  .specialty-text{padding:1.6rem 1.5rem;}
   .how-section{padding:3rem 1.2rem;}
   .how-inner{padding:3rem 1.5rem;}
   .how-steps{grid-template-columns:1fr 1fr;}
@@ -514,7 +534,7 @@ footer a:hover{color:var(--sage);}
   .order-section{padding:3rem 1.2rem;}
   .order-inner{padding:2rem 1.5rem;}
   .trust-band{padding:2rem 1.2rem;}
-  .trust-band-inner{grid-template-columns:1fr 1fr;gap:1.5rem;padding:1.5rem;}
+  .trust-band-inner{grid-template-columns:1fr;gap:1.5rem;padding:1.5rem;}
   .faq-section{padding:3.5rem 1.2rem;}
   .faq-inner{padding:2rem 1.5rem;}
   .insta-section{padding:3rem 1.2rem;}
@@ -662,11 +682,13 @@ footer a:hover{color:var(--sage);}
     <h2 class="section-title">Recent <em>commissions</em></h2>
   </div>
   <div class="gallery-grid">
-    <!-- Gallery tiles sized proportionally to real-world artwork dimensions
-         in a 12-col grid: A5 = 4 cols, A4 = 5 cols, A3 = 7 cols. The Japanese
-         scroll lives in its own Specialty Work section below the gallery.
-         Each tile is `.zoomable` so clicking opens the painting full screen
-         via the shared lightbox. -->
+    <!-- Gallery-wall arrangement: tiles sized proportionally to real-world
+         dimensions in a 12-col grid. Order is chosen so rows pack cleanly:
+         Row 1 = three A5s (4+4+4),  Row 2 = A4 + A3 (5+7),
+         Row 3 = the hanging scroll on its own (centred), letting the
+         specialty piece read as the unusual one of the set.
+         Each tile is `.zoomable` (single-image lightbox) except the scroll,
+         which carries data-lightbox="scroll" for the 4-photo carousel. -->
     <div class="gallery-item zoomable" tabindex="0" role="button" aria-label="Open Summer bouquet full screen">
       <img src="bouquet_corrected.jpg" alt="Summer bouquet — watercolour on paper · A5" loading="lazy" decoding="async">
       <span class="sold-badge">Sold</span>
@@ -691,11 +713,21 @@ footer a:hover{color:var(--sage);}
       <span class="sold-price">2 000 kr</span>
       <div class="gallery-caption">Sunflowers — acrylic on canvas · A4</div>
     </div>
-    <div class="gallery-item size-a3 zoomable" tabindex="0" role="button" aria-label="Open Audrey portrait full screen">
-      <img src="audrey_scarf.png" alt="Portrait of Audrey Hepburn in a hooded scarf — pencil on paper · A3" loading="lazy" decoding="async">
+    <div class="gallery-item size-a3 zoomable" tabindex="0" role="button" aria-label="Open Audrey's scarf full screen">
+      <img src="audrey_scarf.png" alt="Audrey's scarf — pencil on paper · A3" loading="lazy" decoding="async">
       <span class="sold-badge">Sold</span>
       <span class="sold-price">1 400 kr</span>
-      <div class="gallery-caption">Audrey in a scarf — pencil drawing · A3</div>
+      <div class="gallery-caption">Audrey's scarf — pencil drawing · A3</div>
+    </div>
+    <!-- Specialty piece: Japanese hanging scroll. Tile is narrow and tall to
+         reflect the real-world format, and clicking it opens the 4-photo
+         carousel (full / rolled / bird detail / flower detail) — same lightbox
+         the Specialty Work section below also triggers. -->
+    <div class="gallery-item specialty-piece" tabindex="0" role="button" data-lightbox="scroll" aria-label="Open the scroll — 4 photos">
+      <img src="scroll_full.png" alt="Japanese hanging scroll — sumi ink, kakejiku format" loading="lazy" decoding="async">
+      <span class="sold-badge">Sold</span>
+      <span class="specialty-tag">Specialty</span>
+      <div class="gallery-caption">Hand-painted Japanese hanging scroll · kakejiku</div>
     </div>
   </div>
   <!-- "See more works" link: today it points to Instagram (which has the full archive).
@@ -746,11 +778,6 @@ footer a:hover{color:var(--sage);}
       <svg class="trust-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M3 7l9-4 9 4v6c0 5-3.5 7.5-9 9-5.5-1.5-9-4-9-9V7z"/></svg>
       <div class="trust-label">Safely shipped</div>
       <div class="trust-sub">Carefully packed and tracked in transit</div>
-    </div>
-    <div class="trust-item">
-      <svg class="trust-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="12" cy="12" r="5"/><path d="M12 17v4M9 21h6"/></svg>
-      <div class="trust-label">Signed with a circle</div>
-      <div class="trust-sub">Maya's personal mark on every piece</div>
     </div>
   </div>
 </section>
