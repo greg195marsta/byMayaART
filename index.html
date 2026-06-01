@@ -233,6 +233,12 @@ nav ul{align-items:center;}
 }
 .gallery-item.specialty-piece:hover .view-count{opacity:0;}
 
+/* Any image (or wrapper) with this class becomes clickable to open the
+   lightbox full-screen. Cursor + small lift hint at interactivity. */
+.zoomable{cursor:zoom-in;transition:transform .25s ease,filter .25s ease;}
+.zoomable:hover{filter:brightness(1.04);}
+.zoomable:focus-visible{outline:2px solid var(--sage-dark);outline-offset:3px;}
+
 /* ── LIGHTBOX (multi-photo overlay for specialty pieces) ─────────────────── */
 .lightbox{
   position:fixed;inset:0;
@@ -543,9 +549,9 @@ footer a:hover{color:var(--sage);}
     </div>
   </div>
   <div class="hero-garden">
-    <img class="main" src="bouquet_corrected.jpg" alt="Watercolour summer bouquet — roses, daisies and delphinium in a glass vase" fetchpriority="high" decoding="async">
-    <img class="float a" src="improvedpenguin.png" alt="Watercolour penguin portrait" loading="lazy" decoding="async">
-    <img class="float b" src="improvedwatercolorflowers.png" alt="Acrylic sunflowers reflected on water" loading="lazy" decoding="async">
+    <img class="main zoomable" src="bouquet_corrected.jpg" alt="Watercolour summer bouquet — roses, daisies and delphinium in a glass vase" fetchpriority="high" decoding="async" tabindex="0" role="button" aria-label="Open painting full screen">
+    <img class="float a zoomable" src="improvedpenguin.png" alt="Watercolour penguin portrait" loading="lazy" decoding="async" tabindex="0" role="button" aria-label="Open painting full screen">
+    <img class="float b zoomable" src="improvedwatercolorflowers.png" alt="Acrylic sunflowers reflected on water" loading="lazy" decoding="async" tabindex="0" role="button" aria-label="Open painting full screen">
   </div>
 </section>
 
@@ -586,10 +592,10 @@ footer a:hover{color:var(--sage);}
 <!-- ABOUT -->
 <section class="about" id="about">
   <div class="about-images">
-    <img src="lovebirds_corrected.png" alt="Lovebirds on a branch — watercolour" loading="lazy" decoding="async">
-    <img src="scroll_detail_bird.jpg" alt="Cherry blossom and bird — ink on Japanese scroll, detail" loading="lazy" decoding="async">
-    <img src="improvedwatercolorflowers.png" alt="Sunflowers — acrylic on canvas" loading="lazy" decoding="async">
-    <img src="improvedpenguin.png" alt="Penguin portrait — watercolour" loading="lazy" decoding="async">
+    <img class="zoomable" src="lovebirds_corrected.png" alt="Lovebirds on a branch — watercolour" loading="lazy" decoding="async" tabindex="0" role="button" aria-label="Open painting full screen">
+    <img class="zoomable" src="scroll_detail_bird.jpg" alt="Cherry blossom and bird — ink on Japanese scroll, detail" loading="lazy" decoding="async" tabindex="0" role="button" aria-label="Open painting full screen">
+    <img class="zoomable" src="improvedwatercolorflowers.png" alt="Sunflowers — acrylic on canvas" loading="lazy" decoding="async" tabindex="0" role="button" aria-label="Open painting full screen">
+    <img class="zoomable" src="improvedpenguin.png" alt="Penguin portrait — watercolour" loading="lazy" decoding="async" tabindex="0" role="button" aria-label="Open painting full screen">
   </div>
   <div class="about-text">
     <p class="section-label">About me</p>
@@ -614,27 +620,30 @@ footer a:hover{color:var(--sage);}
   <div class="gallery-grid">
     <!-- Gallery tiles are sized proportionally to the real-world dimensions
          of the artwork: A5 watercolours = 2 cols, A4 acrylic = 3 cols,
-         Japanese scroll = 3 cols at its natural very-tall aspect. -->
-    <div class="gallery-item">
-      <img src="bouquet_corrected.jpg" alt="Summer bouquet — watercolour" loading="lazy" decoding="async">
+         Japanese scroll = 3 cols at its natural very-tall aspect.
+         Each tile is `.zoomable` so clicking it opens the painting full
+         screen via the shared lightbox; the scroll tile is the exception
+         (it opens the 4-photo carousel via data-lightbox="scroll"). -->
+    <div class="gallery-item zoomable" tabindex="0" role="button" aria-label="Open Summer bouquet full screen">
+      <img src="bouquet_corrected.jpg" alt="Summer bouquet — watercolour on paper · A5" loading="lazy" decoding="async">
       <span class="sold-badge">Sold</span>
       <span class="sold-price">1 200 kr</span>
       <div class="gallery-caption">Summer bouquet — watercolour on paper · A5</div>
     </div>
-    <div class="gallery-item">
-      <img src="improvedpenguin.png" alt="Penguin portrait — watercolour" loading="lazy" decoding="async">
+    <div class="gallery-item zoomable" tabindex="0" role="button" aria-label="Open Penguin portrait full screen">
+      <img src="improvedpenguin.png" alt="Penguin portrait — watercolour · A5" loading="lazy" decoding="async">
       <span class="sold-badge">Sold</span>
       <span class="sold-price">1 000 kr</span>
       <div class="gallery-caption">Penguin portrait — watercolour · A5</div>
     </div>
-    <div class="gallery-item">
-      <img src="lovebirds_corrected.png" alt="Lovebirds — watercolour" loading="lazy" decoding="async">
+    <div class="gallery-item zoomable" tabindex="0" role="button" aria-label="Open Lovebirds full screen">
+      <img src="lovebirds_corrected.png" alt="Lovebirds — watercolour · A5" loading="lazy" decoding="async">
       <span class="sold-badge">Sold</span>
       <span class="sold-price">1 000 kr</span>
       <div class="gallery-caption">Lovebirds — watercolour · A5</div>
     </div>
-    <div class="gallery-item size-a4">
-      <img src="improvedwatercolorflowers.png" alt="Sunflowers — acrylic" loading="lazy" decoding="async">
+    <div class="gallery-item size-a4 zoomable" tabindex="0" role="button" aria-label="Open Sunflowers full screen">
+      <img src="improvedwatercolorflowers.png" alt="Sunflowers — acrylic on canvas · A4" loading="lazy" decoding="async">
       <span class="sold-badge">Sold</span>
       <span class="sold-price">2 000 kr</span>
       <div class="gallery-caption">Sunflowers — acrylic on canvas · A4</div>
@@ -887,10 +896,11 @@ footer a:hover{color:var(--sage);}
   <p style="margin-top:.7rem;font-size:.7rem;">© 2025 by Maya · All works are original and handmade · Sweden, Europe by arrangement</p>
 </footer>
 
-<!-- Specialty-piece lightbox: shows multiple photos of one work with prev/next,
-     opened by any gallery tile with data-lightbox="<id>". The photos array
-     lives in the script at the bottom of this file. -->
-<div class="lightbox" id="scroll-lightbox" hidden aria-hidden="true" aria-label="Cherry blossom scroll — 4 photos" role="dialog">
+<!-- Universal lightbox: any image with `.zoomable` opens it full-screen here;
+     the specialty scroll tile (data-lightbox="scroll") opens with the full
+     4-photo carousel instead. Prev/Next/counter are hidden when only one
+     image is being shown. -->
+<div class="lightbox" id="lightbox" hidden aria-hidden="true" role="dialog">
   <button class="lightbox-close" aria-label="Close (Esc)">×</button>
   <button class="lightbox-prev" aria-label="Previous photo (←)">‹</button>
   <button class="lightbox-next" aria-label="Next photo (→)">›</button>
@@ -1008,42 +1018,56 @@ form.addEventListener('submit', async function(e) {
   }
 });
 
-/* Specialty-piece lightbox. Tile with data-lightbox="scroll" opens an overlay
-   that walks through multiple photos with prev/next, keyboard (esc, arrows),
-   click-outside-to-close, and tap-anywhere navigation on touch. */
+/* Universal lightbox. Two kinds of triggers:
+   - Specialty multi-photo set: tile with data-lightbox="scroll" opens the
+     4-photo scroll carousel.
+   - Single image: anything with .zoomable opens just itself, full-screen,
+     with prev/next/counter hidden (since there's only one image).
+   Both modes share one DOM element (#lightbox) and one event surface. */
 (function() {
-  const trigger = document.querySelector('[data-lightbox="scroll"]');
-  const lightbox = document.getElementById('scroll-lightbox');
-  if (!trigger || !lightbox) return;
+  const lightbox = document.getElementById('lightbox');
+  if (!lightbox) return;
 
-  const imgEl = lightbox.querySelector('.lightbox-image');
+  const imgEl     = lightbox.querySelector('.lightbox-image');
   const captionEl = lightbox.querySelector('.lightbox-caption');
   const counterEl = lightbox.querySelector('.lightbox-counter');
-  const closeBtn = lightbox.querySelector('.lightbox-close');
-  const prevBtn = lightbox.querySelector('.lightbox-prev');
-  const nextBtn = lightbox.querySelector('.lightbox-next');
+  const closeBtn  = lightbox.querySelector('.lightbox-close');
+  const prevBtn   = lightbox.querySelector('.lightbox-prev');
+  const nextBtn   = lightbox.querySelector('.lightbox-next');
 
+  // Multi-photo set for the specialty scroll piece.
   // Storytelling order: full piece -> physical form -> close-up -> close-up
-  const photos = [
-    { src: 'scroll_full.png',          caption: 'The full scroll — hand-painted ink, mounted as a traditional kakejiku with silk brocade and a hanging ribbon.' },
-    { src: 'scroll_rolled.jpg',        caption: 'Rolled and tied — the scroll arrives ready to hang straight from delivery.' },
-    { src: 'scroll_detail_bird.jpg',   caption: 'Close-up: the bird perched among the flowering branches.' },
-    { src: 'scroll_detail_flower.jpg', caption: 'Close-up: a single blossom rendered with finely shaded petal detail.' }
-  ];
+  const sets = {
+    scroll: [
+      { src: 'scroll_full.png',          caption: 'The full scroll — hand-painted ink, mounted as a traditional kakejiku with silk brocade and a hanging ribbon.' },
+      { src: 'scroll_rolled.jpg',        caption: 'Rolled and tied — the scroll arrives ready to hang straight from delivery.' },
+      { src: 'scroll_detail_bird.jpg',   caption: 'Close-up: the bird perched among the flowering branches.' },
+      { src: 'scroll_detail_flower.jpg', caption: 'Close-up: a single blossom rendered with finely shaded petal detail.' }
+    ]
+  };
 
+  let photos = [];
   let currentIndex = 0;
+  let returnFocus = null;
 
   function show(idx) {
-    // wrap around in both directions
     currentIndex = ((idx % photos.length) + photos.length) % photos.length;
     const p = photos[currentIndex];
     imgEl.src = p.src;
-    imgEl.alt = p.caption;
-    captionEl.textContent = p.caption;
-    counterEl.textContent = (currentIndex + 1) + ' / ' + photos.length;
+    imgEl.alt = p.caption || '';
+    captionEl.textContent = p.caption || '';
+    // Hide nav controls + counter in single-image mode — they'd be meaningless
+    const multi = photos.length > 1;
+    counterEl.textContent = multi ? (currentIndex + 1) + ' / ' + photos.length : '';
+    prevBtn.hidden = !multi;
+    nextBtn.hidden = !multi;
+    counterEl.hidden = !multi;
   }
 
-  function open() {
+  function open(photosArray, focusReturnTarget) {
+    photos = photosArray;
+    returnFocus = focusReturnTarget || null;
+    currentIndex = 0;
     show(0);
     lightbox.hidden = false;
     lightbox.setAttribute('aria-hidden', 'false');
@@ -1055,30 +1079,49 @@ form.addEventListener('submit', async function(e) {
     lightbox.hidden = true;
     lightbox.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
-    trigger.focus(); // return keyboard focus where it came from
+    if (returnFocus) returnFocus.focus();
   }
-
-  trigger.addEventListener('click', open);
-  // Keyboard activation when the gallery tile has focus (tabindex=0 makes it focusable)
-  trigger.addEventListener('keydown', e => {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
-  });
 
   closeBtn.addEventListener('click', close);
   prevBtn.addEventListener('click', () => show(currentIndex - 1));
   nextBtn.addEventListener('click', () => show(currentIndex + 1));
 
   // Click on the dark backdrop (outside any control) closes the lightbox
-  lightbox.addEventListener('click', e => {
-    if (e.target === lightbox) close();
-  });
+  lightbox.addEventListener('click', e => { if (e.target === lightbox) close(); });
 
   // Keyboard navigation while open
   document.addEventListener('keydown', e => {
     if (lightbox.hidden) return;
     if (e.key === 'Escape') close();
-    else if (e.key === 'ArrowLeft') show(currentIndex - 1);
-    else if (e.key === 'ArrowRight') show(currentIndex + 1);
+    else if (e.key === 'ArrowLeft'  && photos.length > 1) show(currentIndex - 1);
+    else if (e.key === 'ArrowRight' && photos.length > 1) show(currentIndex + 1);
+  });
+
+  // === Wire up triggers ===
+
+  // 1. Multi-photo set triggers (e.g. the specialty scroll piece)
+  document.querySelectorAll('[data-lightbox]').forEach(el => {
+    const setName = el.getAttribute('data-lightbox');
+    const set = sets[setName];
+    if (!set) return;
+    el.addEventListener('click', () => open(set, el));
+    el.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(set, el); }
+    });
+  });
+
+  // 2. Single-image triggers: any element with .zoomable. If the trigger is
+  //    an <img>, use its own src/alt; otherwise look for an <img> child.
+  document.querySelectorAll('.zoomable').forEach(el => {
+    const handler = () => {
+      const img = el.tagName === 'IMG' ? el : el.querySelector('img');
+      if (!img) return;
+      open([{ src: img.currentSrc || img.src, caption: img.alt || '' }], el);
+    };
+    el.addEventListener('click', handler);
+    el.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handler(); }
+    });
   });
 })();
 
