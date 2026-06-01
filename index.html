@@ -111,8 +111,6 @@ nav ul{align-items:center;}
 .hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(3rem,5vw,4.8rem);font-weight:300;line-height:1.08;margin-bottom:1.6rem;}
 .hero-title em{font-style:italic;color:var(--sage-dark);}
 .hero-desc{font-size:.97rem;color:var(--text-muted);max-width:40ch;margin-bottom:1rem;line-height:1.85;}
-.sig-note{display:flex;align-items:center;gap:.7rem;margin-bottom:2.5rem;font-size:.78rem;color:rgba(28,26,22,.4);font-style:italic;}
-.sig-circle{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--sage);flex-shrink:0;}
 .hero-buttons{display:flex;gap:1rem;flex-wrap:wrap;}
 
 /* ── HERO PAINTING PANEL ─────────────────────────────────────────────────── */
@@ -167,10 +165,20 @@ nav ul{align-items:center;}
 .why-card p{font-size:.84rem;color:var(--text-muted);line-height:1.75;}
 
 /* ── ABOUT ───────────────────────────────────────────────────────────────── */
-.about{display:grid;grid-template-columns:1fr 1fr;position:relative;}
-.about-images{display:grid;grid-template-columns:1fr 1fr;gap:3px;}
-.about-images img{width:100%;aspect-ratio:3/4;object-fit:contain;object-position:center;display:block;background:#EFF5EB;}
-.about-text{padding:6rem 5rem;display:flex;flex-direction:column;justify-content:center;background:rgba(255,255,255,0.84);}
+/* Card-style layout matching the Specialty section: outer section padding +
+   inner panel with single feature image (left) and text (right). */
+.about{padding:6rem 5rem;position:relative;}
+.about-inner{
+  max-width:1050px;margin:0 auto;
+  background:rgba(248,245,238,0.82);
+  padding:3.5rem 4rem;
+  border:1px solid rgba(90,122,87,0.15);
+  display:grid;grid-template-columns:0.85fr 1fr;
+  gap:3rem;align-items:center;
+}
+.about-image{position:relative;}
+.about-image img{width:100%;height:auto;display:block;box-shadow:0 8px 28px rgba(28,26,22,0.18);}
+.about-text{display:flex;flex-direction:column;justify-content:center;}
 .about-text p{color:var(--text-muted);margin-bottom:1rem;font-size:.92rem;max-width:44ch;}
 .about-sig{display:flex;align-items:center;gap:1rem;margin-top:1.5rem;padding-top:1.5rem;border-top:0.5px solid var(--border);}
 .about-sig-circle{width:28px;height:28px;border-radius:50%;border:2px solid var(--sage);flex-shrink:0;}
@@ -482,8 +490,8 @@ footer a:hover{color:var(--sage);}
   .why-section{padding:4rem 1.2rem;}
   .why-inner{padding:2rem 1.5rem;}
   .why-grid{grid-template-columns:1fr;}
-  .about{grid-template-columns:1fr;}
-  .about-text{padding:3rem 1.8rem;}
+  .about{padding:3.5rem 1.2rem;}
+  .about-inner{padding:2rem 1.5rem;grid-template-columns:1fr;gap:1.5rem;}
   .gallery-section{padding:4rem 1.2rem;}
   .gallery-grid{grid-template-columns:1fr;gap:1rem;}
   .gallery-item,
@@ -569,10 +577,6 @@ footer a:hover{color:var(--sage);}
     <p class="eyebrow">Handmade · Original · Personal</p>
     <h1 class="hero-title">Art that carries<br><em>your</em> story</h1>
     <p class="hero-desc">Every piece is painted by hand — watercolour, ink, acrylic — made to hold real meaning for the person who owns it.</p>
-    <div class="sig-note">
-      <div class="sig-circle"></div>
-      Every painting I sign with my personal mark — a circle
-    </div>
     <a class="hero-ig" href="https://instagram.com/krmantina" target="_blank" rel="noopener">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
       See new work first on Instagram → <strong>@krmantina</strong>
@@ -625,11 +629,9 @@ footer a:hover{color:var(--sage);}
 
 <!-- ABOUT -->
 <section class="about" id="about">
-  <div class="about-images">
-    <img class="zoomable" src="lovebirds_corrected.png" alt="Lovebirds on a branch — watercolour" loading="lazy" decoding="async" tabindex="0" role="button" aria-label="Open painting full screen">
-    <img class="zoomable" src="scroll_detail_bird.jpg" alt="Cherry blossom and bird — ink on Japanese scroll, detail" loading="lazy" decoding="async" tabindex="0" role="button" aria-label="Open painting full screen">
-    <img class="zoomable" src="improvedwatercolorflowers.png" alt="Sunflowers — acrylic on canvas" loading="lazy" decoding="async" tabindex="0" role="button" aria-label="Open painting full screen">
-    <img class="zoomable" src="improvedpenguin.png" alt="Penguin portrait — watercolour" loading="lazy" decoding="async" tabindex="0" role="button" aria-label="Open painting full screen">
+  <div class="about-inner">
+  <div class="about-image">
+    <img class="zoomable" src="bouquet_corrected.jpg" alt="Summer bouquet — watercolour on paper" loading="lazy" decoding="async" tabindex="0" role="button" aria-label="Open painting full screen">
   </div>
   <div class="about-text">
     <p class="section-label">About me</p>
@@ -642,6 +644,7 @@ footer a:hover{color:var(--sage);}
       <div class="about-sig-circle"></div>
       <p>I don't sign my name — just a circle. Simple, unmistakable, mine.</p>
     </div>
+  </div>
   </div>
 </section>
 
@@ -706,7 +709,7 @@ footer a:hover{color:var(--sage);}
 <section class="specialty-section" aria-label="Specialty work — Japanese hanging scrolls">
   <div class="specialty-inner">
     <div class="specialty-image">
-      <img class="zoomable" src="scroll_detail_bird.jpg" alt="Cherry blossom and bird — detail from Japanese hanging scroll" loading="lazy" decoding="async" tabindex="0" role="button" aria-label="Open scroll detail full screen">
+      <img class="zoomable" src="scroll.png" alt="Japanese hanging scroll — kakejiku format" loading="lazy" decoding="async" tabindex="0" role="button" aria-label="Open scroll image full screen">
     </div>
     <div class="specialty-text">
       <p class="section-label">Specialty work</p>
@@ -1091,7 +1094,7 @@ form.addEventListener('submit', async function(e) {
   const sets = {
     scroll: [
       { src: 'scroll_full.png',          caption: 'The full scroll — hand-painted ink, mounted as a traditional kakejiku with silk brocade and a hanging ribbon.' },
-      { src: 'scroll_rolled.jpg',        caption: 'Rolled and tied — the scroll arrives ready to hang straight from delivery.' },
+      { src: 'scroll.png',               caption: 'Rolled and tied — the scroll arrives ready to hang straight from delivery.' },
       { src: 'scroll_detail_bird.jpg',   caption: 'Close-up: the bird perched among the flowering branches.' },
       { src: 'scroll_detail_flower.jpg', caption: 'Close-up: a single blossom rendered with finely shaded petal detail.' }
     ]
