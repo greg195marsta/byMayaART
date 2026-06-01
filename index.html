@@ -214,7 +214,11 @@ nav ul{align-items:center;}
 .gallery-item.specialty-piece{
   cursor:pointer;
   grid-column:span 3; /* same width as A4, tallness comes from the aspect */
-  aspect-ratio:852 / 1846;
+  aspect-ratio:852 / 1474; /* matches the cropped scroll image (content only, no outer padding) */
+  /* Transparent so the site's jasmin-pattern flows through any letterboxing
+     in the tile, instead of a solid jasmin block contrasting with the textured site bg. */
+  background:transparent;
+  box-shadow:none;
 }
 .gallery-item.specialty-piece img{
   /* Override default img aspect-ratio — tile already enforces the right aspect */
