@@ -187,13 +187,13 @@ nav ul{align-items:center;}
 /* ── GALLERY ─────────────────────────────────────────────────────────────── */
 .gallery-section{padding:7rem 4rem;position:relative;}
 .gallery-header{text-align:center;margin-bottom:3.5rem;}
-/* Gallery sized proportionally to real artwork dimensions. 6-column grid:
-   A5 watercolours span 2 cols (smallest), A4 acrylic spans 3 cols (1.5x A5
-   width — close to the real 1.41x A4:A5 linear ratio), Japanese scroll
-   spans 3 cols at its natural very-portrait aspect (visibly the tallest). */
-.gallery-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:1rem;max-width:700px;margin:0 auto;}
+/* Gallery sized proportionally to real artwork dimensions. 12-column grid:
+   A5 = 4 cols (33%), A4 = 5 cols (42%), A3 = 7 cols (58%).
+   A4:A3 ratio ≈ 1.4, matching the real-world 1.41x linear scaling between
+   A-series sizes. */
+.gallery-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:1rem;max-width:700px;margin:0 auto;}
 .gallery-item{
-  grid-column:span 2; /* default = A5 size */
+  grid-column:span 4; /* default = A5 size */
   position:relative;overflow:hidden;cursor:pointer;
   /* Transparent so the site's jasmin-pattern flows through any letterboxing
      (where the image aspect doesn't perfectly fill the 3:4 tile). Avoids the
@@ -205,8 +205,12 @@ nav ul{align-items:center;}
 .gallery-item img{width:100%;aspect-ratio:3/4;object-fit:contain;object-position:center;display:block;background:transparent;transition:transform .65s ease;}
 .gallery-item:hover img{transform:scale(1.03);}
 .gallery-item.size-a4{
-  grid-column:span 3;
-  align-self:center; /* center vertically when row partner (scroll) is taller */
+  grid-column:span 5;
+  align-self:center; /* center vertically when row partner (A3) is taller */
+}
+.gallery-item.size-a3{
+  grid-column:span 7;
+  align-self:center;
 }
 .gallery-caption{position:absolute;bottom:0;left:0;right:0;padding:1.4rem 1.1rem .9rem;background:linear-gradient(transparent,rgba(28,26,22,.62));color:white;font-family:'Cormorant Garamond',serif;font-size:1rem;font-style:italic;opacity:0;transition:opacity .3s;}
 .gallery-item:hover .gallery-caption{opacity:1;}
@@ -247,11 +251,12 @@ nav ul{align-items:center;}
 }
 .gallery-item.specialty-piece:hover .view-count{opacity:0;}
 
-/* Any image (or wrapper) with this class becomes clickable to open the
-   lightbox full-screen. Cursor + small lift hint at interactivity. */
-.zoomable{cursor:zoom-in;transition:transform .25s ease,filter .25s ease;}
-.zoomable:hover{filter:brightness(1.04);}
-.zoomable:focus-visible{outline:2px solid var(--sage-dark);outline-offset:3px;}
+/* Any image (or wrapper) with this class — or with data-lightbox — becomes
+   clickable to open the lightbox full-screen. Cursor + small lift hint at
+   interactivity. */
+.zoomable,[data-lightbox]{cursor:zoom-in;transition:transform .25s ease,filter .25s ease;}
+.zoomable:hover,[data-lightbox]:hover{filter:brightness(1.04);}
+.zoomable:focus-visible,[data-lightbox]:focus-visible{outline:2px solid var(--sage-dark);outline-offset:3px;}
 
 /* ── LIGHTBOX (multi-photo overlay for specialty pieces) ─────────────────── */
 .lightbox{
@@ -496,8 +501,10 @@ footer a:hover{color:var(--sage);}
   .gallery-grid{grid-template-columns:1fr;gap:1rem;}
   .gallery-item,
   .gallery-item.size-a4,
+  .gallery-item.size-a3,
   .gallery-item.specialty-piece{grid-column:span 1;}
-  .gallery-item.size-a4{align-self:stretch;}
+  .gallery-item.size-a4,
+  .gallery-item.size-a3{align-self:stretch;}
   .specialty-section{padding:3.5rem 1.2rem;}
   .specialty-inner{padding:2rem 1.5rem;grid-template-columns:1fr;gap:1.5rem;}
   .how-section{padding:3rem 1.2rem;}
@@ -655,12 +662,11 @@ footer a:hover{color:var(--sage);}
     <h2 class="section-title">Recent <em>commissions</em></h2>
   </div>
   <div class="gallery-grid">
-    <!-- Gallery tiles are sized proportionally to the real-world dimensions
-         of the artwork: A5 watercolours = 2 cols, A4 acrylic = 3 cols,
-         Japanese scroll = 3 cols at its natural very-tall aspect.
-         Each tile is `.zoomable` so clicking it opens the painting full
-         screen via the shared lightbox; the scroll tile is the exception
-         (it opens the 4-photo carousel via data-lightbox="scroll"). -->
+    <!-- Gallery tiles sized proportionally to real-world artwork dimensions
+         in a 12-col grid: A5 = 4 cols, A4 = 5 cols, A3 = 7 cols. The Japanese
+         scroll lives in its own Specialty Work section below the gallery.
+         Each tile is `.zoomable` so clicking opens the painting full screen
+         via the shared lightbox. -->
     <div class="gallery-item zoomable" tabindex="0" role="button" aria-label="Open Summer bouquet full screen">
       <img src="bouquet_corrected.jpg" alt="Summer bouquet — watercolour on paper · A5" loading="lazy" decoding="async">
       <span class="sold-badge">Sold</span>
@@ -685,13 +691,11 @@ footer a:hover{color:var(--sage);}
       <span class="sold-price">2 000 kr</span>
       <div class="gallery-caption">Sunflowers — acrylic on canvas · A4</div>
     </div>
-    <div class="gallery-item specialty-piece" data-lightbox="scroll" tabindex="0" role="button" aria-label="Open Cherry blossom scroll — 4 photos">
-      <img src="scroll_full.png" alt="Cherry blossom — ink on Japanese scroll" loading="lazy" decoding="async">
+    <div class="gallery-item size-a3 zoomable" tabindex="0" role="button" aria-label="Open Audrey portrait full screen">
+      <img src="audrey_scarf.png" alt="Portrait of Audrey Hepburn in a hooded scarf — pencil on paper · A3" loading="lazy" decoding="async">
       <span class="sold-badge">Sold</span>
-      <span class="specialty-tag">Specialty</span>
-      <span class="sold-price">2 500 kr</span>
-      <span class="view-count">View 4 photos →</span>
-      <div class="gallery-caption">Cherry blossom — ink on Japanese scroll · specialty piece</div>
+      <span class="sold-price">1 400 kr</span>
+      <div class="gallery-caption">Audrey in a scarf — pencil drawing · A3</div>
     </div>
   </div>
   <!-- "See more works" link: today it points to Instagram (which has the full archive).
@@ -708,8 +712,11 @@ footer a:hover{color:var(--sage);}
 <!-- SPECIALTY WORK -->
 <section class="specialty-section" aria-label="Specialty work — Japanese hanging scrolls">
   <div class="specialty-inner">
-    <div class="specialty-image">
-      <img class="zoomable" src="scroll.png" alt="Japanese hanging scroll — kakejiku format" loading="lazy" decoding="async" tabindex="0" role="button" aria-label="Open scroll image full screen">
+    <!-- Clicking opens the 4-photo scroll carousel via the same lightbox
+         the gallery used to host. data-lightbox="scroll" matches the photos
+         array in the script at the bottom of this file. -->
+    <div class="specialty-image" data-lightbox="scroll" tabindex="0" role="button" aria-label="Open the scroll — 4 photos">
+      <img src="scroll.png" alt="Japanese hanging scroll — kakejiku format" loading="lazy" decoding="async">
     </div>
     <div class="specialty-text">
       <p class="section-label">Specialty work</p>
