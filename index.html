@@ -194,32 +194,33 @@ nav ul{align-items:center;}
 /* ── GALLERY ─────────────────────────────────────────────────────────────── */
 .gallery-section{padding:7rem 4rem;position:relative;}
 .gallery-header{text-align:center;margin-bottom:3.5rem;}
-/* Gallery-wall arrangement: pieces of varying real-world sizes hung together
-   on a common horizontal "rail". 12-col grid keeps proportions truthful
-   (A5 = 4, A4 = 5, A3 = 7, specialty scroll = 3 narrow-but-tall), while
-   justify-content:center makes any row with leftover cols hang centred —
-   the way pieces would actually be arranged on a wall, not flushed left. */
-.gallery-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:1.5rem 1.25rem;max-width:880px;margin:0 auto;justify-content:center;align-items:center;}
+/* Gallery-wall arrangement: every piece sized to its true real-world cm so
+   the pieces feel proportionally accurate to each other on the wall. One
+   px-per-cm scale variable rules everything — change --scale to rescale the
+   whole wall at once. Flexbox + flex-wrap + center alignment gives the
+   "hung on a picture rail" feel: when a row has leftover space it centres,
+   and shorter pieces float at the vertical centre of taller neighbours. */
+.gallery-grid{
+  --scale: 11px;           /* 1 real-world cm = 11 screen px */
+  display:flex;flex-wrap:wrap;
+  gap:1.5rem 1.25rem;
+  max-width:920px;margin:0 auto;
+  align-items:center;justify-content:center;
+}
 .gallery-item{
-  grid-column:span 4; /* default = A5 size */
+  /* Default real-world dimensions = A5 watercolour (14.8 x 21 cm) */
+  --w-cm:14.8; --h-cm:21;
+  width:calc(var(--w-cm) * var(--scale));
+  aspect-ratio:var(--w-cm) / var(--h-cm);
   position:relative;overflow:hidden;cursor:pointer;
-  /* Transparent so the site's jasmin-pattern flows through any letterboxing
-     (where the image aspect doesn't perfectly fill the 3:4 tile). Avoids the
-     visible solid-jasmin rectangle that read as "white frame around the image". */
   background:transparent;
   transition:transform .4s;
 }
 .gallery-item:hover{transform:translateY(-3px);}
-.gallery-item img{width:100%;aspect-ratio:3/4;object-fit:contain;object-position:center;display:block;background:transparent;transition:transform .65s ease;}
+.gallery-item img{width:100%;height:100%;object-fit:contain;object-position:center;display:block;background:transparent;transition:transform .65s ease;}
 .gallery-item:hover img{transform:scale(1.03);}
-.gallery-item.size-a4{
-  grid-column:span 5;
-  align-self:center; /* center vertically when row partner (A3) is taller */
-}
-.gallery-item.size-a3{
-  grid-column:span 7;
-  align-self:center;
-}
+.gallery-item.size-a4{ --w-cm:21;   --h-cm:29.7; }
+.gallery-item.size-a3{ --w-cm:29.7; --h-cm:42;   }
 .gallery-caption{position:absolute;bottom:0;left:0;right:0;padding:1.4rem 1.1rem .9rem;background:linear-gradient(transparent,rgba(28,26,22,.62));color:white;font-family:'Cormorant Garamond',serif;font-size:1rem;font-style:italic;opacity:0;transition:opacity .3s;}
 .gallery-item:hover .gallery-caption{opacity:1;}
 .sold-badge{position:absolute;top:.9rem;left:.9rem;background:rgba(28,26,22,.82);color:var(--gold);font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;padding:.32rem .7rem;font-family:'Jost',sans-serif;font-weight:400;}
@@ -229,25 +230,15 @@ nav ul{align-items:center;}
    gold so it harmonises with the brand without competing with the Sold tag. */
 .specialty-tag{position:absolute;top:2.45rem;left:.9rem;background:rgba(90,122,87,0.88);color:#F8F5EE;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;padding:.3rem .65rem;font-family:'Jost',sans-serif;font-weight:400;}
 
-/* Specialty piece = gallery tile that opens a multi-photo lightbox on click.
-   Tile aspect matches the scroll image's natural aspect (852/1846) so the
-   piece fills its tile without letterboxing — and ends up much taller than
-   any other tile, conveying its real-world size. */
+/* Specialty piece = Japanese hanging scroll. Real-world 30 x 80 cm — same
+   width as A3 but nearly twice as tall. Sized by the same --scale variable
+   as everything else so it stays proportionally truthful to the A-series
+   pieces around it. Clicking opens the 4-photo lightbox. */
 .gallery-item.specialty-piece{
+  --w-cm:30; --h-cm:80;
   cursor:pointer;
-  grid-column:span 3; /* narrower than A5 in the 12-col grid; the tile's tallness comes from the aspect-ratio below */
-  align-self:center;
-  aspect-ratio:626 / 1484; /* matches the lossless-cropped scroll image (scroll content bounding box, with transparent corners) */
-  /* Transparent so the site's jasmin-pattern flows through any letterboxing
-     in the tile, instead of a solid jasmin block contrasting with the textured site bg. */
   background:transparent;
   box-shadow:none;
-}
-.gallery-item.specialty-piece img{
-  /* Override default img aspect-ratio — tile already enforces the right aspect */
-  aspect-ratio:auto;
-  height:100%;
-  object-fit:contain;
 }
 .view-count{
   position:absolute;bottom:.9rem;right:.9rem;
@@ -497,6 +488,9 @@ footer a:hover{color:var(--sage);}
 }
 @media(max-width:480px){
   .float-cta{bottom:1rem;right:1rem;padding:.7rem 1.2rem;font-size:.68rem;}
+  /* Tighter cm-to-px scale on phones so the 80 cm scroll doesn't dominate
+     the viewport. Proportions between pieces are still preserved. */
+  .gallery-grid{--scale:5.5px;max-width:380px;}
 }
 
 /* ── RESPONSIVE ──────────────────────────────────────────────────────────── */
@@ -517,13 +511,9 @@ footer a:hover{color:var(--sage);}
   .about{padding:3.5rem 1.2rem;}
   .about-inner{padding:2rem 1.5rem;grid-template-columns:1fr;gap:1.5rem;}
   .gallery-section{padding:4rem 1.2rem;}
-  .gallery-grid{grid-template-columns:1fr;gap:1rem;}
-  .gallery-item,
-  .gallery-item.size-a4,
-  .gallery-item.size-a3,
-  .gallery-item.specialty-piece{grid-column:span 1;}
-  .gallery-item.size-a4,
-  .gallery-item.size-a3{align-self:stretch;}
+  /* On tablet shrink the cm-to-px scale so the wall still fits, keeping all
+     pieces proportionally accurate to each other. */
+  .gallery-grid{--scale:7px;gap:1rem;max-width:560px;}
   .specialty-section{padding:3.5rem 1.2rem;}
   .specialty-inner{padding:0;grid-template-columns:1fr;gap:1.5rem;}
   .specialty-text{padding:1.6rem 1.5rem;}
@@ -682,12 +672,16 @@ footer a:hover{color:var(--sage);}
     <h2 class="section-title">Recent <em>commissions</em></h2>
   </div>
   <div class="gallery-grid">
-    <!-- Gallery-wall arrangement: tiles sized proportionally to real-world
-         dimensions in a 12-col grid. Order is chosen so rows pack cleanly:
-         Row 1 = three A5s (4+4+4),  Row 2 = A4 + A3 (5+7),
-         Row 3 = the hanging scroll on its own (centred), letting the
-         specialty piece read as the unusual one of the set.
-         Each tile is `.zoomable` (single-image lightbox) except the scroll,
+    <!-- Gallery-wall arrangement: every tile is sized to its true real-world
+         dimensions (see --scale in the CSS), so pieces feel correctly
+         proportioned to each other. Order is chosen for wall rhythm rather
+         than packing efficiency:
+           Row 1 = three A5 watercolours + the A4 acrylic — the lighter,
+                   smaller pieces hung together at picture-rail height.
+           Row 2 = the two statement pieces — A3 pencil of Audrey alongside
+                   the 30 x 80 cm hanging scroll, which towers as it would
+                   on a real wall.
+         All tiles are `.zoomable` (single-image lightbox) except the scroll,
          which carries data-lightbox="scroll" for the 4-photo carousel. -->
     <div class="gallery-item zoomable" tabindex="0" role="button" aria-label="Open Summer bouquet full screen">
       <img src="bouquet_corrected.jpg" alt="Summer bouquet — watercolour on paper · A5" loading="lazy" decoding="async">
@@ -695,17 +689,17 @@ footer a:hover{color:var(--sage);}
       <span class="sold-price">1 200 kr</span>
       <div class="gallery-caption">Summer bouquet — watercolour on paper · A5</div>
     </div>
-    <div class="gallery-item zoomable" tabindex="0" role="button" aria-label="Open Penguin portrait full screen">
-      <img src="improvedpenguin.png" alt="Penguin portrait — watercolour · A5" loading="lazy" decoding="async">
-      <span class="sold-badge">Sold</span>
-      <span class="sold-price">1 000 kr</span>
-      <div class="gallery-caption">Penguin portrait — watercolour · A5</div>
-    </div>
     <div class="gallery-item zoomable" tabindex="0" role="button" aria-label="Open Lovebirds full screen">
       <img src="lovebirds_corrected.png" alt="Lovebirds — watercolour · A5" loading="lazy" decoding="async">
       <span class="sold-badge">Sold</span>
       <span class="sold-price">1 000 kr</span>
       <div class="gallery-caption">Lovebirds — watercolour · A5</div>
+    </div>
+    <div class="gallery-item zoomable" tabindex="0" role="button" aria-label="Open Penguin portrait full screen">
+      <img src="improvedpenguin.png" alt="Penguin portrait — watercolour · A5" loading="lazy" decoding="async">
+      <span class="sold-badge">Sold</span>
+      <span class="sold-price">1 000 kr</span>
+      <div class="gallery-caption">Penguin portrait — watercolour · A5</div>
     </div>
     <div class="gallery-item size-a4 zoomable" tabindex="0" role="button" aria-label="Open Sunflowers full screen">
       <img src="improvedwatercolorflowers.png" alt="Sunflowers — acrylic on canvas · A4" loading="lazy" decoding="async">
@@ -719,15 +713,15 @@ footer a:hover{color:var(--sage);}
       <span class="sold-price">1 400 kr</span>
       <div class="gallery-caption">Audrey's scarf — pencil drawing · A3</div>
     </div>
-    <!-- Specialty piece: Japanese hanging scroll. Tile is narrow and tall to
-         reflect the real-world format, and clicking it opens the 4-photo
-         carousel (full / rolled / bird detail / flower detail) — same lightbox
-         the Specialty Work section below also triggers. -->
+    <!-- Specialty piece: Japanese hanging scroll, 30 x 80 cm. The CSS sizes
+         this tile from those real cm dimensions just like the other pieces,
+         so its scale relative to the A-series is truthful. Clicking opens
+         the 4-photo carousel (full / rolled / bird detail / flower detail). -->
     <div class="gallery-item specialty-piece" tabindex="0" role="button" data-lightbox="scroll" aria-label="Open the scroll — 4 photos">
-      <img src="scroll_full.png" alt="Japanese hanging scroll — sumi ink, kakejiku format" loading="lazy" decoding="async">
+      <img src="scroll_full.png" alt="Japanese hanging scroll — sumi ink, 30 x 80 cm kakejiku">
       <span class="sold-badge">Sold</span>
       <span class="specialty-tag">Specialty</span>
-      <div class="gallery-caption">Hand-painted Japanese hanging scroll · kakejiku</div>
+      <div class="gallery-caption">Hand-painted Japanese hanging scroll · 30 × 80 cm</div>
     </div>
   </div>
   <!-- "See more works" link: today it points to Instagram (which has the full archive).
