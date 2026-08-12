@@ -123,10 +123,10 @@ html,body{height:100%;overflow:hidden;background:#F8F5EE;font-family:'Jost',sans
       <h2>The Salon</h2>
       <p>A warm living room — see the art the way it would live in your own home.</p>
     </div>
-    <div class="room-card" data-room="cube">
+    <div class="room-card" data-room="bedroom">
       <span class="tag">Proposal 02</span>
-      <h2>The White Cube</h2>
-      <p>An intimate modern gallery — spotlights, a bench, and nothing but the work.</p>
+      <h2>The Bedroom</h2>
+      <p>Wake up next to the art — a calm king-size room in soft morning light.</p>
     </div>
     <div class="room-card" data-room="atelier">
       <span class="tag">Proposal 03</span>
@@ -140,7 +140,7 @@ html,body{height:100%;overflow:hidden;background:#F8F5EE;font-family:'Jost',sans
 <a id="back-link" class="hud" href="index.html">← by Maya</a>
 <div id="room-switch" class="hud" hidden>
   <button data-room="salon">Salon</button>
-  <button data-room="cube">White Cube</button>
+  <button data-room="bedroom">Bedroom</button>
   <button data-room="atelier">Atelier</button>
 </div>
 <div id="help" class="hud">Drag to look · WASD to walk · click a painting to approach</div>
@@ -460,48 +460,83 @@ function buildSalon(scene) {
   return { bounds:{ x:W/2-0.4, z:D/2-0.4 }, spawn:{ pos:[0, EYE, 1.7], yaw:0 } };
 }
 
-function buildCube(scene) {
-  const W = 4.6, D = 6.0, H = 2.9;
-  scene.background = new THREE.Color(0xF6F3EC);
-  const wallMat = M(0xF8F5EC, 0.95, { map: wallTexture('#F8F5EC') });
-  shell(scene, W, D, H, wallMat, M(0xDAD5C8, 0.85, { map: wallTexture('#DAD5C8') }), M(0xF3F0E7, 0.95));
-  baseboards(scene, W, D, M(0xEBE7DB, 0.9));
+function buildBedroom(scene) {
+  const W = 4.8, D = 5.6, H = 2.6;
+  scene.background = new THREE.Color(0xF2EDE2);
+  const cream = M(0xF4EEE1, 0.95, { map: wallTexture('#F4EEE1') });
+  const sage  = M(0xC2CFB8, 0.95, { map: wallTexture('#C2CFB8') });
+  const floorMat = M(0xB59978, 0.62, { map: woodTexture('#B59978', 'rgba(80,58,36,0.35)')(3, 4) });
+  shell(scene, W, D, H, [sage, cream, cream, cream], floorMat, M(0xF6F1E6, 0.95));
+  baseboards(scene, W, D, M(0xE8E0CE, 0.9));
 
-  /* picture rail — warm dark bronze, slimmer. No shadow casting: a thin
-     rail under a directional light throws a huge diagonal streak. */
-  const railMat = M(0x4A443A, 0.55);
-  [ box(scene, W, 0.028, 0.028, railMat, 0, H-0.28, -D/2+0.025),
-    box(scene, D, 0.028, 0.028, railMat, -W/2+0.025, H-0.28, 0, Math.PI/2),
-    box(scene, D, 0.028, 0.028, railMat, W/2-0.025, H-0.28, 0, -Math.PI/2)
-  ].forEach(r => r.castShadow = false);
+  /* ── king-size bed against the sage wall ── */
+  const oak = M(0x9C7B54, 0.6, { map: canvasTex((g,s)=>{ g.fillStyle='#9C7B54'; g.fillRect(0,0,s,s); grain(g,s,0.08); }) });
+  const linen = M(0xF1EADB, 0.95, { map: fabricTexture('#F1EADB') });
+  const linenDim = M(0xE4DCC8, 0.95, { map: fabricTexture('#E4DCC8') });
+  rbox(scene, 1.96, 0.72, 0.09, 0.03, oak, 0, 0.52, -D/2+0.07);            // headboard
+  rbox(scene, 1.9, 0.24, 2.05, 0.02, oak, 0, 0.17, -D/2+1.12);            // frame
+  rbox(scene, 1.8, 0.24, 1.95, 0.06, linenDim, 0, 0.4, -D/2+1.12);        // mattress
+  rbox(scene, 1.86, 0.16, 1.35, 0.07, linen, 0, 0.5, -D/2+1.48);          // duvet
+  /* sleeping pillows + two accent pillows in house colours */
+  const pil = (w, h, d, mat, px, py, pz, rx = 0, ry = 0) => {
+    const m = rbox(scene, w, h, d, Math.min(h, 0.06), mat, px, py, pz);
+    m.rotation.x = rx; m.rotation.y = ry; return m;
+  };
+  pil(0.72, 0.15, 0.42, linen, -0.47, 0.58, -D/2+0.42, -0.12);
+  pil(0.72, 0.15, 0.42, linen,  0.47, 0.58, -D/2+0.42, -0.12);
+  pil(0.4, 0.38, 0.13, M(0x8E9B85, 0.95, { map: fabricTexture('#8E9B85') }), -0.4, 0.68, -D/2+0.58, -0.25, 0.08);
+  pil(0.4, 0.38, 0.13, M(0xC4973A, 0.95, { map: fabricTexture('#C4973A') }), 0.42, 0.68, -D/2+0.58, -0.25, -0.06);
+  /* folded throw across the bed foot */
+  rbox(scene, 1.82, 0.06, 0.45, 0.025, M(0x7E8B76, 0.95, { map: fabricTexture('#7E8B76') }), 0, 0.55, -D/2+1.92);
 
-  /* central bench — oak slab on tapered legs */
-  const oak = M(0x9A7B5C, 0.55, { map: canvasTex((g,s)=>{ g.fillStyle='#9A7B5C'; g.fillRect(0,0,s,s); grain(g,s,0.08); }) });
-  rbox(scene, 1.35, 0.07, 0.42, 0.025, oak, 0, 0.43, -0.4);
-  [[-0.52, -0.4], [0.52, -0.4]].forEach(([lx, lz]) => {
-    const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.035, 0.4, 12), M(0x2E2A24, 0.55));
-    leg.position.set(lx, 0.2, lz); leg.castShadow = true; leg.receiveShadow = true; scene.add(leg);
+  /* bedside tables + warm lamps */
+  [[-1.28, 1], [1.28, -1]].forEach(([bx]) => {
+    rbox(scene, 0.46, 0.44, 0.4, 0.02, oak, bx, 0.22, -D/2+0.45);
+    cyl(scene, 0.025, 0.035, 0.18, M(0x3A332B, 0.5), bx, 0.53, -D/2+0.45, 10);
+    cyl(scene, 0.09, 0.115, 0.13, M(0xF3E8CF, 0.6), bx, 0.68, -D/2+0.45, 14);
+    const pl = new THREE.PointLight(0xFFDFAE, 1.1, 3.5);
+    pl.position.set(bx, 0.68, -D/2+0.45); scene.add(pl);
   });
 
-  keyLight(scene, 0.6, 2.8, 0.8, 0.6, 0xFFFBF2);
-  scene.add(new THREE.AmbientLight(0xFFFDF6, 0.55));
-  scene.add(new THREE.HemisphereLight(0xFFFEF8, 0xD8D2C2, 0.35));
+  /* rug under the foot of the bed */
+  const rug = rbox(scene, 2.7, 0.014, 1.5, 0.006, M(0xD9CBB4, 0.98, { map: fabricTexture('#D9CBB4') }), 0, 0.008, -D/2+2.6);
+  rug.castShadow = false;
 
-  hang(scene, 'audrey',    0,     1.5, -D/2+0.035, 0, { plaque:true });
-  hang(scene, 'scroll',    W/2-0.035, 1.5, -0.6, -Math.PI/2, { plaque:true });
-  hang(scene, 'sunflowers',-W/2+0.035, 1.5, -1.2, Math.PI/2, { plaque:true });
-  hang(scene, 'bouquet',   -W/2+0.035, 1.5, 0.6, Math.PI/2, { plaque:true });
-  hang(scene, 'lovebirds', -0.5, 1.5, D/2-0.035, Math.PI, { plaque:true });
-  hang(scene, 'penguin',    0.5, 1.5, D/2-0.035, Math.PI, { plaque:true });
+  /* ── sliding-door wardrobe along the left wall ── */
+  const wardrobeBody = M(0xEDE6D6, 0.85, { map: wallTexture('#EDE6D6') });
+  const doorOak = M(0xDCCFB4, 0.55, { map: canvasTex((g,s)=>{ g.fillStyle='#DCCFB4'; g.fillRect(0,0,s,s); grain(g,s,0.06); }) });
+  box(scene, 0.58, 2.2, 2.4, wardrobeBody, -W/2+0.3, 1.1, -0.7);           // carcass
+  /* two sliding panels — one proud of the other, on visible tracks */
+  box(scene, 0.022, 2.06, 1.17, doorOak, -W/2+0.61, 1.08, -1.29);
+  box(scene, 0.022, 2.06, 1.17, doorOak, -W/2+0.645, 1.08, -0.12);
+  box(scene, 0.05, 0.05, 2.42, M(0x8C7A5E, 0.5), -W/2+0.63, 2.19, -0.7);   // top track
+  box(scene, 0.05, 0.04, 2.42, M(0x8C7A5E, 0.5), -W/2+0.63, 0.045, -0.7);  // bottom track
+  /* slim recessed handles */
+  box(scene, 0.012, 0.5, 0.02, M(0x4A443A, 0.5), -W/2+0.635, 1.05, -0.75);
+  box(scene, 0.012, 0.5, 0.02, M(0x4A443A, 0.5), -W/2+0.67, 1.05, -0.66);
 
-  spot(scene, 0, 1.5, -D/2, 0, H-0.15, -D/2+1.3, 6, 0xFFF8EC);
-  spot(scene, W/2, 1.5, -0.6, W/2-1.3, H-0.15, -0.6, 6, 0xFFF8EC);
-  spot(scene, -W/2, 1.5, -1.2, -W/2+1.3, H-0.15, -1.2, 5, 0xFFF8EC);
-  spot(scene, -W/2, 1.5, 0.6, -W/2+1.3, H-0.15, 0.6, 5, 0xFFF8EC);
-  spot(scene, -0.5, 1.5, D/2, -0.5, H-0.15, D/2-1.3, 5, 0xFFF8EC);
-  spot(scene, 0.5, 1.5, D/2, 0.5, H-0.15, D/2-1.3, 5, 0xFFF8EC);
+  /* window on the right wall — morning light source */
+  windowLight(scene, W/2-0.01, 1.5, -0.9, 1.1, 1.4, -Math.PI/2);
+  keyLight(scene, 3.2, 2.3, -0.5, 1.25);
+  scene.add(new THREE.AmbientLight(0xFFF6E6, 0.5));
+  scene.add(new THREE.HemisphereLight(0xFFFBEF, 0xC0AB8C, 0.45));
 
-  return { bounds:{ x:W/2-0.4, z:D/2-0.4 }, spawn:{ pos:[0, EYE, 1.9], yaw:0 } };
+  /* ── art: everything visible from the doorway spawn ──
+     Trio over the headboard, scroll on the left wall beyond the wardrobe,
+     sunflowers + Audrey flanking the window on the right wall. */
+  hang(scene, 'bouquet',  -0.55, 1.78, -D/2+0.035, 0);
+  hang(scene, 'lovebirds', 0,    1.78, -D/2+0.035, 0);
+  hang(scene, 'penguin',   0.55, 1.78, -D/2+0.035, 0);
+  hang(scene, 'scroll',   -W/2+0.035, 1.45, 1.05, Math.PI/2);
+  hang(scene, 'sunflowers', W/2-0.035, 1.52, 0.3, -Math.PI/2);
+  hang(scene, 'audrey',     W/2-0.035, 1.52, 1.25, -Math.PI/2);
+
+  spot(scene, -0.55, 1.78, -D/2, -0.55, H-0.08, -D/2+1.1, 3);
+  spot(scene, 0.55, 1.78, -D/2, 0.55, H-0.08, -D/2+1.1, 3);
+  spot(scene, -W/2, 1.45, 1.05, -W/2+1.1, H-0.08, 1.05, 3.5);
+  spot(scene, W/2, 1.52, 0.8, W/2-1.1, H-0.08, 0.8, 3);
+
+  return { bounds:{ x:W/2-0.4, z:D/2-0.4 }, spawn:{ pos:[0.25, EYE, 2.1], yaw:0 } };
 }
 
 function buildAtelier(scene) {
@@ -557,7 +592,7 @@ function buildAtelier(scene) {
   return { bounds:{ x:W/2-0.4, z:D/2-0.4 }, spawn:{ pos:[1.1, EYE, 2.2], yaw:0.22 } };
 }
 
-const ROOMS = { salon:buildSalon, cube:buildCube, atelier:buildAtelier };
+const ROOMS = { salon:buildSalon, bedroom:buildBedroom, atelier:buildAtelier };
 
 /* ── scene lifecycle ────────────────────────────────────────────────────── */
 let scene = null, bounds = { x:2, z:2 };
@@ -709,7 +744,8 @@ document.querySelectorAll('#room-switch button').forEach(btn => {
   btn.addEventListener('click', () => loadRoom(btn.dataset.room));
 });
 
-const initial = location.hash.replace('#', '');
+let initial = location.hash.replace('#', '');
+if (initial === 'cube') initial = 'bedroom';   // old shared links
 if (ROOMS[initial]) {
   loadRoom(initial);
   intro.classList.add('hidden');
