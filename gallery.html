@@ -148,13 +148,21 @@ html,body{height:100%;overflow:hidden;background:#F8F5EE;font-family:'Jost',sans
 
 <script type="importmap">
 { "imports": {
-  "three": "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js",
-  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.161.0/examples/jsm/"
+  "three": "https://cdn.jsdelivr.net/npm/three@0.166.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.166.0/examples/jsm/"
 } }
 </script>
 <script type="module">
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+import { Reflector } from 'three/addons/objects/Reflector.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { BokehPass } from 'three/addons/postprocessing/BokehPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
 /* ── Works: w/h are true real-world cm (1 world unit = 1 m) ─────────────── */
 const WORKS = {
@@ -181,6 +189,45 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.05, 60);
 camera.rotation.order = 'YXZ';
 const EYE = 1.5;
+
+/* HDRI environment (Poly Haven "lebombo", CC0) — image-based ambient light
+   that gives materials real-world colour richness and soft reflections */
+let envMap = null;
+new RGBELoader().load('textures/env_interior.hdr', hdr => {
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  envMap = pmrem.fromEquirectangular(hdr).texture;
+  hdr.dispose(); pmrem.dispose();
+  if (scene) { scene.environment = envMap; scene.environmentIntensity = 0.4; }
+});
+
+/* post-processing: ambient occlusion + soft bloom + dwell depth-of-field */
+let composer = null, renderPass, gtaoPass, bloomPass, bokehPass;
+function ensureComposer() {
+  if (composer) {
+    renderPass.scene = scene;
+    if (gtaoPass) gtaoPass.scene = scene;
+    if (bokehPass) bokehPass.scene = scene;
+    return;
+  }
+  /* phones skip the heavy passes (AO + depth-of-field) and keep 60fps;
+     desktops get the full pipeline */
+  const lite = window.matchMedia('(pointer: coarse)').matches;
+  composer = new EffectComposer(renderer);
+  renderPass = new RenderPass(scene, camera);
+  composer.addPass(renderPass);
+  if (!lite) {
+    gtaoPass = new GTAOPass(scene, camera, innerWidth, innerHeight);
+    composer.addPass(gtaoPass);
+  }
+  bloomPass = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.16, 0.5, 0.93);
+  composer.addPass(bloomPass);
+  if (!lite) {
+    bokehPass = new BokehPass(scene, camera, { focus: 2.0, aperture: 0.0, maxblur: 0.009 });
+    composer.addPass(bokehPass);
+  }
+  composer.addPass(new OutputPass());
+}
+let apertureNow = 0;
 
 /* texture cache — loaded once, reused across rooms */
 const texLoader = new THREE.TextureLoader();
@@ -498,18 +545,52 @@ function buildBedroom(scene) {
   const rug = rbox(scene, 2.7, 0.014, 1.5, 0.006, fabricMat(0xD9CBB4, 4, 2.5), 0, 0.008, -D/2+2.55);
   rug.castShadow = false;
 
-  /* ── sliding-door wardrobe along the left wall ── */
+  /* ── sliding-door wardrobe, partially open: a mirror door, and a glimpse
+        of dresses hanging inside ── */
   const wardrobeBody = plasterMat(0xEDE6D6, 2, 2);
   const doorOak = plasterMat(0xDCCFB4, 1.5, 2);
-  box(scene, 0.58, 2.2, 2.4, wardrobeBody, -W/2+0.3, 1.1, -0.7);           // carcass
-  /* two sliding panels — one proud of the other, on visible tracks */
-  box(scene, 0.022, 2.06, 1.17, doorOak, -W/2+0.61, 1.08, -1.29);
-  box(scene, 0.022, 2.06, 1.17, doorOak, -W/2+0.645, 1.08, -0.12);
-  box(scene, 0.05, 0.05, 2.42, M(0x8C7A5E, 0.5), -W/2+0.63, 2.19, -0.7);   // top track
-  box(scene, 0.05, 0.04, 2.42, M(0x8C7A5E, 0.5), -W/2+0.63, 0.045, -0.7);  // bottom track
-  /* slim recessed handles */
-  box(scene, 0.012, 0.5, 0.02, M(0x4A443A, 0.5), -W/2+0.635, 1.05, -0.75);
-  box(scene, 0.012, 0.5, 0.02, M(0x4A443A, 0.5), -W/2+0.67, 1.05, -0.66);
+  const innerDark = M(0x453C30, 0.92);
+  /* hollow carcass: back panel + top + plinth + end panels, dark interior */
+  box(scene, 0.03, 2.2, 2.4, innerDark, -W/2+0.05, 1.1, -0.7);             // back (interior)
+  box(scene, 0.6, 0.06, 2.4, wardrobeBody, -W/2+0.3, 2.17, -0.7);          // top
+  box(scene, 0.6, 0.09, 2.4, wardrobeBody, -W/2+0.3, 0.045, -0.7);         // plinth
+  box(scene, 0.58, 2.2, 0.035, wardrobeBody, -W/2+0.3, 1.1, -1.9);         // end panels
+  box(scene, 0.58, 2.2, 0.035, wardrobeBody, -W/2+0.3, 1.1, 0.5);
+  /* hanging rod along the interior */
+  const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 2.3, 10), M(0xB9B0A2, 0.35, { metalness:0.6 }));
+  rod.rotation.x = Math.PI/2; rod.position.set(-W/2+0.3, 1.78, -0.7);
+  rod.castShadow = true; scene.add(rod);
+  /* dresses: lathe silhouettes in the house palette, hanging in the open
+     section (and one half-hidden behind the door) */
+  const dressProfile = [[0.15,0],[0.13,0.06],[0.06,0.38],[0.075,0.55],[0.05,0.62],[0.018,0.66]]
+    .map(([r,y]) => new THREE.Vector2(r, y));
+  [[0.08, 0xC99A8D], [0.24, 0x9BA88F], [0.4, 0xEADFC8], [-0.28, 0xBB8468]].forEach(([dz, tint], i) => {
+    const dress = new THREE.Mesh(new THREE.LatheGeometry(dressProfile, 14), fabricMat(tint, 1.5, 1.5));
+    dress.scale.set(0.9, 0.95, 0.62);                       // slightly flattened
+    dress.position.set(-W/2+0.3, 1.12, -0.7 + dz);
+    dress.rotation.y = (i % 2 ? 0.35 : -0.3);
+    dress.castShadow = true; scene.add(dress);
+    const hanger = new THREE.Mesh(new THREE.CylinderGeometry(0.005, 0.005, 0.14, 6), M(0x8C8478, 0.4, { metalness:0.5 }));
+    hanger.position.set(-W/2+0.3, 1.72, -0.7 + dz);
+    scene.add(hanger);
+  });
+  /* mirror sliding door (front position on the track) */
+  const mirror = new Reflector(new THREE.PlaneGeometry(1.16, 2.02), {
+    clipBias: 0.003, textureWidth: 1024, textureHeight: 1024, color: 0xB8C0C0
+  });
+  mirror.position.set(-W/2+0.615, 1.09, -1.31);
+  mirror.rotation.y = Math.PI/2;
+  scene.add(mirror);
+  const mirrorFrame = M(0x4A443A, 0.5);
+  [[-1.9], [-0.72]].forEach(([fz]) => box(scene, 0.03, 2.04, 0.025, mirrorFrame, -W/2+0.61, 1.09, fz));
+  box(scene, 0.03, 0.025, 1.2, mirrorFrame, -W/2+0.61, 2.11, -1.31);
+  box(scene, 0.03, 0.025, 1.2, mirrorFrame, -W/2+0.61, 0.075, -1.31);
+  /* second door, slid partly behind the mirror — leaves the dresses showing */
+  box(scene, 0.022, 2.02, 1.16, doorOak, -W/2+0.655, 1.09, -0.55);
+  /* tracks + handles */
+  box(scene, 0.06, 0.05, 2.42, M(0x8C7A5E, 0.5), -W/2+0.63, 2.19, -0.7);
+  box(scene, 0.06, 0.04, 2.42, M(0x8C7A5E, 0.5), -W/2+0.63, 0.05, -0.7);
+  box(scene, 0.012, 0.5, 0.02, M(0x4A443A, 0.5), -W/2+0.68, 1.05, -0.02);
 
   /* window on the right wall — morning light source */
   windowLight(scene, W/2-0.01, 1.5, -0.9, 1.1, 1.4, -Math.PI/2);
@@ -599,6 +680,8 @@ function loadRoom(name) {
   hidePanel();
   scene = new THREE.Scene();
   const info = ROOMS[name](scene);
+  if (envMap) { scene.environment = envMap; scene.environmentIntensity = 0.4; }
+  ensureComposer();
   bounds = info.bounds;
   startTour(info.spawn);
   document.querySelectorAll('#room-switch button').forEach(b => b.classList.toggle('active', b.dataset.room === name));
@@ -608,13 +691,13 @@ function loadRoom(name) {
 /* ── painting info panel ────────────────────────────────────────────────── */
 const panel = document.getElementById('art-panel');
 let panelAnchor = null;      // world position the panel belongs to
-function showPanel(key, worldPos) {
-  const def = WORKS[key];
-  panel.querySelector('.p-title').textContent = def.title;
-  panel.querySelector('.p-meta').textContent = def.meta;
-  panel.querySelector('.p-status').textContent = def.status;
+function showPanel(stop) {
+  const d = stop.card || WORKS[stop.key];
+  panel.querySelector('.p-title').textContent = d.title;
+  panel.querySelector('.p-meta').textContent = d.meta;
+  panel.querySelector('.p-status').textContent = d.status;
   panel.classList.add('visible');
-  panelAnchor = worldPos.clone();
+  panelAnchor = stop.look.clone();
 }
 function hidePanel() { panel.classList.remove('visible'); panelAnchor = null; }
 document.getElementById('panel-close').addEventListener('click', hidePanel);
@@ -649,14 +732,37 @@ function beginSegment(toPos, toLook, dur, phase) {
   setPhase(phase, dur);
 }
 function startTour(spawn) {
-  tourStops = paintings.map(stopForPainting);
+  let stops = paintings.map(stopForPainting);
+  /* the three A5s hang as a set — the tour treats them as one stop framed
+     so all three are clearly in view */
+  const trioKeys = ['bouquet', 'lovebirds', 'penguin'];
+  const members = stops.filter(s => trioKeys.includes(s.key));
+  if (members.length === 3) {
+    const avgLook = new THREE.Vector3();
+    members.forEach(m => avgLook.add(m.look));
+    avgLook.multiplyScalar(1/3);
+    const mid = stops.find(s => s.key === 'lovebirds') || members[1];
+    const dir = mid.pos.clone().sub(mid.look); dir.y = 0; dir.normalize();
+    const pos = avgLook.clone().addScaledVector(dir, 1.35);
+    pos.y = EYE;
+    pos.x = Math.max(-bounds.x, Math.min(bounds.x, pos.x));
+    pos.z = Math.max(-bounds.z, Math.min(bounds.z, pos.z));
+    const groupStop = {
+      keys: trioKeys, pos, look: avgLook,
+      card: { title:'The watercolour trio', meta:'Three A5 originals · watercolour', status:'Sold as individual pieces' }
+    };
+    const firstIdx = stops.findIndex(s => trioKeys.includes(s.key));
+    stops = stops.filter(s => !trioKeys.includes(s.key));
+    stops.splice(firstIdx, 0, groupStop);
+  }
+  tourStops = stops;
   tourIndex = 0;
   overviewPose.pos.set(...spawn.pos);
   const dir = new THREE.Vector3(-Math.sin(spawn.yaw), -0.04, -Math.cos(spawn.yaw));
   overviewPose.look.copy(overviewPose.pos).addScaledVector(dir, 3);
   camera.position.copy(overviewPose.pos);
   camLook.copy(overviewPose.look);
-  setPhase('hold', 2.0);
+  setPhase('hold', 1.2);
 }
 
 /* tap a painting → tour visits it next */
@@ -668,12 +774,13 @@ canvas.addEventListener('pointerup', e => {
   raycaster.setFromCamera(new THREE.Vector2(e.clientX/innerWidth*2-1, -(e.clientY/innerHeight)*2+1), camera);
   const hit = raycaster.intersectObjects(paintings)[0];
   if (!hit) return;
-  const idx = tourStops.findIndex(s => s.key === hit.object.userData.key);
+  const k = hit.object.userData.key;
+  const idx = tourStops.findIndex(s => s.key === k || (s.keys && s.keys.includes(k)));
   if (idx < 0) return;
   hidePanel();
   tourIndex = idx;
   const st = tourStops[idx];
-  beginSegment(st.pos, st.look, 2.2, 'approach');
+  beginSegment(st.pos, st.look, 1.7, 'approach');
 });
 
 /* ── frame loop ─────────────────────────────────────────────────────────── */
@@ -691,22 +798,22 @@ function animate() {
     if (tourT >= phaseDur) {
       if (tourPhase === 'approach') {
         const st = tourStops[tourIndex];
-        showPanel(st.key, st.look);
-        setPhase('dwell', 4.6);
+        showPanel(st);
+        setPhase('dwell', 3.9);
       } else {
         tourIndex = (tourIndex + 1) % tourStops.length;
-        setPhase('hold', 1.4);
+        setPhase('hold', 0.5);
       }
     }
   } else if (tourPhase === 'dwell') {
     if (tourT >= phaseDur) {
       hidePanel();
-      beginSegment(overviewPose.pos, overviewPose.look, 2.4, 'retreat');
+      beginSegment(overviewPose.pos, overviewPose.look, 1.5, 'retreat');
     }
   } else { /* hold at overview */
     if (tourT >= phaseDur && tourStops.length) {
       const st = tourStops[tourIndex];
-      beginSegment(st.pos, st.look, 3.0, 'approach');
+      beginSegment(st.pos, st.look, 2.0, 'approach');
     }
   }
 
@@ -715,12 +822,25 @@ function animate() {
   lookTmp.copy(camLook);
   if (still) lookTmp.y += Math.sin(clock.elapsedTime * 0.5) * 0.008;
   camera.lookAt(lookTmp);
-  renderer.render(scene, camera);
+
+  /* dwell depth-of-field: focus on the artwork, melt the room behind it */
+  if (composer) {
+    if (bokehPass) {
+      const targetAperture = tourPhase === 'dwell' ? 0.00028 : 0;
+      apertureNow += (targetAperture - apertureNow) * Math.min(1, dt * 2.5);
+      bokehPass.uniforms['aperture'].value = apertureNow;
+      bokehPass.uniforms['focus'].value = camera.position.distanceTo(camLook);
+    }
+    composer.render();
+  } else {
+    renderer.render(scene, camera);
+  }
 }
 
 addEventListener('resize', () => {
   camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
   renderer.setSize(innerWidth, innerHeight);
+  if (composer) composer.setSize(innerWidth, innerHeight);
 });
 
 /* ── UI wiring ──────────────────────────────────────────────────────────── */
