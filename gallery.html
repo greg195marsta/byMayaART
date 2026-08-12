@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>by Maya — Step inside the gallery</title>
+<meta name="description" content="Walk through a virtual gallery of Maya's hand-painted originals — every piece hung at its true real-world size.">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23F8F5EE'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%235A7A57' stroke-width='2'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;background:#F8F5EE;font-family:'Jost',sans-serif;}
+#scene{position:fixed;inset:0;display:block;touch-action:none;cursor:grab;}
+#scene.dragging{cursor:grabbing;}
+
+/* Intro overlay */
+#intro{
+  position:fixed;inset:0;z-index:20;
+  background:rgba(248,245,238,0.96);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:2rem;gap:1.1rem;
+  transition:opacity .6s ease;
+}
+#intro.hidden{opacity:0;pointer-events:none;}
+#intro .mark{width:44px;height:44px;border-radius:50%;border:2.5px solid #5A7A57;}
+#intro h1{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(1.9rem,4.5vw,2.8rem);color:#1C1A16;line-height:1.2;}
+#intro h1 em{font-style:italic;color:#5A7A57;}
+#intro p{font-size:.9rem;color:rgba(28,26,22,0.58);max-width:44ch;line-height:1.8;}
+#intro .hint{font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(28,26,22,0.4);}
+#enter-btn{
+  margin-top:.6rem;padding:.95rem 2.6rem;background:#5A7A57;color:#fff;border:none;
+  font-family:'Jost',sans-serif;font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;
+  cursor:pointer;border-radius:1px;transition:background .25s;
+}
+#enter-btn:hover{background:#1C1A16;}
+
+/* HUD */
+.hud{position:fixed;z-index:10;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;}
+#back-link{
+  top:1rem;left:1rem;display:inline-flex;align-items:center;gap:.5rem;
+  padding:.6rem 1.1rem;background:rgba(248,245,238,0.9);color:#1C1A16;text-decoration:none;
+  border:1px solid rgba(90,122,87,0.3);border-radius:999px;transition:background .2s;
+}
+#back-link:hover{background:#fff;}
+#caption{
+  bottom:4.6rem;left:50%;transform:translateX(-50%);
+  max-width:min(90vw,540px);padding:.7rem 1.4rem;text-align:center;
+  background:rgba(28,26,22,0.82);color:rgba(248,245,238,0.92);
+  font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.02rem;
+  letter-spacing:.02em;text-transform:none;border-radius:2px;
+  opacity:0;transition:opacity .3s;pointer-events:none;
+}
+#caption.visible{opacity:1;}
+#help{
+  bottom:1rem;left:50%;transform:translateX(-50%);
+  color:rgba(28,26,22,0.45);background:rgba(248,245,238,0.75);
+  padding:.45rem 1rem;border-radius:999px;white-space:nowrap;
+}
+/* Mobile walk button */
+#walk-btn{
+  position:fixed;bottom:4.6rem;right:1.2rem;z-index:10;
+  width:64px;height:64px;border-radius:50%;border:2px solid rgba(90,122,87,0.7);
+  background:rgba(248,245,238,0.85);color:#5A7A57;font-size:1.5rem;
+  display:none;align-items:center;justify-content:center;user-select:none;
+  -webkit-user-select:none;touch-action:none;
+}
+@media (pointer:coarse){
+  #walk-btn{display:flex;}
+  #help{display:none;}
+  #caption{bottom:1rem;}
+}
+#fallback{
+  position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;
+  background:#F8F5EE;color:#1C1A16;text-align:center;padding:2rem;
+  font-size:.95rem;line-height:1.8;
+}
+</style>
+</head>
+<body>
+
+<canvas id="scene"></canvas>
+
+<div id="intro">
+  <div class="mark"></div>
+  <h1>Step inside <em>the gallery</em></h1>
+  <p>Every painting in this room hangs at its true real-world size — walk up close, exactly as you would in a gallery.</p>
+  <p class="hint">Drag to look around · W A S D or arrow keys to walk · click a painting to approach it</p>
+  <button id="enter-btn">Enter the gallery</button>
+</div>
+
+<a id="back-link" class="hud" href="index.html">← by Maya</a>
+<div id="caption" class="hud"></div>
+<div id="help" class="hud">Drag to look · WASD to walk · click a painting to approach</div>
+<div id="walk-btn" aria-label="Hold to walk forward">▲</div>
+<div id="fallback">Your browser could not start the 3D gallery.<br>You can still see every piece on the <a href="index.html#gallery">main gallery page</a>.</div>
+
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+
+/* ── The works. w/h are true real-world cm — the same truth-in-scale rule
+     as the main page's gallery wall. 1 world unit = 1 metre. ────────────── */
+const WORKS = [
+  { src:'audrey_scarf.png',              w:29.7, h:42, title:"Audrey's scarf — pencil on paper · A3",            wall:'back',  offset:-1.3 },
+  { src:'scroll_full.png',               w:30,   h:80, title:'Japanese hanging scroll · 30 × 80 cm',             wall:'back',  offset: 1.3, noBacking:true },
+  { src:'bouquet_corrected.jpg',         w:14.8, h:21, title:'Summer bouquet — watercolour · A5',                wall:'left',  offset:-1.6 },
+  { src:'lovebirds_corrected.png',       w:14.8, h:21, title:'Lovebirds — watercolour · A5',                     wall:'left',  offset: 1.6 },
+  { src:'improvedwatercolorflowers.png', w:21,   h:29.7,title:'Sunflowers — acrylic on canvas · A4',             wall:'right', offset:-1.6 },
+  { src:'improvedpenguin.png',           w:14.8, h:21, title:'Penguin portrait — watercolour · A5',              wall:'right', offset: 1.6 }
+];
+
+/* Room dimensions (metres) */
+const ROOM = { w: 9, d: 12, h: 3.2 };
+const EYE = 1.5;             // gallery-standard hanging centre & eye height
+const BOUND = { x: ROOM.w/2 - 0.4, z: ROOM.d/2 - 0.4 };
+
+const canvas = document.getElementById('scene');
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({ canvas, antialias:true });
+} catch (e) {
+  document.getElementById('fallback').style.display = 'flex';
+  throw e;
+}
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xF4F0E6);
+
+const camera = new THREE.PerspectiveCamera(62, innerWidth/innerHeight, 0.05, 60);
+camera.position.set(0, EYE, ROOM.d/2 - 1);
+camera.rotation.order = 'YXZ';
+
+/* ── Room shell ─────────────────────────────────────────────────────────── */
+const ivory = new THREE.MeshStandardMaterial({ color:0xF6F2E9, roughness:0.94 });
+const ivoryDeep = new THREE.MeshStandardMaterial({ color:0xEFEAE0, roughness:0.94 });
+const wood = new THREE.MeshStandardMaterial({ color:0x9A7B5C, roughness:0.72, metalness:0.05 });
+
+function plane(w, h, mat){ return new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat); }
+
+const floor = plane(ROOM.w, ROOM.d, wood);
+floor.rotation.x = -Math.PI/2; scene.add(floor);
+/* subtle floor boards: thin darker strips */
+for (let x = -ROOM.w/2 + 0.6; x < ROOM.w/2; x += 0.6) {
+  const strip = plane(0.012, ROOM.d, new THREE.MeshStandardMaterial({ color:0x7E6248, roughness:0.8 }));
+  strip.rotation.x = -Math.PI/2; strip.position.set(x, 0.001, 0); scene.add(strip);
+}
+const ceiling = plane(ROOM.w, ROOM.d, ivoryDeep);
+ceiling.rotation.x = Math.PI/2; ceiling.position.y = ROOM.h; scene.add(ceiling);
+
+const walls = {
+  back:  { mesh: plane(ROOM.w, ROOM.h, ivory), pos:[0, ROOM.h/2, -ROOM.d/2], rotY: 0 },
+  front: { mesh: plane(ROOM.w, ROOM.h, ivory), pos:[0, ROOM.h/2,  ROOM.d/2], rotY: Math.PI },
+  left:  { mesh: plane(ROOM.d, ROOM.h, ivory), pos:[-ROOM.w/2, ROOM.h/2, 0], rotY: Math.PI/2 },
+  right: { mesh: plane(ROOM.d, ROOM.h, ivory), pos:[ ROOM.w/2, ROOM.h/2, 0], rotY:-Math.PI/2 }
+};
+for (const k in walls){ const w = walls[k]; w.mesh.position.set(...w.pos); w.mesh.rotation.y = w.rotY; scene.add(w.mesh); }
+
+/* baseboards */
+const baseMat = new THREE.MeshStandardMaterial({ color:0xE6E0D2, roughness:0.9 });
+[['back',ROOM.w,0,-ROOM.d/2,0],['front',ROOM.w,0,ROOM.d/2,Math.PI],['left',ROOM.d,-ROOM.w/2,0,Math.PI/2],['right',ROOM.d,ROOM.w/2,0,-Math.PI/2]].forEach(([_,len,x,z,rotY])=>{
+  const b = new THREE.Mesh(new THREE.BoxGeometry(len, 0.12, 0.02), baseMat);
+  b.position.set(x, 0.06, z); b.rotation.y = rotY;
+  b.translateZ(0.011); scene.add(b);
+});
+
+/* ── Lighting: soft daylight + a warm spot per painting ─────────────────── */
+scene.add(new THREE.AmbientLight(0xFFF6E8, 0.55));
+const hemi = new THREE.HemisphereLight(0xFFFBF0, 0xB09877, 0.5); scene.add(hemi);
+
+/* ── Hang the paintings ─────────────────────────────────────────────────── */
+const texLoader = new THREE.TextureLoader();
+const paintings = [];   // meshes for raycasting
+
+function makePlaque(title){
+  const c = document.createElement('canvas'); c.width = 512; c.height = 170;
+  const g = c.getContext('2d');
+  g.fillStyle = '#FDFBF6'; g.fillRect(0,0,512,170);
+  g.strokeStyle = 'rgba(90,122,87,0.5)'; g.lineWidth = 3; g.strokeRect(6,6,500,158);
+  g.fillStyle = '#1C1A16'; g.textAlign = 'center';
+  const dash = title.lastIndexOf('—');
+  const name = dash > 0 ? title.slice(0, dash).trim() : title;
+  const detail = dash > 0 ? title.slice(dash+1).trim() : '';
+  g.font = 'italic 44px "Cormorant Garamond", serif';
+  g.fillText(name, 256, 76, 470);
+  g.font = '28px Jost, sans-serif'; g.fillStyle = 'rgba(28,26,22,0.55)';
+  g.fillText(detail, 256, 126, 470);
+  const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace;
+  return new THREE.Mesh(new THREE.PlaneGeometry(0.21, 0.07),
+    new THREE.MeshStandardMaterial({ map:tex, roughness:0.85 }));
+}
+
+WORKS.forEach(workDef => {
+  const { wall, offset } = workDef;
+  const w = workDef.w/100, h = workDef.h/100;
+  const group = new THREE.Group();
+
+  if (!workDef.noBacking) {
+    const backing = new THREE.Mesh(
+      new THREE.BoxGeometry(w + 0.06, h + 0.06, 0.025),
+      new THREE.MeshStandardMaterial({ color:0x3A332B, roughness:0.6 }));
+    backing.position.z = -0.014;
+    group.add(backing);
+  }
+
+  const tex = texLoader.load(workDef.src);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  const art = new THREE.Mesh(new THREE.PlaneGeometry(w, h),
+    new THREE.MeshStandardMaterial({ map:tex, transparent:true, roughness:0.85 }));
+  art.userData = workDef;
+  group.add(art);
+  paintings.push(art);
+
+  const plaque = makePlaque(workDef.title);
+  plaque.position.set(w/2 + 0.18, -h/2 + 0.1, 0);
+  group.add(plaque);
+
+  /* position the group on its wall */
+  const gap = 0.035; // off the wall
+  if (wall === 'back')  { group.position.set(offset, EYE, -ROOM.d/2 + gap); }
+  if (wall === 'left')  { group.position.set(-ROOM.w/2 + gap, EYE, offset); group.rotation.y =  Math.PI/2; }
+  if (wall === 'right') { group.position.set( ROOM.w/2 - gap, EYE, offset); group.rotation.y = -Math.PI/2; }
+  scene.add(group);
+
+  /* warm spotlight per painting */
+  const spot = new THREE.SpotLight(0xFFF2DC, 6, 8, 0.5, 0.55, 1.2);
+  const wp = new THREE.Vector3(); group.getWorldPosition(wp);
+  const normal = new THREE.Vector3(0,0,1).applyQuaternion(group.quaternion);
+  spot.position.copy(wp).add(normal.clone().multiplyScalar(1.4)).setY(ROOM.h - 0.15);
+  spot.target.position.copy(wp);
+  scene.add(spot, spot.target);
+});
+
+/* ── Controls: drag to look, WASD to walk, click painting to approach ───── */
+let yaw = Math.PI, pitch = 0;           // start facing -z (into the room)
+yaw = 0; // camera at +z looking towards -z is default orientation
+const keys = {};
+addEventListener('keydown', e => { keys[e.key.toLowerCase()] = true; });
+addEventListener('keyup',   e => { keys[e.key.toLowerCase()] = false; });
+
+let dragging = false, lastX = 0, lastY = 0, downX = 0, downY = 0;
+const onDown = (x, y) => { dragging = true; lastX = downX = x; lastY = downY = y; canvas.classList.add('dragging'); };
+const onMove = (x, y) => {
+  if (!dragging) return;
+  yaw   -= (x - lastX) * 0.0032;
+  pitch -= (y - lastY) * 0.0032;
+  pitch = Math.max(-1.2, Math.min(1.2, pitch));
+  lastX = x; lastY = y;
+};
+const onUp = (x, y) => {
+  const wasTap = Math.hypot(x - downX, y - downY) < 6;
+  dragging = false; canvas.classList.remove('dragging');
+  if (wasTap) tryApproach(x, y);
+};
+canvas.addEventListener('mousedown', e => onDown(e.clientX, e.clientY));
+addEventListener('mousemove', e => onMove(e.clientX, e.clientY));
+addEventListener('mouseup',   e => onUp(e.clientX, e.clientY));
+canvas.addEventListener('touchstart', e => { const t = e.touches[0]; onDown(t.clientX, t.clientY); }, { passive:true });
+canvas.addEventListener('touchmove',  e => { const t = e.touches[0]; onMove(t.clientX, t.clientY); }, { passive:true });
+canvas.addEventListener('touchend',   e => { const t = e.changedTouches[0]; onUp(t.clientX, t.clientY); });
+
+/* mobile hold-to-walk */
+let walkHeld = false;
+const walkBtn = document.getElementById('walk-btn');
+['touchstart','mousedown'].forEach(ev => walkBtn.addEventListener(ev, e => { e.preventDefault(); walkHeld = true; }));
+['touchend','touchcancel','mouseup','mouseleave'].forEach(ev => walkBtn.addEventListener(ev, () => { walkHeld = false; }));
+
+/* click/tap a painting → glide to a comfortable viewing distance */
+const raycaster = new THREE.Raycaster();
+const captionEl = document.getElementById('caption');
+let glide = null;
+
+function tryApproach(x, y){
+  raycaster.setFromCamera(new THREE.Vector2(x/innerWidth*2-1, -(y/innerHeight)*2+1), camera);
+  const hit = raycaster.intersectObjects(paintings)[0];
+  if (!hit) return;
+  const def = hit.object.userData;
+  const wp = new THREE.Vector3(); hit.object.getWorldPosition(wp);
+  const normal = new THREE.Vector3(0,0,1).applyQuaternion(hit.object.parent.quaternion);
+  const dist = Math.max(0.85, (def.h/100) * 2.1);
+  const dest = wp.clone().add(normal.multiplyScalar(dist)); dest.y = EYE;
+  glide = { from: camera.position.clone(), to: dest, look: wp, t: 0 };
+  captionEl.textContent = def.title;
+  captionEl.classList.add('visible');
+  clearTimeout(captionEl._hide);
+  captionEl._hide = setTimeout(() => captionEl.classList.remove('visible'), 4200);
+}
+
+/* ── Frame loop ─────────────────────────────────────────────────────────── */
+const clock = new THREE.Clock();
+function animate(){
+  requestAnimationFrame(animate);
+  const dt = Math.min(clock.getDelta(), 0.05);
+
+  if (glide) {
+    glide.t += dt / 1.15;
+    const k = glide.t >= 1 ? 1 : 1 - Math.pow(1 - glide.t, 3); // ease-out cubic
+    camera.position.lerpVectors(glide.from, glide.to, k);
+    /* turn smoothly to face the painting */
+    const dir = glide.look.clone().sub(camera.position);
+    const targetYaw = Math.atan2(-dir.x, -dir.z);
+    const targetPitch = Math.atan2(dir.y, Math.hypot(dir.x, dir.z));
+    yaw += (targetYaw - yaw) * Math.min(1, k * 1.5);
+    pitch += (targetPitch - pitch) * Math.min(1, k * 1.5);
+    if (glide.t >= 1) glide = null;
+  } else {
+    const speed = 2.1 * dt;
+    const fwd = new THREE.Vector3(-Math.sin(yaw), 0, -Math.cos(yaw));
+    const side = new THREE.Vector3(-fwd.z, 0, fwd.x);
+    if (keys['w'] || keys['arrowup']    || walkHeld) camera.position.addScaledVector(fwd,  speed);
+    if (keys['s'] || keys['arrowdown'])  camera.position.addScaledVector(fwd, -speed);
+    if (keys['a'] || keys['arrowleft'])  camera.position.addScaledVector(side, -speed);
+    if (keys['d'] || keys['arrowright']) camera.position.addScaledVector(side,  speed);
+    camera.position.x = Math.max(-BOUND.x, Math.min(BOUND.x, camera.position.x));
+    camera.position.z = Math.max(-BOUND.z, Math.min(BOUND.z, camera.position.z));
+    camera.position.y = EYE;
+  }
+
+  camera.rotation.set(pitch, yaw, 0);
+  renderer.render(scene, camera);
+}
+
+addEventListener('resize', () => {
+  camera.aspect = innerWidth/innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+
+document.getElementById('enter-btn').addEventListener('click', () => {
+  document.getElementById('intro').classList.add('hidden');
+});
+
+animate();
+</script>
+</body>
+</html>

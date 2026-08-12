@@ -451,7 +451,7 @@ footer a:hover{color:var(--sage);}
 .specialty-text .btn-outline{margin-top:.8rem;}
 
 /* ── GALLERY FOOTER (see-more link) ──────────────────────────────────────── */
-.gallery-footer{text-align:center;margin-top:3rem;}
+.gallery-footer{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;margin-top:3rem;}
 .gallery-footer a{
   display:inline-flex;align-items:center;gap:.6rem;
   padding:.85rem 2.2rem;
@@ -464,31 +464,12 @@ footer a:hover{color:var(--sage);}
 .gallery-footer a:hover{background:var(--sage-dark);color:#fff;}
 .gallery-footer a svg{width:14px;height:14px;fill:currentColor;flex-shrink:0;}
 
-/* ── VIDEO PoC (branch video-poc) ────────────────────────────────────────
-   Proof-of-concept additions: the scroll-scrubbed "come to life" section
-   and the process-film cards. Sources are low-res phone exports for now —
-   swap for original-quality files before this ever merges to main.
-   Restore the pre-video design any time: git checkout pre-video-poc -- index.html */
-
-/* Scroll-scrub: a tall track (320vh) with a sticky full-viewport stage.
-   Scroll progress through the track maps to video time via JS. */
-.scrub-section{position:relative;}
-.scrub-track{height:320vh;}
-.scrub-sticky{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.4rem;background:rgba(28,26,22,0.93);padding:5.5rem 1.5rem 2rem;}
-.scrub-header{text-align:center;}
-.scrub-header .section-label{color:rgba(139,168,136,0.9);margin-bottom:.5rem;}
-.scrub-header .section-title{color:#fff;margin-bottom:0;}
-.scrub-header .section-title em{color:var(--gold);}
-.scrub-frame{position:relative;height:min(60vh,540px);aspect-ratio:320/568;box-shadow:0 18px 50px rgba(0,0,0,0.55),0 0 0 1px rgba(139,168,136,0.35);}
-.scrub-frame video{width:100%;height:100%;object-fit:cover;display:block;}
-.scrub-caption{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.08rem;color:rgba(248,245,238,0.88);min-height:1.6em;text-align:center;margin:0;}
-.scrub-hint{font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(248,245,238,0.4);margin:0;}
-@media (prefers-reduced-motion: reduce){
-  .scrub-track{height:auto;}
-  .scrub-sticky{position:static;height:auto;min-height:100vh;}
-}
-
-/* Process-film cards: three portrait films, tap to play with sound. */
+/* ── PROCESS FILMS ───────────────────────────────────────────────────────
+   Three portrait timelapse films, tap to play with sound. Sources are
+   low-res phone exports for now — swap for original-quality files when
+   Maya provides them. (A scroll-scrubbed variant was tried and rejected:
+   the compressed 320px source made scrubbing look poor. Revisit only
+   with original-quality footage — the encode recipe is in git history.) */
 .film-section{padding:6rem 5rem;position:relative;}
 .film-inner{max-width:1050px;margin:0 auto;background:rgba(255,255,255,0.82);padding:4rem;border:1px solid rgba(90,122,87,0.15);}
 .film-header{text-align:center;margin-bottom:3rem;}
@@ -576,7 +557,6 @@ footer a:hover{color:var(--sage);}
   .film-section{padding:3.5rem 1.2rem;}
   .film-inner{padding:2rem 1.2rem;}
   .film-grid{grid-template-columns:1fr;max-width:280px;}
-  .scrub-frame{height:min(56vh,480px);}
   .form-grid{grid-template-columns:1fr;}
   .form-group.full{grid-column:span 1;}
   .lightbox{padding:1rem;}
@@ -624,7 +604,7 @@ footer a:hover{color:var(--sage);}
   <a href="#" class="nav-logo" aria-label="by Maya — home">by <span>Maya</span></a>
   <ul>
     <li><a href="#gallery">Gallery</a></li>
-    <li><a href="#come-to-life">Process</a></li>
+    <li><a href="#film">Process</a></li>
     <li><a href="#about">About</a></li>
     <li><a href="#why">Ideas</a></li>
     <li><a href="#order">Commission</a></li>
@@ -650,7 +630,7 @@ footer a:hover{color:var(--sage);}
     <div class="hero-buttons">
       <a href="#order" class="btn-primary">Commission a piece</a>
       <a href="#gallery" class="btn-outline">View gallery</a>
-      <a href="#come-to-life" class="btn-outline">Watch the process</a>
+      <a href="#film" class="btn-outline">Watch the process</a>
     </div>
   </div>
   <div class="hero-garden">
@@ -704,23 +684,6 @@ footer a:hover{color:var(--sage);}
       <p>I don't sign my name — just a circle. Simple, unmistakable, mine.</p>
     </div>
   </div>
-  </div>
-</section>
-
-<!-- WATCH IT COME TO LIFE — scroll-scrubbed timelapse (video PoC) -->
-<section class="scrub-section" id="come-to-life" aria-label="Watch a painting come to life">
-  <div class="scrub-track" id="scrub-track">
-    <div class="scrub-sticky">
-      <div class="scrub-header">
-        <p class="section-label">From blank paper</p>
-        <h2 class="section-title">Watch a commission <em>come to life</em></h2>
-      </div>
-      <div class="scrub-frame">
-        <video id="scrub-video" src="videos/chico_scrub.mp4" muted playsinline preload="auto" aria-label="Timelapse of Chico, a watercolour dog portrait, being painted stroke by stroke"></video>
-      </div>
-      <p class="scrub-caption" id="scrub-caption">Scroll — and the painting begins</p>
-      <p class="scrub-hint">Keep scrolling · every stroke is real</p>
-    </div>
   </div>
 </section>
 
@@ -787,6 +750,11 @@ footer a:hover{color:var(--sage);}
        TODO Maya: once the homepage gallery has 12+ pieces, build a dedicated /gallery
        page and swap the href below to point there instead. -->
   <div class="gallery-footer">
+    <!-- 3D gallery PoC: every piece hung at true cm scale in a walkable room -->
+    <a href="gallery.html" aria-label="Step inside the 3D gallery">
+      Step inside the gallery
+      <svg viewBox="0 0 24 24" aria-hidden="true" style="fill:none;stroke:currentColor;stroke-width:1.6;"><path d="M3 21V8l7-5 7 5v13M10 21v-6h4v6"/></svg>
+    </a>
     <a href="https://instagram.com/krmantina" target="_blank" rel="noopener" aria-label="See more works on Instagram">
       See the full collection on Instagram
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
@@ -1378,64 +1346,6 @@ form.addEventListener('submit', async function(e) {
   window.addEventListener('scroll', update, { passive: true });
   window.addEventListener('resize', update, { passive: true });
   update();
-})();
-
-/* ── VIDEO PoC ──────────────────────────────────────────────────────────────
-   Scroll-scrubbed "come to life" video. Scroll progress through the tall
-   track maps to video time; a rAF easing loop smooths the seeks so the
-   painting appears to respond fluidly to the scroll. The video file is
-   encoded with a 2-frame keyframe interval specifically to make seeking
-   this dense possible. */
-(function() {
-  const track = document.getElementById('scrub-track');
-  const video = document.getElementById('scrub-video');
-  const captionEl = document.getElementById('scrub-caption');
-  if (!track || !video) return;
-
-  // Reduced motion: no scroll hijacking — just a normal playable video
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    video.controls = true;
-    return;
-  }
-
-  // Captions keyed to progress through the painting
-  const captions = [
-    [0,    'A blank sheet — and the first idea'],
-    [0.16, 'First washes — the background finds its light'],
-    [0.45, 'Layer by layer, Chico appears'],
-    [0.78, 'The final details — depth, shadow, whiskers'],
-    [0.97, 'Finished — ready for the wall']
-  ];
-
-  let target = 0, current = 0;
-
-  function onScroll() {
-    const r = track.getBoundingClientRect();
-    const total = r.height - window.innerHeight;
-    if (total <= 0) return;
-    const p = Math.min(1, Math.max(0, -r.top / total));
-    if (video.duration) target = p * (video.duration - 0.05);
-    let cap = captions[0][1];
-    for (const [at, text] of captions) if (p >= at) cap = text;
-    if (captionEl && captionEl.textContent !== cap) captionEl.textContent = cap;
-  }
-
-  function tick() {
-    if (video.duration && video.readyState >= 2) {
-      const diff = target - current;
-      if (Math.abs(diff) > 0.02) {
-        current += diff * 0.18;
-        try { video.currentTime = current; } catch (e) { /* seek not ready yet */ }
-      }
-    }
-    requestAnimationFrame(tick);
-  }
-
-  window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', onScroll, { passive: true });
-  video.addEventListener('loadedmetadata', onScroll);
-  onScroll();
-  requestAnimationFrame(tick);
 })();
 
 /* Process-film cards: tap to play with sound (the ASMR payoff), tap again
