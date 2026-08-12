@@ -165,15 +165,21 @@ import { BokehPass } from 'three/addons/postprocessing/BokehPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
 /* ── Works: w/h are true real-world cm (1 world unit = 1 m) ─────────────── */
+/* noBacking: these photos already SHOW their real frames (hand-photographed,
+   with slight perspective baked in). Putting a perfectly straight 3D backing
+   behind a slightly skewed photographed frame is what read as "distorted" —
+   so no double-framing. Audrey (plain paper, no frame in photo) keeps one.
+   tourDist: hand-tuned camera distance for the dwell. */
 const WORKS = {
-  bouquet:   { src:'bouquet_corrected.jpg',         w:14.8, h:21,  title:'Summer bouquet',   meta:'Watercolour on paper · A5', status:'Sold · 1 200 kr' },
-  lovebirds: { src:'lovebirds_corrected.png',       w:14.8, h:21,  title:'Lovebirds',        meta:'Watercolour · A5',          status:'Sold · 1 000 kr' },
-  penguin:   { src:'improvedpenguin.png',           w:14.8, h:21,  title:'Penguin portrait', meta:'Watercolour · A5',          status:'Sold · 1 000 kr' },
-  sunflowers:{ src:'improvedwatercolorflowers.png', w:21,   h:29.7,title:'Sunflowers',       meta:'Acrylic on canvas · A4',    status:'Sold · 2 000 kr' },
+  bouquet:   { src:'bouquet_corrected.jpg',         w:14.8, h:21,  noBacking:true, title:'Summer bouquet',   meta:'Watercolour on paper · A5', status:'Sold · 1 200 kr' },
+  lovebirds: { src:'lovebirds_corrected.png',       w:14.8, h:21,  noBacking:true, title:'Lovebirds',        meta:'Watercolour · A5',          status:'Sold · 1 000 kr' },
+  penguin:   { src:'improvedpenguin.png',           w:14.8, h:21,  noBacking:true, title:'Penguin portrait', meta:'Watercolour · A5',          status:'Sold · 1 000 kr' },
+  sunflowers:{ src:'improvedwatercolorflowers.png', w:21,   h:29.7,noBacking:true, title:'Sunflowers',       meta:'Acrylic on canvas · A4',    status:'Sold · 2 000 kr' },
   audrey:    { src:'audrey_scarf.png',              w:29.7, h:42,  title:"Audrey's scarf",   meta:'Pencil on paper · A3',      status:'Sold · 1 400 kr' },
-  /* scroll displayed 20% over true size (Gregory's call) — it is the
-     centre-piece and needs the presence */
-  scroll:    { src:'scroll_full.png',               w:36,   h:96,  title:'Hanging scroll',   meta:'Kakejiku · 30 × 80 cm · silk brocade', status:'Sold', noBacking:true }
+  /* scroll displayed 20% over true size (Gregory's call) — centre-piece.
+     tourDist 0.95: close enough that the painted branch and bird fill the
+     frame and the brushwork is actually visible. */
+  scroll:    { src:'scroll_full.png',               w:36,   h:96,  title:'Hanging scroll',   meta:'Kakejiku · 30 × 80 cm · silk brocade', status:'Sold', noBacking:true, tourDist:0.95 }
 };
 
 const canvas = document.getElementById('scene');
@@ -484,66 +490,70 @@ function buildSalon(scene) {
   shell(scene, W, D, H, [paleAccent, pale, pale, pale], floorMat, M(0xF7F4EC, 0.95));
   baseboards(scene, W, D, M(0xEDE8DB, 0.9));
 
-  /* rug */
-  const rug = rbox(scene, 2.7, 0.014, 1.8, 0.007, fabricMat(0xE2DACB, 4, 3), 0, 0.008, -0.9);
+  /* rug between sofa and TV */
+  const rug = rbox(scene, 1.9, 0.014, 2.6, 0.007, fabricMat(0xE2DACB, 3, 4), 0.55, 0.008, 0.15);
   rug.castShadow = false;
 
-  /* sofa on the back wall — light greige, sage + gold pillows */
+  /* sofa along the RIGHT wall, facing the TV on the left wall */
   const fab = fabricMat(0xD6CEC0);
   const fabDim = fabricMat(0xC9C0B0);
-  rbox(scene, 2.0, 0.3, 0.85, 0.06, fab, 0, 0.3, -2.3);
-  rbox(scene, 0.92, 0.17, 0.78, 0.07, fabDim, -0.48, 0.5, -2.3);
-  rbox(scene, 0.92, 0.17, 0.78, 0.07, fabDim, 0.48, 0.5, -2.3);
-  rbox(scene, 0.95, 0.52, 0.2, 0.08, fab, -0.48, 0.78, -2.6);
-  rbox(scene, 0.95, 0.52, 0.2, 0.08, fab, 0.48, 0.78, -2.6);
-  rbox(scene, 0.2, 0.62, 0.85, 0.08, fab, -1.06, 0.55, -2.3);
-  rbox(scene, 0.2, 0.62, 0.85, 0.08, fab, 1.06, 0.55, -2.3);
-  [[-0.95, -2.0], [0.95, -2.0], [-0.95, -2.57], [0.95, -2.57]].forEach(([lx, lz]) =>
+  rbox(scene, 0.85, 0.3, 2.0, 0.06, fab, 1.85, 0.3, 0.15);
+  rbox(scene, 0.78, 0.17, 0.92, 0.07, fabDim, 1.85, 0.5, -0.33);
+  rbox(scene, 0.78, 0.17, 0.92, 0.07, fabDim, 1.85, 0.5, 0.63);
+  rbox(scene, 0.2, 0.52, 0.95, 0.08, fab, 2.15, 0.78, -0.33);
+  rbox(scene, 0.2, 0.52, 0.95, 0.08, fab, 2.15, 0.78, 0.63);
+  rbox(scene, 0.85, 0.62, 0.2, 0.08, fab, 1.85, 0.55, -0.91);
+  rbox(scene, 0.85, 0.62, 0.2, 0.08, fab, 1.85, 0.55, 1.21);
+  [[1.55, -0.8], [1.55, 1.1], [2.12, -0.8], [2.12, 1.1]].forEach(([lx, lz]) =>
     cyl(scene, 0.02, 0.025, 0.14, M(0x8C7A5E, 0.5), lx, 0.07, lz, 10));
-  rbox(scene, 0.4, 0.4, 0.13, 0.05, fabricMat(0x8E9B85, 1.5, 1.5), -0.55, 0.72, -2.45, 0.2);
-  rbox(scene, 0.4, 0.4, 0.13, 0.05, fabricMat(0xC4973A, 1.5, 1.5), 0.5, 0.72, -2.45, -0.15);
+  const pil1 = rbox(scene, 0.13, 0.4, 0.4, 0.05, fabricMat(0x8E9B85, 1.5, 1.5), 2.0, 0.72, -0.4);
+  pil1.rotation.y = 0.2;
+  const pil2 = rbox(scene, 0.13, 0.4, 0.4, 0.05, fabricMat(0xC4973A, 1.5, 1.5), 2.0, 0.72, 0.55);
+  pil2.rotation.y = -0.15;
 
   /* coffee table in front of the sofa, with books and a small vase */
   const oakLight = darkWoodMat(0xEBDCC6, 1, 1);
-  rbox(scene, 1.0, 0.045, 0.55, 0.02, oakLight, 0, 0.4, -1.15);
-  [[-0.44, -0.95], [0.44, -0.95], [-0.44, -1.35], [0.44, -1.35]].forEach(([lx, lz]) =>
+  rbox(scene, 0.55, 0.045, 1.0, 0.02, oakLight, 0.75, 0.4, 0.15);
+  [[0.55, -0.29], [0.55, 0.59], [0.95, -0.29], [0.95, 0.59]].forEach(([lx, lz]) =>
     cyl(scene, 0.017, 0.021, 0.39, M(0x8C7A5E, 0.5), lx, 0.195, lz, 10));
-  bookStack(scene, -0.25, 0.42, -1.12, 0.1);
-  vaseBranches(scene, 0.3, -1.15, 0.42);
+  bookStack(scene, 0.75, 0.42, -0.1, 1.65);
+  vaseBranches(scene, 0.75, 0.5, 0.42);
 
-  /* TV wall (front): low media console + wall-mounted panel */
-  rbox(scene, 1.7, 0.32, 0.4, 0.02, oakLight, 0, 0.19, 2.52);
-  [[-0.75, 2.4], [0.75, 2.4], [-0.75, 2.64], [0.75, 2.64]].forEach(([lx, lz]) =>
+  /* TV on the LEFT wall opposite the sofa: console + wall panel */
+  rbox(scene, 0.4, 0.32, 1.7, 0.02, oakLight, -2.08, 0.19, 0.35);
+  [[-2.2, -0.4], [-2.2, 1.1], [-1.96, -0.4], [-1.96, 1.1]].forEach(([lx, lz]) =>
     cyl(scene, 0.015, 0.018, 0.06, M(0x8C7A5E, 0.5), lx, 0.015, lz, 8));
-  const tv = box(scene, 1.32, 0.76, 0.035, M(0x14120F, 0.3, { metalness:0.5 }), 0, 1.25, 2.76);
+  const tv = box(scene, 1.32, 0.76, 0.035, M(0x14120F, 0.3, { metalness:0.5 }), -2.26, 1.25, 0.35, Math.PI/2);
   tv.castShadow = false;
-  box(scene, 1.26, 0.7, 0.01, M(0x090807, 0.15, { metalness:0.7 }), 0, 1.25, 2.74);
+  box(scene, 1.26, 0.7, 0.01, M(0x090807, 0.15, { metalness:0.7 }), -2.24, 1.25, 0.35, Math.PI/2);
 
   /* corner styling */
-  archLamp(scene, -1.85, -2.1, 0.7);
-  vaseBranches(scene, 1.95, -2.35, 1.15);
+  archLamp(scene, -1.8, -2.15, 0.7);
+  vaseBranches(scene, 2.0, -2.4, 1.15);
+  vaseBranches(scene, -2.0, 2.35, 0.9);
 
-  /* window on the right wall */
-  windowLight(scene, W/2-0.01, 1.5, 0.6, 1.15, 1.4, -Math.PI/2);
-  keyLight(scene, 3.2, 2.3, 0.9, 1.3);
+  /* window on the front wall */
+  windowLight(scene, 0.9, 1.5, D/2-0.01, 1.15, 1.4, Math.PI);
+  keyLight(scene, 1.4, 2.4, 3.3, 1.3);
   scene.add(new THREE.AmbientLight(0xFFF8EC, 0.45));
   scene.add(new THREE.HemisphereLight(0xFFFCF2, 0xC4B49A, 0.4));
 
-  /* art — trio over the sofa; the scroll owns the left wall */
-  hang(scene, 'bouquet',  -0.55, 1.72, -D/2+0.035, 0);
-  hang(scene, 'lovebirds', 0,    1.72, -D/2+0.035, 0);
-  hang(scene, 'penguin',   0.55, 1.72, -D/2+0.035, 0);
-  hang(scene, 'scroll',   -W/2+0.035, 1.5, -0.4, Math.PI/2);
-  hang(scene, 'sunflowers', -W/2+0.035, 1.5, 1.55, Math.PI/2);
-  hang(scene, 'audrey',    W/2-0.035, 1.5, -1.35, -Math.PI/2);
+  /* art — scroll first (it opens the tour), the trio above the sofa,
+     Audrey + sunflowers on the back wall */
+  hang(scene, 'scroll',   -W/2+0.035, 1.5, -1.5, Math.PI/2);
+  hang(scene, 'bouquet',   W/2-0.035, 1.72, -0.4, -Math.PI/2);
+  hang(scene, 'lovebirds', W/2-0.035, 1.72, 0.15, -Math.PI/2);
+  hang(scene, 'penguin',   W/2-0.035, 1.72, 0.7, -Math.PI/2);
+  hang(scene, 'audrey',   -0.7, 1.5, -D/2+0.035, 0);
+  hang(scene, 'sunflowers', 0.75, 1.5, -D/2+0.035, 0);
 
-  spot(scene, -0.55, 1.72, -D/2, -0.55, H-0.08, -D/2+1.1, 3);
-  spot(scene, 0.55, 1.72, -D/2, 0.55, H-0.08, -D/2+1.1, 3);
-  spot(scene, -W/2, 1.5, -0.4, -W/2+1.2, H-0.06, -0.4, 5.5);   // centre-piece
-  spot(scene, -W/2, 1.5, 1.55, -W/2+1.1, H-0.08, 1.55, 3);
-  spot(scene, W/2, 1.5, -1.35, W/2-1.1, H-0.08, -1.35, 3.5);
+  spot(scene, -W/2, 1.5, -1.5, -W/2+1.2, H-0.06, -1.5, 5.5);   // centre-piece
+  spot(scene, W/2, 1.72, -0.4, W/2-1.1, H-0.08, -0.4, 3);
+  spot(scene, W/2, 1.72, 0.7, W/2-1.1, H-0.08, 0.7, 3);
+  spot(scene, -0.7, 1.5, -D/2, -0.7, H-0.08, -D/2+1.1, 3.5);
+  spot(scene, 0.75, 1.5, -D/2, 0.75, H-0.08, -D/2+1.1, 3);
 
-  return { bounds:{ x:W/2-0.4, z:D/2-0.4 }, spawn:{ pos:[1.35, EYE, 2.0], yaw:0.42 } };
+  return { bounds:{ x:W/2-0.4, z:D/2-0.4 }, spawn:{ pos:[-1.45, EYE, 2.25], yaw:-0.25 } };
 }
 
 function buildBedroom(scene) {
@@ -775,9 +785,9 @@ function stopForPainting(mesh) {
   const q = new THREE.Quaternion(); mesh.getWorldQuaternion(q);
   const normal = new THREE.Vector3(0, 0, 1).applyQuaternion(q);
   normal.y = 0; normal.normalize();
-  const dist = Math.max(0.75, (def.h/100) * 2.0);
+  const dist = def.tourDist || Math.max(0.75, (def.h/100) * 2.0);
   const pos = wp.clone().add(normal.multiplyScalar(dist));
-  pos.y = EYE;
+  pos.y = def.tourDist ? Math.min(EYE, wp.y) : EYE;
   pos.x = Math.max(-bounds.x, Math.min(bounds.x, pos.x));
   pos.z = Math.max(-bounds.z, Math.min(bounds.z, pos.z));
   return { key: mesh.userData.key, pos, look: wp };
