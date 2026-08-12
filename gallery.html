@@ -39,14 +39,17 @@ html,body{height:100%;background:#1C1A16;font-family:'Jost',sans-serif;overflow:
   width:100%;height:100%;display:block;object-fit:contain;
   filter:drop-shadow(0 10px 16px rgba(28,26,22,0.38));
 }
-/* CSS frame for pieces photographed without one (plain white background) */
+/* Thin frame at the paper's edge for pieces photographed without one.
+   No mat/padding — the drawing's own white paper margin is the mat. */
 #art-wrap.framed{
-  background:#FDFBF6;
   border:3px solid #33302A;
-  padding:4.5%;
+  background:#FDFBF6;
   box-shadow:0 12px 22px rgba(28,26,22,0.42);
 }
 #art-wrap.framed img{filter:none;}
+/* trio hanging: three A5s as one set, spaced like a real gallery wall */
+#art-wrap.trio{display:flex;justify-content:space-between;align-items:center;}
+#art-wrap.trio img{width:28.2%;height:auto;object-fit:contain;}
 /* gentle ambient tint so the artwork sits in the room's light — display
    simulation only, the artwork files themselves are never altered */
 .tint-warm #art-wrap img{filter:sepia(0.12) brightness(0.96) drop-shadow(0 10px 16px rgba(28,26,22,0.45));}
@@ -134,6 +137,8 @@ html,body{height:100%;background:#1C1A16;font-family:'Jost',sans-serif;overflow:
    the main page. The room anchor + pxPerCm place it on the photographed wall
    at honest scale relative to the furniture. */
 const WORKS = {
+  trio:       { srcs:['bouquet_corrected.jpg','lovebirds_corrected.png','improvedpenguin.png'],
+                w:52.4, h:21, title:'The watercolour trio', detail:'Three A5 originals' },
   bouquet:    { src:'bouquet_corrected.jpg',         w:14.8, h:21,   title:'Summer bouquet',    detail:'Watercolour · A5' },
   lovebirds:  { src:'lovebirds_corrected.png',       w:14.8, h:21,   title:'Lovebirds',         detail:'Watercolour · A5' },
   penguin:    { src:'improvedpenguin.png',           w:14.8, h:21,   title:'Penguin portrait',  detail:'Watercolour · A5' },
@@ -147,11 +152,15 @@ const WORKS = {
    top/bottom limits keep tall pieces off sofas, plants and lamps. */
 const ROOMS = {
   bright: {
+    /* pxPerCm calibrated on the sofa back cushions (~65 cm each in frame).
+       Single A5s are not offered here — honestly scaled, one A5 disappears
+       above a two-metre sofa; the trio set is how small works carry a big
+       wall in real homes. */
     img:'rooms/room-bright.jpg', w:1600, h:2400,
     name:'Bright room',
-    anchor:{ cx:0.50, cy:0.325 }, pxPerCm:10,
-    topLimit:0.045, bottomLimit:0.465,
-    works:['bouquet','lovebirds','penguin','sunflowers','audrey','scroll'],
+    anchor:{ cx:0.50, cy:0.33 }, pxPerCm:12.5,
+    topLimit:0.045, bottomLimit:0.44,
+    works:['trio','sunflowers','audrey','scroll'],
     tint:false
   },
   reading: {
@@ -159,7 +168,7 @@ const ROOMS = {
     name:'Reading corner',
     anchor:{ cx:0.245, cy:0.285 }, pxPerCm:10,
     topLimit:0.045, bottomLimit:0.325,
-    works:['bouquet','lovebirds','penguin','sunflowers','audrey'],
+    works:['trio','bouquet','lovebirds','penguin','sunflowers','audrey'],
     tint:false
   },
   evening: {
@@ -180,15 +189,17 @@ const picker = document.getElementById('picker');
 const cardT = document.querySelector('#art-card .t');
 const cardD = document.querySelector('#art-card .d');
 
-let currentRoom = 'bright', currentWork = 'sunflowers';
+let currentRoom = 'bright', currentWork = 'trio';
 
 /* build picker thumbs once */
 for (const key in WORKS) {
+  const work = WORKS[key];
   const b = document.createElement('div');
   b.className = 'thumb'; b.dataset.work = key;
   b.setAttribute('role', 'button');
-  b.setAttribute('aria-label', 'Hang ' + WORKS[key].title + ' in the room');
-  b.innerHTML = `<img src="${WORKS[key].src}" alt="${WORKS[key].title}">`;
+  b.setAttribute('aria-label', 'Hang ' + work.title + ' in the room');
+  const srcs = work.srcs || [work.src];
+  b.innerHTML = srcs.map(s => `<img src="${s}" alt="${work.title}" style="max-width:${60/srcs.length}px">`).join('');
   b.addEventListener('click', () => { currentWork = key; render(); });
   picker.appendChild(b);
 }
@@ -205,8 +216,8 @@ function render() {
 
   /* true-scale placement */
   const wPx = work.w * room.pxPerCm, hPx = work.h * room.pxPerCm;
-  /* CSS frame adds visual size; treat padding+border as part of hung object */
-  const frameFactor = work.cssFrame ? 1.12 : 1;
+  /* thin edge frame adds a sliver of visual size */
+  const frameFactor = work.cssFrame ? 1.02 : 1;
   const wFrac = (wPx * frameFactor) / room.w;
   const hFrac = (hPx * frameFactor) / room.h;
   let cy = room.anchor.cy;
@@ -214,12 +225,20 @@ function render() {
   if (cy - hFrac/2 < room.topLimit)    cy = room.topLimit + hFrac/2;
 
   artWrap.classList.toggle('framed', !!work.cssFrame);
+  artWrap.classList.toggle('trio', !!work.srcs);
   artWrap.style.left = (room.anchor.cx * 100) + '%';
   artWrap.style.top = (cy * 100) + '%';
   artWrap.style.width = (wFrac * 100) + '%';
   artWrap.style.height = (hFrac * 100) + '%';
-  artImg.src = work.src;
-  artImg.alt = work.title + ' — shown at true size in this room';
+  if (work.srcs) {
+    artWrap.innerHTML = work.srcs.map(s =>
+      `<img src="${s}" alt="${work.title} — shown at true size in this room">`).join('');
+  } else {
+    artWrap.innerHTML = '';
+    artWrap.appendChild(artImg);
+    artImg.src = work.src;
+    artImg.alt = work.title + ' — shown at true size in this room';
+  }
 
   cardT.textContent = work.title;
   cardD.textContent = work.detail + ' · true size';
