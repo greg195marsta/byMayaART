@@ -1,0 +1,589 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>by Maya — Step inside the gallery</title>
+<meta name="description" content="Walk through virtual rooms hung with Maya's hand-painted originals — every piece at its true real-world size.">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23F8F5EE'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%235A7A57' stroke-width='2'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;background:#F8F5EE;font-family:'Jost',sans-serif;}
+#scene{position:fixed;inset:0;display:block;touch-action:none;cursor:grab;}
+#scene.dragging{cursor:grabbing;}
+
+/* Intro overlay with room chooser */
+#intro{
+  position:fixed;inset:0;z-index:20;
+  background:rgba(248,245,238,0.97);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:2rem;gap:1rem;overflow-y:auto;
+  transition:opacity .6s ease;
+}
+#intro.hidden{opacity:0;pointer-events:none;}
+#intro .mark{width:42px;height:42px;border-radius:50%;border:2.5px solid #5A7A57;flex-shrink:0;}
+#intro h1{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(1.8rem,4.5vw,2.7rem);color:#1C1A16;line-height:1.2;}
+#intro h1 em{font-style:italic;color:#5A7A57;}
+#intro>p{font-size:.88rem;color:rgba(28,26,22,0.58);max-width:46ch;line-height:1.75;}
+.room-cards{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;margin-top:.6rem;}
+.room-card{
+  width:200px;padding:1.4rem 1.2rem;background:#fff;border:1px solid rgba(90,122,87,0.25);
+  cursor:pointer;text-align:center;transition:transform .2s,border-color .2s,box-shadow .2s;
+  font-family:'Jost',sans-serif;
+}
+.room-card:hover{transform:translateY(-3px);border-color:#5A7A57;box-shadow:0 10px 30px rgba(28,26,22,0.12);}
+.room-card h2{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:1.35rem;color:#1C1A16;margin-bottom:.45rem;}
+.room-card p{font-size:.76rem;color:rgba(28,26,22,0.55);line-height:1.65;}
+.room-card .tag{display:inline-block;margin-bottom:.7rem;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:#5A7A57;}
+#intro .hint{font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(28,26,22,0.38);margin-top:.7rem;}
+
+/* HUD */
+.hud{position:fixed;z-index:10;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;}
+#back-link{
+  top:1rem;left:1rem;display:inline-flex;align-items:center;gap:.5rem;
+  padding:.6rem 1.1rem;background:rgba(248,245,238,0.9);color:#1C1A16;text-decoration:none;
+  border:1px solid rgba(90,122,87,0.3);border-radius:999px;transition:background .2s;
+}
+#back-link:hover{background:#fff;}
+#room-switch{
+  top:1rem;left:50%;transform:translateX(-50%);
+  display:flex;gap:.4rem;background:rgba(248,245,238,0.88);
+  padding:.3rem;border-radius:999px;border:1px solid rgba(90,122,87,0.3);
+}
+#room-switch button{
+  border:none;background:none;padding:.45rem 1rem;border-radius:999px;cursor:pointer;
+  font-family:'Jost',sans-serif;font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(28,26,22,0.55);transition:background .2s,color .2s;
+}
+#room-switch button.active{background:#5A7A57;color:#fff;}
+#caption{
+  bottom:4.6rem;left:50%;transform:translateX(-50%);
+  max-width:min(90vw,540px);padding:.7rem 1.4rem;text-align:center;
+  background:rgba(28,26,22,0.82);color:rgba(248,245,238,0.92);
+  font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.02rem;
+  letter-spacing:.02em;text-transform:none;border-radius:2px;
+  opacity:0;transition:opacity .3s;pointer-events:none;
+}
+#caption.visible{opacity:1;}
+#help{
+  bottom:1rem;left:50%;transform:translateX(-50%);
+  color:rgba(28,26,22,0.45);background:rgba(248,245,238,0.75);
+  padding:.45rem 1rem;border-radius:999px;white-space:nowrap;
+}
+#walk-btn{
+  position:fixed;bottom:4.6rem;right:1.2rem;z-index:10;
+  width:64px;height:64px;border-radius:50%;border:2px solid rgba(90,122,87,0.7);
+  background:rgba(248,245,238,0.85);color:#5A7A57;font-size:1.5rem;
+  display:none;align-items:center;justify-content:center;user-select:none;
+  -webkit-user-select:none;touch-action:none;
+}
+@media (pointer:coarse){
+  #walk-btn{display:flex;}
+  #help{display:none;}
+  #caption{bottom:1rem;}
+}
+@media (max-width:560px){
+  #room-switch{top:auto;bottom:1rem;left:50%;}
+  #help{display:none;}
+}
+#fallback{
+  position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;
+  background:#F8F5EE;color:#1C1A16;text-align:center;padding:2rem;
+  font-size:.95rem;line-height:1.8;
+}
+</style>
+</head>
+<body>
+
+<canvas id="scene"></canvas>
+
+<div id="intro">
+  <div class="mark"></div>
+  <h1>Step inside <em>the gallery</em></h1>
+  <p>Three rooms, one collection — every painting hangs at its true real-world size. Pick a room to walk through.</p>
+  <div class="room-cards">
+    <div class="room-card" data-room="salon">
+      <span class="tag">Proposal 01</span>
+      <h2>The Salon</h2>
+      <p>A warm living room — see the art the way it would live in your own home.</p>
+    </div>
+    <div class="room-card" data-room="cube">
+      <span class="tag">Proposal 02</span>
+      <h2>The White Cube</h2>
+      <p>An intimate modern gallery — spotlights, a bench, and nothing but the work.</p>
+    </div>
+    <div class="room-card" data-room="atelier">
+      <span class="tag">Proposal 03</span>
+      <h2>The Atelier</h2>
+      <p>The studio mood — easels, warm light, and paintings where they were born.</p>
+    </div>
+  </div>
+  <p class="hint">Drag to look · W A S D to walk · click a painting to approach</p>
+</div>
+
+<a id="back-link" class="hud" href="index.html">← by Maya</a>
+<div id="room-switch" class="hud" hidden>
+  <button data-room="salon">Salon</button>
+  <button data-room="cube">White Cube</button>
+  <button data-room="atelier">Atelier</button>
+</div>
+<div id="caption" class="hud"></div>
+<div id="help" class="hud">Drag to look · WASD to walk · click a painting to approach</div>
+<div id="walk-btn" aria-label="Hold to walk forward">▲</div>
+<div id="fallback">Your browser could not start the 3D gallery.<br>You can still see every piece on the <a href="index.html#gallery">main gallery page</a>.</div>
+
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+
+/* ── Works: w/h are true real-world cm (1 world unit = 1 m) ─────────────── */
+const WORKS = {
+  bouquet:   { src:'bouquet_corrected.jpg',         w:14.8, h:21,  title:'Summer bouquet — watercolour · A5' },
+  lovebirds: { src:'lovebirds_corrected.png',       w:14.8, h:21,  title:'Lovebirds — watercolour · A5' },
+  penguin:   { src:'improvedpenguin.png',           w:14.8, h:21,  title:'Penguin portrait — watercolour · A5' },
+  sunflowers:{ src:'improvedwatercolorflowers.png', w:21,   h:29.7,title:'Sunflowers — acrylic on canvas · A4' },
+  audrey:    { src:'audrey_scarf.png',              w:29.7, h:42,  title:"Audrey's scarf — pencil on paper · A3" },
+  scroll:    { src:'scroll_full.png',               w:30,   h:80,  title:'Japanese hanging scroll · 30 × 80 cm', noBacking:true }
+};
+
+const canvas = document.getElementById('scene');
+let renderer;
+try { renderer = new THREE.WebGLRenderer({ canvas, antialias:true }); }
+catch (e) { document.getElementById('fallback').style.display = 'flex'; throw e; }
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+const camera = new THREE.PerspectiveCamera(62, innerWidth/innerHeight, 0.05, 60);
+camera.rotation.order = 'YXZ';
+const EYE = 1.5;
+
+/* texture cache — loaded once, reused across rooms */
+const texLoader = new THREE.TextureLoader();
+const TEX = {};
+for (const k in WORKS) { TEX[k] = texLoader.load(WORKS[k].src); TEX[k].colorSpace = THREE.SRGBColorSpace; }
+
+/* ── small builder helpers ──────────────────────────────────────────────── */
+const M = (c, r = 0.9, extra = {}) => new THREE.MeshStandardMaterial({ color:c, roughness:r, ...extra });
+function box(scene, w, h, d, mat, x, y, z, ry = 0) {
+  const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
+  m.position.set(x, y, z); m.rotation.y = ry; scene.add(m); return m;
+}
+function cyl(scene, rTop, rBot, h, mat, x, y, z, seg = 16) {
+  const m = new THREE.Mesh(new THREE.CylinderGeometry(rTop, rBot, h, seg), mat);
+  m.position.set(x, y, z); scene.add(m); return m;
+}
+function plane(w, h, mat) { return new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat); }
+
+function makePlaque(title) {
+  const c = document.createElement('canvas'); c.width = 512; c.height = 170;
+  const g = c.getContext('2d');
+  g.fillStyle = '#FDFBF6'; g.fillRect(0, 0, 512, 170);
+  g.strokeStyle = 'rgba(90,122,87,0.5)'; g.lineWidth = 3; g.strokeRect(6, 6, 500, 158);
+  g.fillStyle = '#1C1A16'; g.textAlign = 'center';
+  const dash = title.lastIndexOf('—');
+  const name = dash > 0 ? title.slice(0, dash).trim() : title;
+  const detail = dash > 0 ? title.slice(dash + 1).trim() : '';
+  g.font = 'italic 44px "Cormorant Garamond", serif'; g.fillText(name, 256, 76, 470);
+  g.font = '28px Jost, sans-serif'; g.fillStyle = 'rgba(28,26,22,0.55)'; g.fillText(detail, 256, 126, 470);
+  const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace;
+  return new THREE.Mesh(new THREE.PlaneGeometry(0.21, 0.07), M(0xffffff, 0.85, { map:tex }));
+}
+
+let paintings = [];   // raycast targets, rebuilt per room
+
+/* A hung/standing painting. opts: {plaque, tilt} */
+function makeWork(key, opts = {}) {
+  const def = WORKS[key];
+  const w = def.w/100, h = def.h/100;
+  const group = new THREE.Group();
+  if (!def.noBacking) {
+    const backing = new THREE.Mesh(new THREE.BoxGeometry(w + 0.06, h + 0.06, 0.025), M(0x3A332B, 0.6));
+    backing.position.z = -0.014; group.add(backing);
+  }
+  const art = new THREE.Mesh(new THREE.PlaneGeometry(w, h),
+    M(0xffffff, 0.85, { map:TEX[key], transparent:true }));
+  art.userData = def; group.add(art); paintings.push(art);
+  if (opts.plaque) { const p = makePlaque(def.title); p.position.set(w/2 + 0.18, -h/2 + 0.1, 0); group.add(p); }
+  if (opts.tilt) group.rotation.x = opts.tilt;
+  return group;
+}
+/* hang on a wall: pos + yaw */
+function hang(scene, key, x, y, z, ry, opts) {
+  const g = makeWork(key, opts); g.position.set(x, y, z); g.rotation.y = ry; scene.add(g); return g;
+}
+function spot(scene, tx, ty, tz, fromX, fromY, fromZ, intensity = 5, color = 0xFFF2DC) {
+  const s = new THREE.SpotLight(color, intensity, 9, 0.5, 0.6, 1.2);
+  s.position.set(fromX, fromY, fromZ);
+  s.target.position.set(tx, ty, tz);
+  scene.add(s, s.target); return s;
+}
+function shell(scene, W, D, H, wallMat, floorMat, ceilMat) {
+  const f = plane(W, D, floorMat); f.rotation.x = -Math.PI/2; scene.add(f);
+  const c = plane(W, D, ceilMat); c.rotation.x = Math.PI/2; c.position.y = H; scene.add(c);
+  const defs = [
+    [W, 0, H/2, -D/2, 0], [W, 0, H/2, D/2, Math.PI],
+    [D, -W/2, H/2, 0, Math.PI/2], [D, W/2, H/2, 0, -Math.PI/2]
+  ];
+  const wallMats = Array.isArray(wallMat) ? wallMat : [wallMat, wallMat, wallMat, wallMat];
+  defs.forEach(([len, x, y, z, ry], i) => {
+    const wMesh = plane(len, H, wallMats[i]); wMesh.position.set(x, y, z); wMesh.rotation.y = ry; scene.add(wMesh);
+  });
+}
+function baseboards(scene, W, D, mat) {
+  [[W, 0, -D/2, 0], [W, 0, D/2, Math.PI], [D, -W/2, 0, Math.PI/2], [D, W/2, 0, -Math.PI/2]].forEach(([len, x, z, ry]) => {
+    const b = new THREE.Mesh(new THREE.BoxGeometry(len, 0.11, 0.02), mat);
+    b.position.set(x, 0.055, z); b.rotation.y = ry; b.translateZ(0.011); scene.add(b);
+  });
+}
+function floorBoards(scene, W, D, color) {
+  for (let x = -W/2 + 0.55; x < W/2; x += 0.55) {
+    const s = plane(0.012, D, M(color, 0.8));
+    s.rotation.x = -Math.PI/2; s.position.set(x, 0.001, 0); scene.add(s);
+  }
+}
+function plant(scene, x, z, scale = 1) {
+  cyl(scene, 0.11*scale, 0.14*scale, 0.26*scale, M(0xB08968, 0.85), x, 0.13*scale, z);
+  const leafMat = M(0x4F6B4C, 0.8);
+  for (let i = 0; i < 7; i++) {
+    const a = i / 7 * Math.PI * 2;
+    const leaf = new THREE.Mesh(new THREE.SphereGeometry(0.16*scale, 8, 6), leafMat);
+    leaf.scale.set(0.35, 1.15, 0.35);
+    leaf.position.set(x + Math.cos(a)*0.1*scale, (0.5 + (i%3)*0.12)*scale, z + Math.sin(a)*0.1*scale);
+    leaf.rotation.set(Math.cos(a)*0.5, 0, Math.sin(a)*0.5);
+    scene.add(leaf);
+  }
+}
+function windowLight(scene, x, y, z, w, h, ry) {
+  const g = new THREE.Group();
+  const glow = plane(w, h, new THREE.MeshBasicMaterial({ color:0xFDF6E3 }));
+  g.add(glow);
+  const frameMat = M(0xFFFFFF, 0.6);
+  [[-w/2, 0, 0.02, 0.05, h], [w/2, 0, 0.02, 0.05, h], [0, -h/2, w, 0.05, 0.02], [0, h/2, w, 0.05, 0.02], [0, 0, 0.04, 0.03, h], [0, 0, w, 0.03, 0.04]].forEach(([fx, fy, fw, fh, fd]) => {
+    const bar = new THREE.Mesh(new THREE.BoxGeometry(fw, fd, 0.03), frameMat);
+    bar.position.set(fx, fy, 0.015); g.add(bar);
+  });
+  g.position.set(x, y, z); g.rotation.y = ry; scene.add(g);
+  const dl = new THREE.DirectionalLight(0xFFF6E0, 1.1);
+  dl.position.set(x, y + 0.4, z); dl.target.position.set(0, 0.6, 0);
+  scene.add(dl, dl.target);
+}
+function easel(scene, key, x, z, ry) {
+  const g = new THREE.Group();
+  const woodMat = M(0x8A6A45, 0.75);
+  const mk = (w, h, d, px, py, pz, rx = 0) => {
+    const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), woodMat);
+    m.position.set(px, py, pz); m.rotation.x = rx; g.add(m);
+  };
+  const lean = 0.13;
+  mk(0.04, 1.75, 0.04, -0.28, 0.875, 0, lean);
+  mk(0.04, 1.75, 0.04,  0.28, 0.875, 0, lean);
+  mk(0.04, 1.6,  0.04,  0,    0.8,  -0.24, -0.28);
+  mk(0.64, 0.05, 0.06,  0,    0.85,  0.115, lean);   // ledge
+  mk(0.5,  0.04, 0.04,  0,    1.5,   0.03,  lean);   // top clamp
+  const def = WORKS[key];
+  paintingsPushLater.push(() => {
+    const art = makeWork(key, { tilt:-lean });
+    art.position.set(0, 0.87 + (def.h/200) * Math.cos(lean), 0.13 + (def.h/200) * Math.sin(lean));
+    g.add(art);
+  });
+  g.position.set(x, 0, z); g.rotation.y = ry; scene.add(g);
+  return g;
+}
+let paintingsPushLater = [];
+
+/* ── ROOM BUILDERS — each returns {bounds, spawn:{pos,yaw}} ─────────────── */
+
+function buildSalon(scene) {
+  const W = 5.2, D = 6.4, H = 2.7;
+  scene.background = new THREE.Color(0xF2EDE2);
+  const cream = M(0xEFE8DA, 0.94), sage = M(0xB9C8B0, 0.94);
+  shell(scene, W, D, H, [sage, cream, cream, cream], M(0x97795A, 0.72), M(0xF4EFE5, 0.95));
+  floorBoards(scene, W, D, 0x7E6248);
+  baseboards(scene, W, D, M(0xE2DACA, 0.9));
+
+  /* rug */
+  const rug = plane(3.0, 2.0, M(0xD9CBB4, 0.98));
+  rug.rotation.x = -Math.PI/2; rug.position.set(0, 0.003, -1.2); scene.add(rug);
+  const rugInner = plane(2.6, 1.6, M(0xCEBFA4, 0.98));
+  rugInner.rotation.x = -Math.PI/2; rugInner.position.set(0, 0.004, -1.2); scene.add(rugInner);
+
+  /* sofa against back wall */
+  const fabric = M(0x8E9B85, 0.95), fabricDark = M(0x7E8B76, 0.95);
+  box(scene, 2.0, 0.24, 0.85, fabric, 0, 0.24, -2.75);          // base
+  box(scene, 1.9, 0.16, 0.8,  fabricDark, 0, 0.42, -2.75);      // cushions
+  box(scene, 2.0, 0.55, 0.16, fabric, 0, 0.62, -3.08);          // back
+  box(scene, 0.16, 0.3, 0.85, fabric, -1.0, 0.5, -2.75);        // arms
+  box(scene, 0.16, 0.3, 0.85, fabric,  1.0, 0.5, -2.75);
+  /* cushions accent */
+  box(scene, 0.4, 0.36, 0.12, M(0xC4973A, 0.95), -0.6, 0.62, -2.95, 0.15);
+  box(scene, 0.4, 0.36, 0.12, M(0xE8EFE2, 0.95), 0.55, 0.62, -2.95, -0.1);
+
+  /* coffee table */
+  box(scene, 0.9, 0.045, 0.5, M(0x6E5236, 0.6), 0, 0.36, -1.35);
+  [[-0.4, -1.14], [0.4, -1.14], [-0.4, -1.56], [0.4, -1.56]].forEach(([x, z]) => cyl(scene, 0.018, 0.018, 0.36, M(0x4A3826, 0.6), x, 0.18, z, 8));
+
+  /* console table under Audrey (right wall) */
+  box(scene, 0.08, 0.75, 1.0, M(0x6E5236, 0.7), 2.52, 0.375, -0.8);
+
+  plant(scene, -2.25, -2.85); plant(scene, 2.3, 2.85, 0.8);
+
+  /* floor lamp + warm light */
+  cyl(scene, 0.015, 0.015, 1.5, M(0x3A332B, 0.5), -2.2, 0.75, 1.9, 8);
+  cyl(scene, 0.14, 0.18, 0.22, M(0xF3E8CF, 0.6), -2.2, 1.6, 1.9, 14);
+  const lampLight = new THREE.PointLight(0xFFE3B8, 1.4, 5); lampLight.position.set(-2.2, 1.55, 1.9); scene.add(lampLight);
+
+  windowLight(scene, -2.59, 1.55, 1.0, 1.2, 1.5, Math.PI/2);
+  scene.add(new THREE.AmbientLight(0xFFF6E8, 0.5));
+  scene.add(new THREE.HemisphereLight(0xFFFBF0, 0xB09877, 0.45));
+
+  /* art */
+  const gz = -3.16;
+  hang(scene, 'bouquet',   -0.62, 1.62, gz, 0);          // trio above the sofa
+  hang(scene, 'lovebirds',  0,    1.62, gz, 0);
+  hang(scene, 'penguin',    0.62, 1.62, gz, 0);
+  hang(scene, 'audrey',     2.56, 1.55, -0.8, -Math.PI/2);   // above console
+  hang(scene, 'sunflowers', -2.56, 1.5, -1.0, Math.PI/2);
+  hang(scene, 'scroll',     2.56, 1.5, 1.6, -Math.PI/2);
+
+  spot(scene, -0.62, 1.62, gz, -0.62, H-0.1, gz+1.2, 3.5);
+  spot(scene, 0.62, 1.62, gz, 0.62, H-0.1, gz+1.2, 3.5);
+  spot(scene, 2.56, 1.55, -0.8, 1.4, H-0.1, -0.8, 3.5);
+  spot(scene, 2.56, 1.5, 1.6, 1.4, H-0.1, 1.6, 3);
+
+  return { bounds:{ x:W/2-0.4, z:D/2-0.4 }, spawn:{ pos:[0, EYE, 2.5], yaw:0 } };
+}
+
+function buildCube(scene) {
+  const W = 4.6, D = 6.0, H = 2.9;
+  scene.background = new THREE.Color(0xF7F6F2);
+  shell(scene, W, D, H, M(0xFAF8F3, 0.95), M(0xD9D6CE, 0.9), M(0xF2F0EA, 0.95));
+  baseboards(scene, W, D, M(0xE9E6DE, 0.9));
+
+  /* picture rail */
+  const railMat = M(0x2E2A24, 0.6);
+  box(scene, W, 0.04, 0.04, railMat, 0, H-0.25, -D/2+0.03);
+  box(scene, D, 0.04, 0.04, railMat, -W/2+0.03, H-0.25, 0, Math.PI/2);
+  box(scene, D, 0.04, 0.04, railMat, W/2-0.03, H-0.25, 0, Math.PI/2);
+
+  /* central bench */
+  box(scene, 1.3, 0.06, 0.42, M(0x8A6A45, 0.6), 0, 0.42, -0.4);
+  box(scene, 0.12, 0.4, 0.34, M(0x2E2A24, 0.6), -0.5, 0.2, -0.4);
+  box(scene, 0.12, 0.4, 0.34, M(0x2E2A24, 0.6), 0.5, 0.2, -0.4);
+
+  scene.add(new THREE.AmbientLight(0xFFFFFF, 0.55));
+  scene.add(new THREE.HemisphereLight(0xFFFFFF, 0xCFCabc, 0.35));
+
+  /* art with plaques */
+  hang(scene, 'audrey',    0,     1.5, -D/2+0.035, 0, { plaque:true });
+  hang(scene, 'scroll',    W/2-0.035, 1.5, -0.6, -Math.PI/2, { plaque:true });
+  hang(scene, 'sunflowers',-W/2+0.035, 1.5, -1.2, Math.PI/2, { plaque:true });
+  hang(scene, 'bouquet',   -W/2+0.035, 1.5, 0.6, Math.PI/2, { plaque:true });
+  hang(scene, 'lovebirds', -0.5, 1.5, D/2-0.035, Math.PI, { plaque:true });
+  hang(scene, 'penguin',    0.5, 1.5, D/2-0.035, Math.PI, { plaque:true });
+
+  spot(scene, 0, 1.5, -D/2, 0, H-0.15, -D/2+1.3, 6, 0xFFF8EC);
+  spot(scene, W/2, 1.5, -0.6, W/2-1.3, H-0.15, -0.6, 6, 0xFFF8EC);
+  spot(scene, -W/2, 1.5, -1.2, -W/2+1.3, H-0.15, -1.2, 5, 0xFFF8EC);
+  spot(scene, -W/2, 1.5, 0.6, -W/2+1.3, H-0.15, 0.6, 5, 0xFFF8EC);
+  spot(scene, -0.5, 1.5, D/2, -0.5, H-0.15, D/2-1.3, 5, 0xFFF8EC);
+  spot(scene, 0.5, 1.5, D/2, 0.5, H-0.15, D/2-1.3, 5, 0xFFF8EC);
+
+  return { bounds:{ x:W/2-0.4, z:D/2-0.4 }, spawn:{ pos:[0, EYE, 2.4], yaw:0 } };
+}
+
+function buildAtelier(scene) {
+  const W = 5.0, D = 5.4, H = 2.6;
+  scene.background = new THREE.Color(0xEDE2CC);
+  shell(scene, W, D, H, M(0xEBDFC9, 0.95), M(0x6E573C, 0.8), M(0xEFE5D2, 0.95));
+  floorBoards(scene, W, D, 0x5C4832);
+  baseboards(scene, W, D, M(0xDDD0B8, 0.9));
+
+  /* work table with painterly props */
+  box(scene, 1.5, 0.05, 0.7, M(0x8A6A45, 0.7), -1.6, 0.78, -2.2, 0.15);
+  [[-2.25, -2.0], [-0.95, -2.0], [-2.25, -2.45], [-0.95, -2.45]].forEach(([x, z]) => box(scene, 0.05, 0.76, 0.05, M(0x5C4832, 0.7), x, 0.38, z));
+  /* palette + paint blobs + jars */
+  cyl(scene, 0.14, 0.14, 0.015, M(0xF3EBDA, 0.85), -1.75, 0.82, -2.25, 18);
+  [0xC0392B, 0x2E6B8A, 0xC4973A, 0x5A7A57, 0x7E4A8A].forEach((c, i) => {
+    const blob = new THREE.Mesh(new THREE.SphereGeometry(0.02, 8, 6), M(c, 0.4));
+    blob.scale.y = 0.5; blob.position.set(-1.85 + i*0.05, 0.835, -2.3 + (i%2)*0.06); scene.add(blob);
+  });
+  cyl(scene, 0.045, 0.04, 0.12, M(0xD8E4EA, 0.3, { transparent:true, opacity:0.75 }), -1.35, 0.87, -2.15, 12);
+  cyl(scene, 0.035, 0.035, 0.14, M(0xB08968, 0.8), -1.22, 0.88, -2.28, 10);
+  /* stool */
+  cyl(scene, 0.16, 0.16, 0.04, M(0x8A6A45, 0.7), -1.5, 0.55, -1.5, 14);
+  [[-1.62, -1.62], [-1.38, -1.62], [-1.5, -1.36]].forEach(([x, z]) => box(scene, 0.04, 0.54, 0.04, M(0x5C4832, 0.7), x, 0.27, z));
+
+  plant(scene, 2.2, -2.3, 1.1);
+
+  /* two easels holding work-in-view */
+  easel(scene, 'audrey', 0.9, -1.7, -0.5);
+  easel(scene, 'sunflowers', 1.9, -0.7, -0.9);
+
+  /* wall art: the scroll + a drying-wall trio, slightly informal */
+  hang(scene, 'scroll', 0, 1.45, -D/2+0.035, 0);
+  const lz = Math.PI/2;
+  hang(scene, 'bouquet',  -W/2+0.035, 1.62, -0.9, lz).rotation.z = 0.025;
+  hang(scene, 'lovebirds',-W/2+0.035, 1.52, -0.25, lz).rotation.z = -0.02;
+  hang(scene, 'penguin',  -W/2+0.035, 1.6,  0.4, lz).rotation.z = 0.03;
+
+  /* warm evening light: two pendants + amber ambience */
+  [[-1.6, -2.0], [0.9, -1.4]].forEach(([x, z]) => {
+    cyl(scene, 0.01, 0.01, 0.5, M(0x3A332B, 0.5), x, H-0.25, z, 6);
+    cyl(scene, 0.09, 0.13, 0.12, M(0x2E2A24, 0.5), x, H-0.52, z, 14);
+    const pl = new THREE.PointLight(0xFFDCA8, 1.6, 5); pl.position.set(x, H-0.62, z); scene.add(pl);
+  });
+  scene.add(new THREE.AmbientLight(0xFFE9C8, 0.45));
+  scene.add(new THREE.HemisphereLight(0xFFEFD8, 0x8A6A45, 0.4));
+  spot(scene, 0, 1.45, -D/2, 0, H-0.1, -D/2+1.2, 4);
+  spot(scene, -W/2, 1.55, -0.25, -W/2+1.2, H-0.1, -0.25, 3.5);
+
+  return { bounds:{ x:W/2-0.4, z:D/2-0.4 }, spawn:{ pos:[1.2, EYE, 2.2], yaw:0.25 } };
+}
+
+const ROOMS = { salon:buildSalon, cube:buildCube, atelier:buildAtelier };
+
+/* ── scene lifecycle ────────────────────────────────────────────────────── */
+let scene = null, bounds = { x:2, z:2 };
+function loadRoom(name) {
+  if (!ROOMS[name]) name = 'salon';
+  if (scene) scene.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material && !o.material.map) o.material.dispose(); });
+  paintings = []; paintingsPushLater = [];
+  scene = new THREE.Scene();
+  const info = ROOMS[name](scene);
+  paintingsPushLater.forEach(fn => fn());     // easel paintings attach after group placement
+  bounds = info.bounds;
+  camera.position.set(...info.spawn.pos);
+  yaw = info.spawn.yaw; pitch = 0; glide = null;
+  document.querySelectorAll('#room-switch button').forEach(b => b.classList.toggle('active', b.dataset.room === name));
+  history.replaceState(null, '', '#' + name);
+}
+
+/* ── controls ───────────────────────────────────────────────────────────── */
+let yaw = 0, pitch = 0, glide = null;
+const keys = {};
+addEventListener('keydown', e => { keys[e.key.toLowerCase()] = true; });
+addEventListener('keyup',   e => { keys[e.key.toLowerCase()] = false; });
+
+let dragging = false, lastX = 0, lastY = 0, downX = 0, downY = 0;
+const onDown = (x, y) => { dragging = true; lastX = downX = x; lastY = downY = y; canvas.classList.add('dragging'); };
+const onMove = (x, y) => {
+  if (!dragging) return;
+  yaw -= (x - lastX) * 0.0032; pitch -= (y - lastY) * 0.0032;
+  pitch = Math.max(-1.2, Math.min(1.2, pitch));
+  lastX = x; lastY = y;
+};
+const onUp = (x, y) => {
+  const wasTap = Math.hypot(x - downX, y - downY) < 6;
+  dragging = false; canvas.classList.remove('dragging');
+  if (wasTap) tryApproach(x, y);
+};
+canvas.addEventListener('mousedown', e => onDown(e.clientX, e.clientY));
+addEventListener('mousemove', e => onMove(e.clientX, e.clientY));
+addEventListener('mouseup', e => onUp(e.clientX, e.clientY));
+canvas.addEventListener('touchstart', e => { const t = e.touches[0]; onDown(t.clientX, t.clientY); }, { passive:true });
+canvas.addEventListener('touchmove',  e => { const t = e.touches[0]; onMove(t.clientX, t.clientY); }, { passive:true });
+canvas.addEventListener('touchend',   e => { const t = e.changedTouches[0]; onUp(t.clientX, t.clientY); });
+
+let walkHeld = false;
+const walkBtn = document.getElementById('walk-btn');
+['touchstart','mousedown'].forEach(ev => walkBtn.addEventListener(ev, e => { e.preventDefault(); walkHeld = true; }));
+['touchend','touchcancel','mouseup','mouseleave'].forEach(ev => walkBtn.addEventListener(ev, () => { walkHeld = false; }));
+
+const raycaster = new THREE.Raycaster();
+const captionEl = document.getElementById('caption');
+function tryApproach(x, y) {
+  if (!scene) return;
+  raycaster.setFromCamera(new THREE.Vector2(x/innerWidth*2-1, -(y/innerHeight)*2+1), camera);
+  const hit = raycaster.intersectObjects(paintings)[0];
+  if (!hit) return;
+  const def = hit.object.userData;
+  const wp = new THREE.Vector3(); hit.object.getWorldPosition(wp);
+  const q = new THREE.Quaternion(); hit.object.getWorldQuaternion(q);
+  const normal = new THREE.Vector3(0, 0, 1).applyQuaternion(q);
+  normal.y = 0; normal.normalize();
+  const dist = Math.max(0.8, (def.h/100) * 2.0);
+  const dest = wp.clone().add(normal.multiplyScalar(dist));
+  dest.y = EYE;
+  dest.x = Math.max(-bounds.x, Math.min(bounds.x, dest.x));
+  dest.z = Math.max(-bounds.z, Math.min(bounds.z, dest.z));
+  glide = { from:camera.position.clone(), to:dest, look:wp, t:0 };
+  captionEl.textContent = def.title;
+  captionEl.classList.add('visible');
+  clearTimeout(captionEl._hide);
+  captionEl._hide = setTimeout(() => captionEl.classList.remove('visible'), 4200);
+}
+
+/* ── frame loop ─────────────────────────────────────────────────────────── */
+const clock = new THREE.Clock();
+function animate() {
+  requestAnimationFrame(animate);
+  if (!scene) return;
+  const dt = Math.min(clock.getDelta(), 0.05);
+
+  if (glide) {
+    glide.t += dt / 1.15;
+    const k = glide.t >= 1 ? 1 : 1 - Math.pow(1 - glide.t, 3);
+    camera.position.lerpVectors(glide.from, glide.to, k);
+    const dir = glide.look.clone().sub(camera.position);
+    const targetYaw = Math.atan2(-dir.x, -dir.z);
+    const targetPitch = Math.atan2(dir.y, Math.hypot(dir.x, dir.z));
+    let dy = targetYaw - yaw;
+    while (dy > Math.PI) dy -= Math.PI*2; while (dy < -Math.PI) dy += Math.PI*2;
+    yaw += dy * Math.min(1, k * 1.5);
+    pitch += (targetPitch - pitch) * Math.min(1, k * 1.5);
+    if (glide.t >= 1) glide = null;
+  } else {
+    const speed = 1.9 * dt;
+    const fwd = new THREE.Vector3(-Math.sin(yaw), 0, -Math.cos(yaw));
+    const side = new THREE.Vector3(-fwd.z, 0, fwd.x);
+    if (keys['w'] || keys['arrowup'] || walkHeld) camera.position.addScaledVector(fwd, speed);
+    if (keys['s'] || keys['arrowdown'])  camera.position.addScaledVector(fwd, -speed);
+    if (keys['a'] || keys['arrowleft'])  camera.position.addScaledVector(side, -speed);
+    if (keys['d'] || keys['arrowright']) camera.position.addScaledVector(side, speed);
+    camera.position.x = Math.max(-bounds.x, Math.min(bounds.x, camera.position.x));
+    camera.position.z = Math.max(-bounds.z, Math.min(bounds.z, camera.position.z));
+    camera.position.y = EYE;
+  }
+
+  camera.rotation.set(pitch, yaw, 0);
+  renderer.render(scene, camera);
+}
+
+addEventListener('resize', () => {
+  camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+
+/* ── UI wiring ──────────────────────────────────────────────────────────── */
+const intro = document.getElementById('intro');
+const roomSwitch = document.getElementById('room-switch');
+document.querySelectorAll('.room-card').forEach(card => {
+  card.addEventListener('click', () => {
+    loadRoom(card.dataset.room);
+    intro.classList.add('hidden');
+    roomSwitch.hidden = false;
+  });
+});
+document.querySelectorAll('#room-switch button').forEach(btn => {
+  btn.addEventListener('click', () => loadRoom(btn.dataset.room));
+});
+
+/* deep link: gallery.html#cube opens that room directly */
+const initial = location.hash.replace('#', '');
+if (ROOMS[initial]) {
+  loadRoom(initial);
+  intro.classList.add('hidden');
+  roomSwitch.hidden = false;
+}
+
+animate();
+</script>
+</body>
+</html>
