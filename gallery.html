@@ -65,15 +65,7 @@ html,body{height:100%;overflow:hidden;background:#F8F5EE;font-family:'Jost',sans
   color:rgba(28,26,22,0.45);background:rgba(248,245,238,0.75);
   padding:.45rem 1rem;border-radius:999px;white-space:nowrap;
 }
-#walk-btn{
-  position:fixed;bottom:4.6rem;right:1.2rem;z-index:10;
-  width:64px;height:64px;border-radius:50%;border:2px solid rgba(90,122,87,0.7);
-  background:rgba(248,245,238,0.85);color:#5A7A57;font-size:1.5rem;
-  display:none;align-items:center;justify-content:center;user-select:none;
-  -webkit-user-select:none;touch-action:none;
-}
 @media (pointer:coarse){
-  #walk-btn{display:flex;}
   #help{display:none;}
 }
 #fallback{
@@ -116,7 +108,7 @@ html,body{height:100%;overflow:hidden;background:#F8F5EE;font-family:'Jost',sans
 <div id="intro">
   <div class="mark"></div>
   <h1>Step inside <em>the gallery</em></h1>
-  <p>Three rooms, one collection — every painting hangs at its true real-world size. Pick a room to walk through.</p>
+  <p>Three rooms, one collection — every painting hangs at its true real-world size. Pick a room and let it show you around.</p>
   <div class="room-cards">
     <div class="room-card" data-room="salon">
       <span class="tag">Proposal 01</span>
@@ -134,7 +126,7 @@ html,body{height:100%;overflow:hidden;background:#F8F5EE;font-family:'Jost',sans
       <p>The studio mood — easels, warm light, and paintings where they were born.</p>
     </div>
   </div>
-  <p class="hint">Drag to look · W A S D to walk · click a painting to approach</p>
+  <p class="hint">A slow guided tour — sit back, or click any painting to visit it</p>
 </div>
 
 <a id="back-link" class="hud" href="index.html">← by Maya</a>
@@ -143,8 +135,7 @@ html,body{height:100%;overflow:hidden;background:#F8F5EE;font-family:'Jost',sans
   <button data-room="bedroom">Bedroom</button>
   <button data-room="atelier">Atelier</button>
 </div>
-<div id="help" class="hud">Drag to look · WASD to walk · click a painting to approach</div>
-<div id="walk-btn" aria-label="Hold to walk forward">▲</div>
+<div id="help" class="hud">Sit back — the room shows itself · click a painting to visit it</div>
 <div id="fallback">Your browser could not start the 3D gallery.<br>You can still see every piece on the <a href="index.html#gallery">main gallery page</a>.</div>
 
 <div id="art-panel" role="dialog" aria-label="About this painting">
@@ -196,7 +187,10 @@ const texLoader = new THREE.TextureLoader();
 const TEX = {};
 for (const k in WORKS) { TEX[k] = texLoader.load(WORKS[k].src); TEX[k].colorSpace = THREE.SRGBColorSpace; }
 
-/* ── procedural material textures (canvas-painted, no downloads) ────────── */
+/* ── PBR materials from CC0 photographic texture sets (ambientCG) ─────────
+   textures/: WoodFloor043 (floor), Plaster001 (wall), Fabric032 (fabric),
+   Wood062 (furniture wood). Color+NormalGL+Roughness each. The color map is
+   tinted via material.color, so one photographic set serves every hue. */
 function canvasTex(paint, repeatX = 1, repeatY = 1, size = 512) {
   const c = document.createElement('canvas'); c.width = c.height = size;
   paint(c.getContext('2d'), size);
@@ -205,39 +199,39 @@ function canvasTex(paint, repeatX = 1, repeatY = 1, size = 512) {
   t.colorSpace = THREE.SRGBColorSpace;
   return t;
 }
-function grain(g, s, alpha) {           // fine noise pass
+function grain(g, s, alpha) {
   for (let i = 0; i < 2600; i++) {
     g.fillStyle = `rgba(${Math.random() > 0.5 ? '255,255,255' : '20,14,8'},${Math.random() * alpha})`;
     g.fillRect(Math.random() * s, Math.random() * s, 1.5, 1.5);
   }
 }
-function woodTexture(base, dark, planks = 5) {
-  return (rx, ry) => canvasTex((g, s) => {
-    g.fillStyle = base; g.fillRect(0, 0, s, s);
-    for (let i = 0; i < 46; i++) {      // grain lines
-      g.strokeStyle = `rgba(52,36,22,${0.05 + Math.random() * 0.09})`;
-      g.lineWidth = 0.8 + Math.random() * 1.8;
-      const y = Math.random() * s;
-      g.beginPath(); g.moveTo(0, y);
-      g.bezierCurveTo(s*0.3, y + Math.random()*10-5, s*0.66, y + Math.random()*10-5, s, y + Math.random()*12-6);
-      g.stroke();
-    }
-    g.strokeStyle = dark; g.lineWidth = 2.2;
-    for (let x = 0; x <= planks; x++) { g.beginPath(); g.moveTo(x*s/planks, 0); g.lineTo(x*s/planks, s); g.stroke(); }
-    grain(g, s, 0.05);
-  }, rx, ry);
+const PBR_CACHE = {};
+function pbrMaps(setName) {
+  if (PBR_CACHE[setName]) return PBR_CACHE[setName];
+  const color = texLoader.load(`textures/${setName}_color.jpg`);
+  color.colorSpace = THREE.SRGBColorSpace;
+  const normal = texLoader.load(`textures/${setName}_normal.jpg`);
+  const rough  = texLoader.load(`textures/${setName}_rough.jpg`);
+  [color, normal, rough].forEach(t => { t.wrapS = t.wrapT = THREE.RepeatWrapping; });
+  PBR_CACHE[setName] = { color, normal, rough };
+  return PBR_CACHE[setName];
 }
-function fabricTexture(base) {
-  return canvasTex((g, s) => {
-    g.fillStyle = base; g.fillRect(0, 0, s, s);
-    for (let y = 0; y < s; y += 3) { g.strokeStyle = 'rgba(255,255,255,0.03)'; g.beginPath(); g.moveTo(0, y); g.lineTo(s, y); g.stroke(); }
-    for (let x = 0; x < s; x += 3) { g.strokeStyle = 'rgba(0,0,0,0.03)'; g.beginPath(); g.moveTo(x, 0); g.lineTo(x, s); g.stroke(); }
-    grain(g, s, 0.06);
-  }, 3, 3);
+/* tint: multiplies the photographic color map, so pass light tints (>0x808080)
+   to keep photographic detail visible. */
+function pbrMat(setName, tint, repeatX, repeatY, extra = {}) {
+  const src = pbrMaps(setName);
+  /* clone per repeat so different surfaces can tile differently */
+  const color = src.color.clone(), normal = src.normal.clone(), rough = src.rough.clone();
+  [color, normal, rough].forEach(t => { t.repeat.set(repeatX, repeatY); t.needsUpdate = true; });
+  return new THREE.MeshStandardMaterial({
+    color: tint, map: color, normalMap: normal, roughnessMap: rough,
+    normalScale: new THREE.Vector2(0.8, 0.8), ...extra
+  });
 }
-function wallTexture(base) {
-  return canvasTex((g, s) => { g.fillStyle = base; g.fillRect(0, 0, s, s); grain(g, s, 0.035); }, 4, 3);
-}
+const woodFloorMat = (tint, rx, ry) => pbrMat('floor', tint, rx, ry);
+const plasterMat   = (tint, rx = 3, ry = 2) => pbrMat('wall', tint, rx, ry);
+const fabricMat    = (tint, rx = 2.5, ry = 2.5) => pbrMat('fabric', tint, rx, ry);
+const darkWoodMat  = (tint = 0xFFFFFF, rx = 1.5, ry = 1.5) => pbrMat('wood', tint, rx, ry);
 
 /* ── builder helpers ────────────────────────────────────────────────────── */
 const M = (c, r = 0.9, extra = {}) => new THREE.MeshStandardMaterial({ color:c, roughness:r, ...extra });
@@ -362,7 +356,7 @@ function windowLight(scene, x, y, z, w, h, ry) {
    frame, resting directly on the ledge. */
 function easel(scene, key, x, z, ry) {
   const group = new THREE.Group();
-  const woodMat = M(0x9A7852, 0.7, { map: canvasTex((g,s)=>{ g.fillStyle='#9A7852'; g.fillRect(0,0,s,s); grain(g,s,0.09); }) });
+  const woodMat = darkWoodMat(0xE0CCB0, 1, 2);
   const lean = 0.14;
   const frame = new THREE.Group();
   const mk = (w, h, d, px, py, pz, rz = 0) => {
@@ -395,19 +389,19 @@ function easel(scene, key, x, z, ry) {
 function buildSalon(scene) {
   const W = 5.2, D = 6.4, H = 2.7;
   scene.background = new THREE.Color(0xF2EDE2);
-  const cream = M(0xF3ECDD, 0.94, { map: wallTexture('#F3ECDD') });
-  const sage  = M(0xB9C8B0, 0.94, { map: wallTexture('#B9C8B0') });
-  const floorMat = M(0xA98863, 0.62, { map: woodTexture('#A98863', 'rgba(70,50,30,0.4)')(3, 4) });
+  const cream = plasterMat(0xF3ECDD);
+  const sage  = plasterMat(0xB9C8B0);
+  const floorMat = woodFloorMat(0xFFFFFF, 2.5, 3.5);
   shell(scene, W, D, H, [sage, cream, cream, cream], floorMat, M(0xF6F1E6, 0.95));
   baseboards(scene, W, D, M(0xE6DECC, 0.9));
 
   /* rug */
-  const rug = rbox(scene, 3.0, 0.015, 2.0, 0.007, M(0xD9CBB4, 0.98, { map: fabricTexture('#D9CBB4') }), 0, 0.008, -1.2);
+  const rug = rbox(scene, 3.0, 0.015, 2.0, 0.007, fabricMat(0xD9CBB4, 4, 3), 0, 0.008, -1.2);
   rug.castShadow = false;
 
   /* sofa — rounded, cushioned */
-  const fab = M(0x8E9B85, 0.95, { map: fabricTexture('#8E9B85') });
-  const fabDark = M(0x7E8B76, 0.95, { map: fabricTexture('#7E8B76') });
+  const fab = fabricMat(0x8E9B85);
+  const fabDark = fabricMat(0x7E8B76);
   rbox(scene, 2.0, 0.3, 0.85, 0.06, fab, 0, 0.3, -2.75);                 // base
   rbox(scene, 0.92, 0.17, 0.78, 0.07, fabDark, -0.48, 0.5, -2.75);      // seat cushions
   rbox(scene, 0.92, 0.17, 0.78, 0.07, fabDark, 0.48, 0.5, -2.75);
@@ -417,11 +411,11 @@ function buildSalon(scene) {
   rbox(scene, 0.2, 0.62, 0.85, 0.08, fab, 1.06, 0.55, -2.75);
   [[-0.95, -2.45], [0.95, -2.45], [-0.95, -3.02], [0.95, -3.02]].forEach(([lx, lz]) =>
     cyl(scene, 0.02, 0.025, 0.14, M(0x4A3826, 0.6), lx, 0.07, lz, 10));
-  rbox(scene, 0.4, 0.4, 0.13, 0.05, M(0xC4973A, 0.95, { map: fabricTexture('#C4973A') }), -0.55, 0.72, -2.9, 0.2);
-  rbox(scene, 0.4, 0.4, 0.13, 0.05, M(0xE8EFE2, 0.95, { map: fabricTexture('#E8EFE2') }), 0.5, 0.72, -2.9, -0.15);
+  rbox(scene, 0.4, 0.4, 0.13, 0.05, fabricMat(0xC4973A, 1.5, 1.5), -0.55, 0.72, -2.9, 0.2);
+  rbox(scene, 0.4, 0.4, 0.13, 0.05, fabricMat(0xE8EFE2, 1.5, 1.5), 0.5, 0.72, -2.9, -0.15);
 
-  /* coffee table — lighter walnut; ACES tone mapping darkens deep browns */
-  const walnut = M(0x96754F, 0.5, { map: canvasTex((g,s)=>{ g.fillStyle='#96754F'; g.fillRect(0,0,s,s); grain(g,s,0.07); }) });
+  /* coffee table — photographic walnut, tinted light against ACES */
+  const walnut = darkWoodMat(0xE8D8C6, 1, 1);
   rbox(scene, 0.95, 0.05, 0.52, 0.02, walnut, 0, 0.38, -1.35);
   [[-0.42, -1.15], [0.42, -1.15], [-0.42, -1.55], [0.42, -1.55]].forEach(([lx, lz]) =>
     cyl(scene, 0.018, 0.022, 0.37, M(0x4A3826, 0.6), lx, 0.185, lz, 10));
@@ -461,18 +455,19 @@ function buildSalon(scene) {
 }
 
 function buildBedroom(scene) {
-  const W = 4.8, D = 5.6, H = 2.6;
+  /* Smaller than v1 — the tour starts closer, the art reads larger */
+  const W = 4.4, D = 5.0, H = 2.6;
   scene.background = new THREE.Color(0xF2EDE2);
-  const cream = M(0xF4EEE1, 0.95, { map: wallTexture('#F4EEE1') });
-  const sage  = M(0xC2CFB8, 0.95, { map: wallTexture('#C2CFB8') });
-  const floorMat = M(0xB59978, 0.62, { map: woodTexture('#B59978', 'rgba(80,58,36,0.35)')(3, 4) });
+  const cream = plasterMat(0xF4EEE1);
+  const sage  = plasterMat(0xC2CFB8);
+  const floorMat = woodFloorMat(0xFFFFFF, 2.2, 2.8);
   shell(scene, W, D, H, [sage, cream, cream, cream], floorMat, M(0xF6F1E6, 0.95));
   baseboards(scene, W, D, M(0xE8E0CE, 0.9));
 
   /* ── king-size bed against the sage wall ── */
-  const oak = M(0x9C7B54, 0.6, { map: canvasTex((g,s)=>{ g.fillStyle='#9C7B54'; g.fillRect(0,0,s,s); grain(g,s,0.08); }) });
-  const linen = M(0xF1EADB, 0.95, { map: fabricTexture('#F1EADB') });
-  const linenDim = M(0xE4DCC8, 0.95, { map: fabricTexture('#E4DCC8') });
+  const oak = darkWoodMat(0xEBD9C2, 1, 1);
+  const linen = fabricMat(0xF1EADB);
+  const linenDim = fabricMat(0xE4DCC8);
   rbox(scene, 1.96, 0.72, 0.09, 0.03, oak, 0, 0.52, -D/2+0.07);            // headboard
   rbox(scene, 1.9, 0.24, 2.05, 0.02, oak, 0, 0.17, -D/2+1.12);            // frame
   rbox(scene, 1.8, 0.24, 1.95, 0.06, linenDim, 0, 0.4, -D/2+1.12);        // mattress
@@ -484,10 +479,11 @@ function buildBedroom(scene) {
   };
   pil(0.72, 0.15, 0.42, linen, -0.47, 0.58, -D/2+0.42, -0.12);
   pil(0.72, 0.15, 0.42, linen,  0.47, 0.58, -D/2+0.42, -0.12);
-  pil(0.4, 0.38, 0.13, M(0x8E9B85, 0.95, { map: fabricTexture('#8E9B85') }), -0.4, 0.68, -D/2+0.58, -0.25, 0.08);
-  pil(0.4, 0.38, 0.13, M(0xC4973A, 0.95, { map: fabricTexture('#C4973A') }), 0.42, 0.68, -D/2+0.58, -0.25, -0.06);
-  /* folded throw across the bed foot */
-  rbox(scene, 1.82, 0.06, 0.45, 0.025, M(0x7E8B76, 0.95, { map: fabricTexture('#7E8B76') }), 0, 0.55, -D/2+1.92);
+  pil(0.4, 0.38, 0.13, fabricMat(0x8E9B85, 1.5, 1.5), -0.4, 0.68, -D/2+0.58, -0.25, 0.08);
+  pil(0.4, 0.38, 0.13, fabricMat(0xC4973A, 1.5, 1.5), 0.42, 0.68, -D/2+0.58, -0.25, -0.06);
+  /* folded throw across the bed foot — raised clear of the duvet's top
+     surface: coplanar faces z-fight and flicker as the camera moves */
+  rbox(scene, 1.82, 0.06, 0.45, 0.025, fabricMat(0x7E8B76, 2, 1), 0, 0.595, -D/2+1.92);
 
   /* bedside tables + warm lamps */
   [[-1.28, 1], [1.28, -1]].forEach(([bx]) => {
@@ -499,12 +495,12 @@ function buildBedroom(scene) {
   });
 
   /* rug under the foot of the bed */
-  const rug = rbox(scene, 2.7, 0.014, 1.5, 0.006, M(0xD9CBB4, 0.98, { map: fabricTexture('#D9CBB4') }), 0, 0.008, -D/2+2.6);
+  const rug = rbox(scene, 2.7, 0.014, 1.5, 0.006, fabricMat(0xD9CBB4, 4, 2.5), 0, 0.008, -D/2+2.55);
   rug.castShadow = false;
 
   /* ── sliding-door wardrobe along the left wall ── */
-  const wardrobeBody = M(0xEDE6D6, 0.85, { map: wallTexture('#EDE6D6') });
-  const doorOak = M(0xDCCFB4, 0.55, { map: canvasTex((g,s)=>{ g.fillStyle='#DCCFB4'; g.fillRect(0,0,s,s); grain(g,s,0.06); }) });
+  const wardrobeBody = plasterMat(0xEDE6D6, 2, 2);
+  const doorOak = plasterMat(0xDCCFB4, 1.5, 2);
   box(scene, 0.58, 2.2, 2.4, wardrobeBody, -W/2+0.3, 1.1, -0.7);           // carcass
   /* two sliding panels — one proud of the other, on visible tracks */
   box(scene, 0.022, 2.06, 1.17, doorOak, -W/2+0.61, 1.08, -1.29);
@@ -542,13 +538,13 @@ function buildBedroom(scene) {
 function buildAtelier(scene) {
   const W = 5.0, D = 5.4, H = 2.6;
   scene.background = new THREE.Color(0xEDE2CC);
-  const plaster = M(0xEDE1CB, 0.95, { map: wallTexture('#EDE1CB') });
-  const floorMat = M(0x77603F, 0.6, { map: woodTexture('#77603F', 'rgba(40,28,16,0.5)')(3, 3) });
+  const plaster = plasterMat(0xEDE1CB);
+  const floorMat = woodFloorMat(0xA8937C, 2.3, 2.5);
   shell(scene, W, D, H, plaster, floorMat, M(0xF0E6D3, 0.95));
   baseboards(scene, W, D, M(0xDFD2B9, 0.9));
 
   /* work table with palette props */
-  const tableWood = M(0x8A6A45, 0.65, { map: canvasTex((g,s)=>{ g.fillStyle='#8A6A45'; g.fillRect(0,0,s,s); grain(g,s,0.1); }) });
+  const tableWood = darkWoodMat(0xDCC8AE, 1, 1);
   rbox(scene, 1.5, 0.05, 0.7, 0.015, tableWood, -1.6, 0.79, -2.2, 0.15);
   [[-2.25, -2.0], [-0.95, -2.0], [-2.25, -2.45], [-0.95, -2.45]].forEach(([lx, lz]) =>
     box(scene, 0.05, 0.76, 0.05, M(0x5C4832, 0.7), lx, 0.38, lz));
@@ -604,8 +600,7 @@ function loadRoom(name) {
   scene = new THREE.Scene();
   const info = ROOMS[name](scene);
   bounds = info.bounds;
-  camera.position.set(...info.spawn.pos);
-  yaw = info.spawn.yaw; pitch = 0; glide = null;
+  startTour(info.spawn);
   document.querySelectorAll('#room-switch button').forEach(b => b.classList.toggle('active', b.dataset.room === name));
   history.replaceState(null, '', '#' + name);
 }
@@ -624,104 +619,102 @@ function showPanel(key, worldPos) {
 function hidePanel() { panel.classList.remove('visible'); panelAnchor = null; }
 document.getElementById('panel-close').addEventListener('click', hidePanel);
 
-/* ── controls ───────────────────────────────────────────────────────────── */
-let yaw = 0, pitch = 0, glide = null;
-let lastInput = 0;
-const keys = {};
-addEventListener('keydown', e => { keys[e.key.toLowerCase()] = true; lastInput = performance.now(); });
-addEventListener('keyup',   e => { keys[e.key.toLowerCase()] = false; });
+/* ── cinematic tour ──────────────────────────────────────────────────────
+   No user movement: the room shows itself. Loop per room:
+   overview → glide to a painting → dwell (info card) → retreat → next.
+   Clicking/tapping a painting sends the tour there immediately. */
+let tourStops = [], tourIndex = 0, tourPhase = 'hold', tourT = 0, phaseDur = 1.6, seg = null;
+const overviewPose = { pos:new THREE.Vector3(), look:new THREE.Vector3() };
+const camLook = new THREE.Vector3();
+const lookTmp = new THREE.Vector3();
+const easeInOut = t => t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3)/2;
 
-let dragging = false, lastX = 0, lastY = 0, downX = 0, downY = 0;
-const onDown = (x, y) => { dragging = true; lastX = downX = x; lastY = downY = y; canvas.classList.add('dragging'); lastInput = performance.now(); };
-const onMove = (x, y) => {
-  if (!dragging) return;
-  yaw -= (x - lastX) * 0.0032; pitch -= (y - lastY) * 0.0032;
-  pitch = Math.max(-1.2, Math.min(1.2, pitch));
-  lastX = x; lastY = y; lastInput = performance.now();
-};
-const onUp = (x, y) => {
-  const wasTap = Math.hypot(x - downX, y - downY) < 6;
-  dragging = false; canvas.classList.remove('dragging');
-  if (wasTap) tryApproach(x, y);
-};
-canvas.addEventListener('mousedown', e => onDown(e.clientX, e.clientY));
-addEventListener('mousemove', e => onMove(e.clientX, e.clientY));
-addEventListener('mouseup', e => onUp(e.clientX, e.clientY));
-canvas.addEventListener('touchstart', e => { const t = e.touches[0]; onDown(t.clientX, t.clientY); }, { passive:true });
-canvas.addEventListener('touchmove',  e => { const t = e.touches[0]; onMove(t.clientX, t.clientY); }, { passive:true });
-canvas.addEventListener('touchend',   e => { const t = e.changedTouches[0]; onUp(t.clientX, t.clientY); });
-
-let walkHeld = false;
-const walkBtn = document.getElementById('walk-btn');
-['touchstart','mousedown'].forEach(ev => walkBtn.addEventListener(ev, e => { e.preventDefault(); walkHeld = true; lastInput = performance.now(); }));
-['touchend','touchcancel','mouseup','mouseleave'].forEach(ev => walkBtn.addEventListener(ev, () => { walkHeld = false; }));
-
-const raycaster = new THREE.Raycaster();
-function tryApproach(x, y) {
-  if (!scene) return;
-  raycaster.setFromCamera(new THREE.Vector2(x/innerWidth*2-1, -(y/innerHeight)*2+1), camera);
-  const hit = raycaster.intersectObjects(paintings)[0];
-  if (!hit) return;
-  const key = hit.object.userData.key;
-  const def = WORKS[key];
-  const wp = new THREE.Vector3(); hit.object.getWorldPosition(wp);
-  const q = new THREE.Quaternion(); hit.object.getWorldQuaternion(q);
+function stopForPainting(mesh) {
+  const def = WORKS[mesh.userData.key];
+  const wp = new THREE.Vector3(); mesh.getWorldPosition(wp);
+  const q = new THREE.Quaternion(); mesh.getWorldQuaternion(q);
   const normal = new THREE.Vector3(0, 0, 1).applyQuaternion(q);
   normal.y = 0; normal.normalize();
-  const dist = Math.max(0.8, (def.h/100) * 2.0);
-  const dest = wp.clone().add(normal.multiplyScalar(dist));
-  dest.y = EYE;
-  dest.x = Math.max(-bounds.x, Math.min(bounds.x, dest.x));
-  dest.z = Math.max(-bounds.z, Math.min(bounds.z, dest.z));
-  glide = { from:camera.position.clone(), to:dest, look:wp, t:0, key };
-  lastInput = performance.now();
+  const dist = Math.max(0.75, (def.h/100) * 2.0);
+  const pos = wp.clone().add(normal.multiplyScalar(dist));
+  pos.y = EYE;
+  pos.x = Math.max(-bounds.x, Math.min(bounds.x, pos.x));
+  pos.z = Math.max(-bounds.z, Math.min(bounds.z, pos.z));
+  return { key: mesh.userData.key, pos, look: wp };
+}
+function setPhase(name, dur) { tourPhase = name; tourT = 0; phaseDur = dur; }
+function beginSegment(toPos, toLook, dur, phase) {
+  seg = { fromPos: camera.position.clone(), fromLook: camLook.clone(),
+          toPos: toPos.clone(), toLook: toLook.clone() };
+  setPhase(phase, dur);
+}
+function startTour(spawn) {
+  tourStops = paintings.map(stopForPainting);
+  tourIndex = 0;
+  overviewPose.pos.set(...spawn.pos);
+  const dir = new THREE.Vector3(-Math.sin(spawn.yaw), -0.04, -Math.cos(spawn.yaw));
+  overviewPose.look.copy(overviewPose.pos).addScaledVector(dir, 3);
+  camera.position.copy(overviewPose.pos);
+  camLook.copy(overviewPose.look);
+  setPhase('hold', 2.0);
 }
 
+/* tap a painting → tour visits it next */
+let downX = 0, downY = 0;
+const raycaster = new THREE.Raycaster();
+canvas.addEventListener('pointerdown', e => { downX = e.clientX; downY = e.clientY; });
+canvas.addEventListener('pointerup', e => {
+  if (Math.hypot(e.clientX - downX, e.clientY - downY) > 6 || !scene) return;
+  raycaster.setFromCamera(new THREE.Vector2(e.clientX/innerWidth*2-1, -(e.clientY/innerHeight)*2+1), camera);
+  const hit = raycaster.intersectObjects(paintings)[0];
+  if (!hit) return;
+  const idx = tourStops.findIndex(s => s.key === hit.object.userData.key);
+  if (idx < 0) return;
+  hidePanel();
+  tourIndex = idx;
+  const st = tourStops[idx];
+  beginSegment(st.pos, st.look, 2.2, 'approach');
+});
+
 /* ── frame loop ─────────────────────────────────────────────────────────── */
-const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const clock = new THREE.Clock();
-let swayAmp = 0;
 function animate() {
   requestAnimationFrame(animate);
   if (!scene) return;
   const dt = Math.min(clock.getDelta(), 0.05);
-  const t = clock.elapsedTime;
+  tourT += dt;
 
-  if (glide) {
-    glide.t += dt / 1.15;
-    const k = glide.t >= 1 ? 1 : 1 - Math.pow(1 - glide.t, 3);
-    camera.position.lerpVectors(glide.from, glide.to, k);
-    const dir = glide.look.clone().sub(camera.position);
-    const targetYaw = Math.atan2(-dir.x, -dir.z);
-    const targetPitch = Math.atan2(dir.y, Math.hypot(dir.x, dir.z));
-    let dy = targetYaw - yaw;
-    while (dy > Math.PI) dy -= Math.PI*2; while (dy < -Math.PI) dy += Math.PI*2;
-    yaw += dy * Math.min(1, k * 1.5);
-    pitch += (targetPitch - pitch) * Math.min(1, k * 1.5);
-    if (glide.t >= 1) { showPanel(glide.key, glide.look); glide = null; }
-  } else {
-    const speed = 1.9 * dt;
-    const fwd = new THREE.Vector3(-Math.sin(yaw), 0, -Math.cos(yaw));
-    const side = new THREE.Vector3(-fwd.z, 0, fwd.x);
-    if (keys['w'] || keys['arrowup'] || walkHeld) camera.position.addScaledVector(fwd, speed);
-    if (keys['s'] || keys['arrowdown'])  camera.position.addScaledVector(fwd, -speed);
-    if (keys['a'] || keys['arrowleft'])  camera.position.addScaledVector(side, -speed);
-    if (keys['d'] || keys['arrowright']) camera.position.addScaledVector(side, speed);
-    camera.position.x = Math.max(-bounds.x, Math.min(bounds.x, camera.position.x));
-    camera.position.z = Math.max(-bounds.z, Math.min(bounds.z, camera.position.z));
-    camera.position.y = EYE;
-    /* hide the info card once the visitor walks away from the piece */
-    if (panelAnchor && camera.position.distanceTo(panelAnchor) > 2.6) hidePanel();
+  if (tourPhase === 'approach' || tourPhase === 'retreat') {
+    const k = easeInOut(Math.min(1, tourT / phaseDur));
+    camera.position.lerpVectors(seg.fromPos, seg.toPos, k);
+    camLook.lerpVectors(seg.fromLook, seg.toLook, k);
+    if (tourT >= phaseDur) {
+      if (tourPhase === 'approach') {
+        const st = tourStops[tourIndex];
+        showPanel(st.key, st.look);
+        setPhase('dwell', 4.6);
+      } else {
+        tourIndex = (tourIndex + 1) % tourStops.length;
+        setPhase('hold', 1.4);
+      }
+    }
+  } else if (tourPhase === 'dwell') {
+    if (tourT >= phaseDur) {
+      hidePanel();
+      beginSegment(overviewPose.pos, overviewPose.look, 2.4, 'retreat');
+    }
+  } else { /* hold at overview */
+    if (tourT >= phaseDur && tourStops.length) {
+      const st = tourStops[tourIndex];
+      beginSegment(st.pos, st.look, 3.0, 'approach');
+    }
   }
 
-  /* museum stillness: a barely-there sway when the visitor is idle */
-  const idle = !reducedMotion && performance.now() - lastInput > 4000 && !glide;
-  swayAmp += ((idle ? 1 : 0) - (swayAmp > 0 ? swayAmp : 0)) * dt * 0.5;
-  swayAmp = Math.max(0, Math.min(1, swayAmp));
-  const sway = Math.sin(t * 0.35) * 0.012 * swayAmp;
-  const swayP = Math.sin(t * 0.23) * 0.006 * swayAmp;
-
-  camera.rotation.set(pitch + swayP, yaw + sway, 0);
+  /* gentle breathing while stationary */
+  const still = tourPhase === 'dwell' || tourPhase === 'hold';
+  lookTmp.copy(camLook);
+  if (still) lookTmp.y += Math.sin(clock.elapsedTime * 0.5) * 0.008;
+  camera.lookAt(lookTmp);
   renderer.render(scene, camera);
 }
 
