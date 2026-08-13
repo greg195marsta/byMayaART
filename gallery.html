@@ -125,15 +125,33 @@ html,body{height:100%;overflow:hidden;background:#F8F5EE;font-family:'Jost',sans
       <h2>The Atelier</h2>
       <p>The studio mood — easels, warm light, and paintings where they were born.</p>
     </div>
+    <div class="room-card" data-room="reading">
+      <span class="tag">Photo room 01</span>
+      <h2>The Reading Room</h2>
+      <p>A real sunlit apartment — the art hung on photographed walls.</p>
+    </div>
+    <div class="room-card" data-room="country">
+      <span class="tag">Photo room 02</span>
+      <h2>The Country Bedroom</h2>
+      <p>A real cottage bedroom, soft daylight and lamplight.</p>
+    </div>
+    <div class="room-card" data-room="fireside">
+      <span class="tag">Photo room 03</span>
+      <h2>The Fireside Lounge</h2>
+      <p>A real lounge at night, lit by the fire — the art in evening warmth.</p>
+    </div>
   </div>
   <p class="hint">A slow guided tour — sit back, or click any painting to visit it</p>
 </div>
 
 <a id="back-link" class="hud" href="index.html">← by Maya</a>
 <div id="room-switch" class="hud" hidden>
-  <button data-room="salon">Living room</button>
+  <button data-room="salon">Living</button>
   <button data-room="bedroom">Bedroom</button>
   <button data-room="atelier">Atelier</button>
+  <button data-room="reading">Reading</button>
+  <button data-room="country">Country</button>
+  <button data-room="fireside">Fireside</button>
 </div>
 <div id="help" class="hud">Sit back — the room shows itself · click a painting to visit it</div>
 <div id="fallback">Your browser could not start the 3D gallery.<br>You can still see every piece on the <a href="index.html#gallery">main gallery page</a>.</div>
@@ -736,21 +754,171 @@ function buildAtelier(scene) {
   return { bounds:{ x:W/2-0.4, z:D/2-0.4 }, spawn:{ pos:[1.1, EYE, 2.2], yaw:0.22 } };
 }
 
-const ROOMS = { salon:buildSalon, bedroom:buildBedroom, atelier:buildAtelier };
+/* ── PHOTO ROOMS: real photographed 360° interiors (Poly Haven, CC0) ─────
+   The pano wraps an inverted sphere; paintings are planes positioned on the
+   photographed walls. Camera sits at the pano's centre — the tour pans and
+   FOV-zooms toward each piece (no translation: a photo has no depth).
+   u/v are fractions across the equirect image; angH is the piece's angular
+   height in degrees (how large it reads on the wall). */
+const PANO_R = 5;
+function dirFromUV(u, v) {
+  /* calibrated: the inverted-sphere equirect mapping shows image-u at
+     yaw = (0.25 - u) · 2π — u/v below are true fractions of the photo */
+  const yaw = (0.25 - u) * Math.PI * 2;
+  const pitch = (0.5 - v) * Math.PI;
+  return new THREE.Vector3().setFromSphericalCoords(1, Math.PI/2 - pitch, yaw);
+}
+const PANOS = {
+  reading: {
+    img: 'panos/reading.jpg', name: 'Reading room',
+    overview: { u: 0.40, v: 0.47 }, artTint: 0xFFFFFF,
+    placements: [
+      { key:'scroll',    u:0.315, v:0.425, angH:22 },
+      { key:'bouquet',   u:0.695, v:0.420, angH:6 },
+      { key:'lovebirds', u:0.7155,v:0.420, angH:6 },
+      { key:'penguin',   u:0.736, v:0.420, angH:6 },
+      { key:'sunflowers',u:0.475, v:0.425, angH:7.5 },
+      { key:'audrey',    u:0.378, v:0.415, angH:11 }
+    ]
+  },
+  country: {
+    img: 'panos/country.jpg', name: 'Country bedroom',
+    overview: { u: 0.72, v: 0.47 }, artTint: 0xFFF3E4,
+    placements: [
+      { key:'scroll',    u:0.789, v:0.403, angH:15 },
+      { key:'bouquet',   u:0.115, v:0.435, angH:5.6 },
+      { key:'lovebirds', u:0.133, v:0.435, angH:5.6 },
+      { key:'penguin',   u:0.151, v:0.435, angH:5.6 },
+      { key:'sunflowers',u:0.915, v:0.42, angH:6.5 },
+      { key:'audrey',    u:0.237, v:0.43, angH:8 }
+    ]
+  },
+  fireside: {
+    img: 'panos/fireside.jpg', name: 'Fireside lounge',
+    overview: { u: 0.40, v: 0.47 }, artTint: 0xFFDFB8,
+    placements: [
+      { key:'scroll',    u:0.385, v:0.40, angH:21 },
+      { key:'bouquet',   u:0.285, v:0.41, angH:6 },
+      { key:'lovebirds', u:0.305, v:0.41, angH:6 },
+      { key:'penguin',   u:0.325, v:0.41, angH:6 },
+      { key:'sunflowers',u:0.145, v:0.40, angH:7.5 },
+      { key:'audrey',    u:0.745, v:0.40, angH:9.5 }
+    ]
+  }
+};
+const PANO_TEX = {};
+let softShadowTex = null;
+function getSoftShadow() {
+  if (softShadowTex) return softShadowTex;
+  const c = document.createElement('canvas'); c.width = c.height = 256;
+  const g = c.getContext('2d');
+  const grad = g.createRadialGradient(128, 128, 30, 128, 128, 128);
+  grad.addColorStop(0, 'rgba(0,0,0,0.55)'); grad.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = grad; g.fillRect(0, 0, 256, 256);
+  softShadowTex = new THREE.CanvasTexture(c);
+  return softShadowTex;
+}
+function buildPano(scene, cfg) {
+  let tex = PANO_TEX[cfg.img];
+  if (!tex) {
+    tex = texLoader.load(cfg.img);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    PANO_TEX[cfg.img] = tex;
+  }
+  const geo = new THREE.SphereGeometry(10, 64, 40);
+  geo.scale(-1, 1, 1);
+  scene.add(new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: tex })));
+  cfg.placements.forEach(p => {
+    const def = WORKS[p.key];
+    const dir = dirFromUV(p.u, p.v);
+    const h = 2 * PANO_R * Math.tan(THREE.MathUtils.degToRad(p.angH) / 2);
+    const aspect = def.aspect || def.w / def.h;
+    const w = h * aspect;
+    /* soft shadow glues the piece to the photographed wall */
+    const sh = new THREE.Mesh(new THREE.PlaneGeometry(w * 1.3, h * 1.3),
+      new THREE.MeshBasicMaterial({ map: getSoftShadow(), transparent: true, opacity: 0.5, depthWrite: false }));
+    sh.position.copy(dir.clone().multiplyScalar(PANO_R * 1.015));
+    sh.position.y -= h * 0.05;
+    sh.lookAt(0, 0, 0);
+    scene.add(sh);
+    if (!def.noBacking) {
+      const frame = new THREE.Mesh(new THREE.BoxGeometry(w + h*0.045, h + h*0.045, h*0.02), new THREE.MeshBasicMaterial({ color: 0x33302A }));
+      frame.position.copy(dir.clone().multiplyScalar(PANO_R * 1.005));
+      frame.lookAt(0, 0, 0);
+      scene.add(frame);
+    }
+    const art = new THREE.Mesh(new THREE.PlaneGeometry(w, h),
+      new THREE.MeshBasicMaterial({ map: TEX[p.key], transparent: true, color: cfg.artTint || 0xFFFFFF }));
+    art.position.copy(dir.clone().multiplyScalar(PANO_R));
+    art.lookAt(0, 0, 0);
+    art.userData = { key: p.key };
+    scene.add(art);
+    paintings.push(art);
+  });
+}
+function startPanoTour(cfg) {
+  const trioKeys = ['bouquet', 'lovebirds', 'penguin'];
+  const stops = [], members = [];
+  cfg.placements.forEach(p => {
+    const st = {
+      key: p.key, pos: new THREE.Vector3(0, 0, 0),
+      look: dirFromUV(p.u, p.v).multiplyScalar(PANO_R),
+      fov: Math.min(44, Math.max(15, p.angH * 1.5))
+    };
+    (trioKeys.includes(p.key) ? members : stops).push(st);
+  });
+  if (members.length === 3) {
+    const avg = new THREE.Vector3();
+    members.forEach(m => avg.add(m.look));
+    avg.multiplyScalar(1/3);
+    stops.splice(Math.min(1, stops.length), 0, {
+      keys: trioKeys, pos: new THREE.Vector3(0, 0, 0), look: avg, fov: 26,
+      card: { title:'The watercolour trio', meta:'Three A5 originals · watercolour', status:'Sold as individual pieces' }
+    });
+  } else stops.push(...members);
+  tourStops = stops;
+  tourIndex = 0;
+  overviewPose.pos.set(0, 0, 0);
+  overviewPose.look.copy(dirFromUV(cfg.overview.u, cfg.overview.v).multiplyScalar(PANO_R));
+  camera.position.set(0, 0, 0);
+  camLook.copy(overviewPose.look);
+  camera.fov = 68; camera.updateProjectionMatrix();
+  setPhase('hold', 1.2);
+}
+
+const ROOMS = {
+  salon:    { build: buildSalon,   type: 'walk' },
+  bedroom:  { build: buildBedroom, type: 'walk' },
+  atelier:  { build: buildAtelier, type: 'walk' },
+  reading:  { pano: PANOS.reading,  type: 'pano' },
+  country:  { pano: PANOS.country,  type: 'pano' },
+  fireside: { pano: PANOS.fireside, type: 'pano' }
+};
 
 /* ── scene lifecycle ────────────────────────────────────────────────────── */
-let scene = null, bounds = { x:2, z:2 };
+let scene = null, bounds = { x:2, z:2 }, roomType = 'walk';
 function loadRoom(name) {
   if (!ROOMS[name]) name = 'salon';
   if (scene) scene.traverse(o => { if (o.geometry) o.geometry.dispose(); });
   paintings = [];
   hidePanel();
   scene = new THREE.Scene();
-  const info = ROOMS[name](scene);
-  if (envMap) { scene.environment = envMap; scene.environmentIntensity = 0.4; }
-  ensureComposer();
-  bounds = info.bounds;
-  startTour(info.spawn);
+  const room = ROOMS[name];
+  roomType = room.type;
+  if (room.type === 'walk') {
+    const info = room.build(scene);
+    if (envMap) { scene.environment = envMap; scene.environmentIntensity = 0.4; }
+    bounds = info.bounds;
+    camera.fov = 52; camera.updateProjectionMatrix();
+    ensureComposer();
+    startTour(info.spawn);
+  } else {
+    buildPano(scene, room.pano);
+    ensureComposer();
+    startPanoTour(room.pano);
+  }
+  if (gtaoPass) gtaoPass.enabled = (room.type === 'walk');
   document.querySelectorAll('#room-switch button').forEach(b => b.classList.toggle('active', b.dataset.room === name));
   history.replaceState(null, '', '#' + name);
 }
@@ -793,9 +961,10 @@ function stopForPainting(mesh) {
   return { key: mesh.userData.key, pos, look: wp };
 }
 function setPhase(name, dur) { tourPhase = name; tourT = 0; phaseDur = dur; }
-function beginSegment(toPos, toLook, dur, phase) {
+function beginSegment(toPos, toLook, dur, phase, toFov) {
   seg = { fromPos: camera.position.clone(), fromLook: camLook.clone(),
-          toPos: toPos.clone(), toLook: toLook.clone() };
+          toPos: toPos.clone(), toLook: toLook.clone(),
+          fromFov: camera.fov, toFov: toFov !== undefined ? toFov : camera.fov };
   setPhase(phase, dur);
 }
 function startTour(spawn) {
@@ -847,7 +1016,7 @@ canvas.addEventListener('pointerup', e => {
   hidePanel();
   tourIndex = idx;
   const st = tourStops[idx];
-  beginSegment(st.pos, st.look, 1.7, 'approach');
+  beginSegment(st.pos, st.look, 1.7, 'approach', st.fov);
 });
 
 /* ── frame loop ─────────────────────────────────────────────────────────── */
@@ -862,6 +1031,10 @@ function animate() {
     const k = easeInOut(Math.min(1, tourT / phaseDur));
     camera.position.lerpVectors(seg.fromPos, seg.toPos, k);
     camLook.lerpVectors(seg.fromLook, seg.toLook, k);
+    if (seg.toFov !== seg.fromFov) {
+      camera.fov = seg.fromFov + (seg.toFov - seg.fromFov) * k;
+      camera.updateProjectionMatrix();
+    }
     if (tourT >= phaseDur) {
       if (tourPhase === 'approach') {
         const st = tourStops[tourIndex];
@@ -875,12 +1048,13 @@ function animate() {
   } else if (tourPhase === 'dwell') {
     if (tourT >= phaseDur) {
       hidePanel();
-      beginSegment(overviewPose.pos, overviewPose.look, 1.5, 'retreat');
+      beginSegment(overviewPose.pos, overviewPose.look, 1.5, 'retreat',
+        roomType === 'pano' ? 68 : undefined);
     }
   } else { /* hold at overview */
     if (tourT >= phaseDur && tourStops.length) {
       const st = tourStops[tourIndex];
-      beginSegment(st.pos, st.look, 2.0, 'approach');
+      beginSegment(st.pos, st.look, 2.0, 'approach', st.fov);
     }
   }
 
@@ -893,7 +1067,7 @@ function animate() {
   /* dwell depth-of-field: focus on the artwork, melt the room behind it */
   if (composer) {
     if (bokehPass) {
-      const targetAperture = tourPhase === 'dwell' ? 0.00028 : 0;
+      const targetAperture = (tourPhase === 'dwell' && roomType === 'walk') ? 0.00028 : 0;
       apertureNow += (targetAperture - apertureNow) * Math.min(1, dt * 2.5);
       bokehPass.uniforms['aperture'].value = apertureNow;
       bokehPass.uniforms['focus'].value = camera.position.distanceTo(camLook);
